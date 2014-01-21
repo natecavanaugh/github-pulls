@@ -4,7 +4,9 @@ global.console = console;
 var async = require('async');
 var gui = require('nw.gui');
 var Y = require('yui/io-base');
-// require('nw.gui').Window.get().showDevTools()
+
+// require('nw.gui').Window.get().showDevTools();
+// window.focus();
 
 window.resizeTo(window.innerWidth, Math.max(window.innerWidth, screen.height - 100, 930));
 
@@ -97,6 +99,44 @@ AUI().use(
 				}
 
 				return ret;
+			}
+		);
+
+		A.Handlebars.registerHelper(
+			'createLink',
+			function(context, options) {
+				var number = this.number;
+				var title = this.title;
+				var url = this.html_url;
+
+				var jiraLink = '';
+
+				title = title.replace(
+					/(?:[A-Z]{3,}-\d+)/,
+					function(match, key, str) {
+						if (match) {
+							jiraLink = '<a class="external-link" href="https://issues.liferay.com/browse/' + match + '">' + match + '</a>';
+						}
+
+						return '';
+					}
+				);
+
+				title = title.replace(/^\s*-\s*/, '');
+
+				title = A.Lang.trim(title);
+
+				var buffer = ['<a class="external-link" href="' + url + '">' + number + '</a>'];
+
+				if (jiraLink) {
+					buffer.push(jiraLink);
+				}
+
+				if (title) {
+					buffer.push('<a class="external-link" href="' + url + '">' + title + '</a>');
+				}
+
+				return new A.Handlebars.SafeString(buffer.join(' - '));
 			}
 		);
 
