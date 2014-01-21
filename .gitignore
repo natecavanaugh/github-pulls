@@ -6,3 +6,7 @@ bin
 Icon
 
 node_modules
+
+build/osx/post_build.sh
+
+npm-debug.log
