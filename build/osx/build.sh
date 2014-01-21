@@ -37,6 +37,11 @@ if [[ -a "$BUILD_APP_PATH" ]]; then
 	rm -rf "$BUILD_APP_PATH"
 fi
 
-mv -f "$APP" "$BIN_PATH"
+mv -f "$APP" "$BIN_PATH" && BUILT=1
 
 echo "$APP copied to bin directory"
+
+if [[ $BUILT && -f "${BASE_PATH}/post_build.sh" ]]; then
+	echo "executing post_build"
+	${BASE_PATH}/post_build.sh
+fi
