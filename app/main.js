@@ -307,8 +307,10 @@ AUI().use(
 		};
 
 		var loadLogin = function() {
+			var body = A.getBody();
+
 			if (navigator.onLine) {
-				A.getBody().removeClass('status-offline').addClass('loaded login').html(loginTemplate());
+				body.removeClass('status-offline').removeClass('loading').addClass('loaded').addClass('login').html(loginTemplate());
 
 				A.one('#fm').on(
 					'submit',
@@ -335,6 +337,8 @@ AUI().use(
 								}
 							);
 
+							body.addClass('loading');
+
 							ghApiRequest(
 								'authorizations',
 								function(json, response) {
@@ -348,7 +352,7 @@ AUI().use(
 
 										settings.val(val);
 
-										A.getBody().removeClass('loaded').html('');
+										body.removeClass('loaded').html('');
 
 										loadPulls();
 									}
@@ -357,6 +361,8 @@ AUI().use(
 										response.message = json.message;
 
 										loginErrors.html(loginErrorTemplate(response)).show();
+
+										body.removeClass('loading');
 									}
 								},
 								function(response) {
@@ -379,7 +385,7 @@ AUI().use(
 
 			}
 			else {
-				A.getBody().replaceClass('loading', 'status-offline');
+				body.replaceClass('loading', 'status-offline');
 			}
 		};
 
