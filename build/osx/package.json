@@ -1,0 +1,8 @@
+{
+  "name": "github-pulls-build",
+  "dependencies": {
+    "async": "~0.2.9",
+    "optimist": "*",
+    "fs-extra": "*"
+  }
+}

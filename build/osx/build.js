@@ -1,47 +1,110 @@
-#!/bin/bash
+#!/usr/bin/env node
 
-# Inspired by Gisto's (https://github.com/Gisto/Gisto) build script
+var async = require('async');
+var argv = require('optimist').argv;
+var fs = require('fs-extra');
+var path = require('path');
+var exec = require('child_process').exec;
 
-NW="/Applications/node-webkit.app"
-APP='Github Pulls.app'
+var NW_VER = argv.version || '';
 
-BASE_PATH="$(perl -e "use Cwd qw(realpath);print realpath('$0');" | xargs dirname)"
-ROOT_PATH="${BASE_PATH}/../.."
-APP_PATH="$BASE_PATH/$APP"
-APP_SRC_PATH="${ROOT_PATH}/app"
-BIN_PATH="${ROOT_PATH}/bin"
-BUILD_APP_PATH="$BIN_PATH/${APP}"
+var NW_APP = 'node-webkit' + NW_VER + '.app';
 
-if [[ !(-a "$NW") ]]; then
-    NW="${HOME}$NW"
+var ROOT_APPLICATIONS_PATH = '/Applications';
+var USER_APPLICATIONS_PATH = path.join(process.env.HOME, ROOT_APPLICATIONS_PATH);
 
-    if [[ !(-a "$NW") ]]; then
-        echo "This script requires node-webkit.app in your applications folder"
+var NW = path.join(ROOT_APPLICATIONS_PATH, NW_APP);
 
-        exit 1
-    fi
-fi
+var APP = 'Github Pulls.app';
 
-cd $APP_SRC_PATH
-npm install --loglevel error
-cd -
+var BASE_PATH = __dirname;
+var ROOT_PATH = path.join(BASE_PATH, '../..');
+var APP_PATH = path.join(BASE_PATH, APP);
+var APP_SRC_PATH = path.join(ROOT_PATH, 'app');
+var BIN_PATH = path.join(ROOT_PATH, 'bin');
+var BUILD_APP_PATH = path.join(BIN_PATH, APP);
 
-cp -r "$NW" "$APP_PATH"
+async.detect(
+	[NW, path.join(USER_APPLICATIONS_PATH, NW_APP)],
+	fs.exists,
+	checkNodeWebkit
+);
 
-cp -r "$APP_SRC_PATH" "$APP_PATH/Contents/Resources/app.nw"
+function checkNodeWebkit(result) {
+	if (!result) {
+		console.log('This script requires ' + NW_APP + ' to be in your applications directory');
 
-cp -r "${BASE_PATH}/app.icns" "$APP_PATH/Contents/Resources"
-cp -r "${BASE_PATH}/info.plist" "$APP_PATH/Contents"
+		return process.exit(1);
+	}
 
-if [[ -a "$BUILD_APP_PATH" ]]; then
-	rm -rf "$BUILD_APP_PATH"
-fi
+	NW = result;
 
-mv -f "$APP" "$BIN_PATH" && BUILT=1
+	init();
+}
 
-echo "$APP copied to bin directory"
+function copy(from, to) {
+	return fs.copy.bind(fs, from, to);
+}
 
-if [[ $BUILT && -f "${BASE_PATH}/post_build.sh" ]]; then
-	echo "executing post_build"
-	${BASE_PATH}/post_build.sh
-fi
+function init() {
+	async.series(
+		[
+			installModules,
+			copy(NW, APP_PATH),
+			copy(APP_SRC_PATH, path.join(APP_PATH, 'Contents/Resources/app.nw')),
+			copy(path.join(BASE_PATH, 'app.icns'), path.join(APP_PATH, 'Contents/Resources/app.icns')),
+			copy(path.join(BASE_PATH, 'Info.plist'), path.join(APP_PATH, 'Contents/Info.plist')),
+			fs.remove.bind(fs, BUILD_APP_PATH),
+			fs.rename.bind(fs, path.join(BASE_PATH, APP), BUILD_APP_PATH),
+			install,
+		],
+		function(err) {
+			console.log('done');
+		}
+	)
+}
+
+function installModules(callback) {
+	exec(
+		'npm install --loglevel error',
+		{
+			cwd: APP_SRC_PATH
+		},
+		function(err, stdout, stderr) {
+			if (err) {
+				callback(err);
+			}
+			else {
+				console.log(stdout || stderr);
+
+				callback();
+			}
+		}
+	);
+}
+
+function install(callback) {
+	if (argv.install) {
+		async.detectSeries(
+			[USER_APPLICATIONS_PATH, ROOT_APPLICATIONS_PATH],
+			fs.exists,
+			function(result) {
+				var destination = path.join(result, APP);
+
+				async.series(
+					[
+						fs.remove.bind(fs, destination),
+						fs.rename.bind(fs, BUILD_APP_PATH, destination)
+					],
+					function(results) {
+						console.log('copied?', BUILD_APP_PATH, destination);
+						callback(results);
+					}
+				);
+			}
+		);
+	}
+	else {
+		callback();
+	}
+}
