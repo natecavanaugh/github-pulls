@@ -1,10 +1,10 @@
 #Github Pulls
 
-![Github Pulls](http://alterform.com/github-pulls/ghp.png)
-
 This app shows all of your pull requests across your different repositories, and even across the branches in those repos.
 
 To download, just go to the [Releases](https://github.com/natecavanaugh/github-pulls/releases) tab and download the latest zip file.
+
+![Github Pulls](http://alterform.com/github-pulls/ghp.png)
 
 #Building locally
 
