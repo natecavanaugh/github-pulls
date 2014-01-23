@@ -1,5 +1,6 @@
 #Github Pulls
-<img alt="Github Pulls" src="http://alterform.com/github-pulls/ghp.png" style="max-width: 70%;" />
+
+![Github Pulls](http://alterform.com/github-pulls/ghp.png)
 
 This app shows all of your pull requests across your different repositories, and even across the branches in those repos.
 
