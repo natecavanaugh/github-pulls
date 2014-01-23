@@ -1,0 +1,312 @@
+<html>
+<head>
+<title>Github Pull Requests</title>
+<link rel="stylesheet" href="css/bootstrap.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="css/bootstrap-responsive.css" type="text/css" media="screen" />
+<style>
+	body.loading {
+		background: url(aui/build/aui-skin-classic/images/loading_indicator.gif) no-repeat 50%;
+	}
+	body.loaded {
+		background-image: none;
+	}
+
+	.network-status, body.loaded.status-offline .network-status, h1 .status-icon {
+		display: none;
+	}
+
+	.status-offline .network-status, .error-status {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		font-size: 32px;
+		color: rgba(0,0,0,0.5);
+		text-shadow: 1px 1px rgba(255,255,255, 0.5);
+		background: #D5DCE3;
+		display: table;
+		width: 100%;
+		height: 100%;
+	}
+
+	.status-offline .network-status p, .error-status p {
+		text-align: center;
+		display: table-cell;
+		vertical-align: middle;
+	}
+
+	.error-status p .reload-pulls {
+		display: block;
+		font-size: 0.5em;
+		margin-top: 1em;
+		text-align: center;
+	}
+
+	body.loaded.status-error .error-warning .error-status {
+		background: none;
+		position: static;
+		height: auto;
+		width: auto;
+		display: block;
+		font-size: 16px;
+	}
+
+	body.loaded.status-error .error-warning h1 {
+		font-size: 18px;
+		margin: 0;
+	}
+
+	body.loaded.status-error .error-warning .error-status p {
+		display: block;
+	}
+
+	body.loaded.status-error .error-warning .error-status p .reload-pulls {
+		font-size: 14px;
+	}
+
+	body.loaded.status-offline > h1 .status-icon {
+		display: inline-block;
+		margin: 16px 0;
+		float: right;
+	}
+
+	.error-status .icon-exclamation-sign {
+		vertical-align: top;
+		margin: 5px;
+	}
+
+	.avatar {
+		width: 20px;
+		min-height: 20px;
+		border-radius: 2px;
+		border: 1px solid #ccc;
+	}
+
+	.pulls {
+		/*padding-left: 1em;*/
+		border-top: 1px solid #eee;
+		padding-top: 0.25em;
+	}
+
+	.pull {
+		margin-bottom: 0.25em;
+		padding-bottom: 0.25em;
+		border-bottom: 1px solid #fafafa;
+	}
+
+	.property-title {
+		font-size: 1.1em;
+	}
+
+	.pull-count {
+		background: #09C;
+		border-radius: 5px;
+		padding: 6px;
+		position: relative;
+		display: inline-block;
+		vertical-align: middle;
+		color: #fff;
+		font-size: 0.7em;
+		line-height: 1;
+		z-index: 5;
+		text-align: center;
+	}
+
+	.login form {
+		margin: 0 auto;
+		width: 300px;
+	}
+
+	.account-bar {
+		background-color: #EEE;
+		position: fixed;
+		top: 0;
+		border-bottom: 2px solid #CCC;
+		left: 0;
+		right: 0;
+		padding: 1em;
+		display: -webkit-flex;
+		-webkit-align-content: center;
+		-webkit-justify-content: space-between;
+		-webkit-transition: background-color 0.5s;
+		z-index: 10;
+	}
+
+	.account-bar .logout {
+		-webkit-flex: 1 auto;
+		text-align: right;
+		display: inline-block;
+		line-height: 32px;
+	}
+
+	.account-bar .user-info {
+		-webkit-flex: 1 auto;
+	}
+
+	.account-bar .user-info img {
+		border-radius: 50%;
+		width: 32px;
+	}
+
+	.account-bar .app-title {
+		-webkit-flex: 1 auto;
+		font-weight: bold;
+		line-height: 32px;
+		text-align: center;
+		font-size: 18px;
+	}
+
+	.account-bar .app-title .pull-count {
+		line-height: 0;
+		padding: 10px 8px;
+	}
+
+	body.loaded {
+		padding-top: 70px;
+	}
+
+/*	body.loaded.loading .account-bar {
+		background: lightyellow;
+	}
+
+	body.loaded.loading .account-bar .app-title {
+		background: url(aui/build/aui-skin-classic/images/loading_indicator.gif) no-repeat 100% 50%;
+	}
+*/
+	.loading .account-bar {
+		border-bottom-color: #DDD;
+	}
+
+	.loading-bar {
+		background: #09C;
+		display: none;
+		height: 2px;
+		left: 0;
+		position: fixed;
+		right: 0;
+		top: 0;
+		z-index: 800;
+		-webkit-transform: translateX(100%);
+	}
+
+	.account-bar .loading-bar {
+		position: absolute;
+		top: auto;
+		bottom: -2px;
+	}
+
+	@-webkit-keyframes shift-rightwards {
+		0% {
+			-webkit-transform: translateX(-100%);
+		}
+
+		40% {
+			-webkit-transform: translateX(0%);
+		}
+
+		60% {
+			-webkit-transform: translateX(0%);
+		}
+
+		100% {
+			-webkit-transform: translateX(100%);
+		}
+	}
+
+	.loading .loading-bar {
+		display: block;
+		-webkit-animation: shift-rightwards 1s ease-in-out infinite;
+		-webkit-animation-delay: .4s;
+	}
+/*
+	.loading .account-bar .pull-count {
+		-webkit-animation: rotateplane 1.2s infinite ease-in-out;
+	}
+
+	@-webkit-keyframes rotateplane {
+		0% { -webkit-transform: perspective(120px) }
+		50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+		100% { -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg) }
+	}
+*/
+/*	body h1 {
+		-webkit-transition: background-color 0.5s;
+	}
+	body.loaded.loading > h1 {
+		background: lightyellow url(aui/build/aui-skin-classic/images/loading_indicator.gif) no-repeat 100% 50%;
+		padding-right: 20px;
+	}
+*/
+</style>
+<script src="aui/build/aui/aui.js" type="text/javascript"></script>
+<script src="main.js" type="text/javascript"></script>
+</head>
+
+<body class="loading">
+	<script id="listTemplate" type="text/x-handlebars-template">
+		<div class="account-bar" id="accountBar">
+			<span class="user-info">
+				<a class="external-link" href="http://github.com/{{username}}"><img src="{{avatar}}" /></a>
+				<a class="external-link" href="http://github.com/{{username}}">{{username}}</a>
+			</span>
+
+			<span class="app-title">Github Pulls <span class="pull-count">{{total}}</span></span>
+
+			<a class="logout" href="javascript:;"><i class="icon-off"></i> Logout</a>
+
+			<div class="loading-bar"></div>
+		</div>
+
+		{{#results}}
+			<h2>{{this.name}} <span class="pull-count">{{this.total}}</span></h2>
+
+			<ul class="unstyled">
+				{{#eachProperty this.branchPulls}}
+						<li><b class="property-title">{{property}}</b>
+
+							<ul class="unstyled pulls">
+								{{#each value}}
+									<li class="pull"><img class="avatar" src="{{this.user.avatar_url}}" /> {{this.number}} - <a class="external-link" href="{{this.html_url}}" target="_blank">{{this.title}}</a> ({{this.fromUser}})</li>
+								{{/each}}
+							</ul>
+						</li>
+				{{/eachProperty}}
+			</ul>
+		{{/results}}
+	</script>
+
+	<script id="loginTemplate" type="text/x-handlebars-template">
+		<form action="" id="fm">
+			<h1 id="pullsTitle">Github Pulls <span class="status-icon icon-exclamation-sign"></span></h1>
+
+			<div class="alert alert-error hide" id="loginErrors"></div>
+
+			<input class="input-large" id="username" placeholder="Github username" type="text" /><br />
+			<input class="input-large" id="password" placeholder="Github password" type="password" /><br />
+
+			<input class="btn btn-primary" type="submit" value="Login" />
+		</form>
+
+		<div class="loading-bar"></div>
+	</script>
+
+	<script id="errorTemplate" type="text/x-handlebars-template">
+		<div class="error-warning">
+			<h1>Github Pulls Error</h1>
+			<div class="error-status"><p><span class="icon-exclamation-sign"></span><span>{{statusText}}<br />
+			{{responseText.message}}</span> <a class="reload-pulls" href="javascript:;">Reload Pulls</a></p></div>
+		</div>
+	</script>
+
+	<script id="loginErrorTemplate" type="text/x-handlebars-template">
+		<p>{{errorText}}</p>
+		<p><span class="icon-exclamation-sign"></span> {{statusText}}</p>
+		<p>Server responded with:<br />
+			<b>{{message}}</b>
+		</p>
+	</script>
+
+	<div class="network-status"><p><span class="icon-exclamation-sign"></span> Not connected to a network</p></div>
+</body>
+</html>

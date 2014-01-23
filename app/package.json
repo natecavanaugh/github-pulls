@@ -1,0 +1,8 @@
+{
+  "name": "github-pulls",
+  "main": "index.html",
+  "dependencies": {
+    "async": "~0.2.9",
+    "yui": "~3.14.1"
+  }
+}
