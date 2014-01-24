@@ -166,14 +166,6 @@
 		padding-top: 70px;
 	}
 
-/*	body.loaded.loading .account-bar {
-		background: lightyellow;
-	}
-
-	body.loaded.loading .account-bar .app-title {
-		background: url(aui/build/aui-skin-classic/images/loading_indicator.gif) no-repeat 100% 50%;
-	}
-*/
 	.loading .account-bar {
 		border-bottom-color: #DDD;
 	}
@@ -188,6 +180,24 @@
 		top: 0;
 		z-index: 800;
 		-webkit-transform: translateX(100%);
+	}
+
+	.spinner {
+		display: none;
+		position: absolute;
+		top: 8px;
+		right: 5px;
+		border: 2px dashed #999;
+		border-radius: 50%;
+		width: 16px;
+		height: 16px;
+		-webkit-animation: spin 1s linear infinite;
+	}
+
+	.account-bar .spinner {
+		position: absolute;
+		top: auto;
+		bottom: -28px;
 	}
 
 	.account-bar .loading-bar {
@@ -219,25 +229,16 @@
 		-webkit-animation: shift-rightwards 1s ease-in-out infinite;
 		-webkit-animation-delay: .4s;
 	}
-/*
-	.loading .account-bar .pull-count {
-		-webkit-animation: rotateplane 1.2s infinite ease-in-out;
+
+	.loading .spinner {
+		display: block;
+		-webkit-animation: spin 1s linear infinite;
 	}
 
-	@-webkit-keyframes rotateplane {
-		0% { -webkit-transform: perspective(120px) }
-		50% { -webkit-transform: perspective(120px) rotateY(180deg) }
-		100% { -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg) }
+	@-webkit-keyframes spin {
+		0% { -webkit-transform: rotateZ(0deg); }
+		100% { -webkit-transform: rotateZ(360deg); }
 	}
-*/
-/*	body h1 {
-		-webkit-transition: background-color 0.5s;
-	}
-	body.loaded.loading > h1 {
-		background: lightyellow url(aui/build/aui-skin-classic/images/loading_indicator.gif) no-repeat 100% 50%;
-		padding-right: 20px;
-	}
-*/
 </style>
 <script src="aui/build/aui/aui.js" type="text/javascript"></script>
 <script src="main.js" type="text/javascript"></script>
@@ -256,6 +257,7 @@
 			<a class="logout" href="javascript:;"><i class="icon-off"></i> Logout</a>
 
 			<div class="loading-bar"></div>
+			<div class="spinner"></div>
 		</div>
 
 		{{#results}}
@@ -289,6 +291,7 @@
 		</form>
 
 		<div class="loading-bar"></div>
+		<div class="spinner"></div>
 	</script>
 
 	<script id="errorTemplate" type="text/x-handlebars-template">
