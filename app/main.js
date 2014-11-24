@@ -1,32 +1,80 @@
-global.A = AUI();
 global.console = console;
 
 var async = require('async');
 var gui = require('nw.gui');
-var Y = require('yui/io-base');
 
 // require('nw.gui').Window.get().showDevTools();
 // window.focus();
 
 window.resizeTo(window.innerWidth, Math.max(window.innerWidth, screen.height - 100, 930));
 
-AUI().use(
-	'aui-base', 'dump', 'handlebars',
-	function(A) {
-		var Lang = A.Lang;
+var $ = require('jquery')(window);
+var Handlebars = require('handlebars');
+var _ = require('lodash');
 
+var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
+
+$.support.cors = true;
+
+$.ajaxSettings.xhr = function () {
+    return new XMLHttpRequest();
+};
+
+$.fn.replaceClass = function(oldClass, newClass) {
+	return this.each(
+		function(index, item) {
+			var instance = $(this);
+
+			instance.removeClass(oldClass);
+			instance.addClass(newClass);
+		}
+	);
+};
+
+var REGEX_SUB = /\{\s*([^|}]+?)\s*(?:\|([^}]*))?\s*\}/g;
+
+_.mixin(
+	{
+		sub: function(string, data) {
+			if (arguments.length > 2 || !_.isObject(data)) {
+				data = _.toArray(arguments).slice(1);
+			}
+
+			return string.replace ? string.replace(
+				REGEX_SUB,
+				function (match, key) {
+					return _.isUndefined(data[key]) ? match : data[key];
+				}
+			) : string;
+		}
+	}
+);
+
+Object.defineProperty(
+	$,
+	'body',
+	{
+		get: function() {
+			return $('body');
+		},
+		configurable: true
+	}
+);
+
+$(document).ready(
+	function($) {
 		var API_URL = 'https://api.github.com/{0}';
 
 		var REFRESH_TIME = 30 * 1000;
 
-		var TPL_LOGIN = A.one('#loginTemplate').html();
-		var TPL_LOGIN_ERROR = A.one('#loginErrorTemplate').html();
-		var TPL_SOURCE = A.one('#listTemplate').html();
-		var TPL_SOURCE_ERROR = A.one('#errorTemplate').html();
+		var TPL_LOGIN = $('#loginTemplate').html();
+		var TPL_LOGIN_ERROR = $('#loginErrorTemplate').html();
+		var TPL_SOURCE = $('#listTemplate').html();
+		var TPL_SOURCE_ERROR = $('#errorTemplate').html();
 
-		var errorTemplate = A.Handlebars.compile(TPL_SOURCE_ERROR);
-		var loginTemplate = A.Handlebars.compile(TPL_LOGIN);
-		var loginErrorTemplate = A.Handlebars.compile(TPL_LOGIN_ERROR);
+		var errorTemplate = Handlebars.compile(TPL_SOURCE_ERROR);
+		var loginTemplate = Handlebars.compile(TPL_LOGIN);
+		var loginErrorTemplate = Handlebars.compile(TPL_LOGIN_ERROR);
 
 		var settings = {
 			data: {},
@@ -48,7 +96,7 @@ AUI().use(
 				else {
 					var parsed = JSON.parse(localStorage.settings);
 
-					A.mix(data, parsed, true);
+					_.extend(data, parsed);
 
 					instance._loaded = true;
 				}
@@ -62,8 +110,8 @@ AUI().use(
 
 				var setting;
 
-				var get = (arguments.length === 1 && Lang.isString(key));
-				var objectKey = Lang.isObject(key);
+				var get = (arguments.length === 1 && _.isString(key));
+				var objectKey = _.isObject(key);
 
 				if (objectKey || arguments.length > 1) {
 					get = false;
@@ -74,7 +122,7 @@ AUI().use(
 				}
 				else {
 					if (objectKey) {
-						A.mix(settings, key, true);
+						_.extend(settings, key);
 					}
 					else {
 						settings[key] = value;
@@ -89,7 +137,7 @@ AUI().use(
 
 		var avatar = settings.val('avatar');
 
-		A.Handlebars.registerHelper(
+		Handlebars.registerHelper(
 			'eachProperty',
 			function(context, options) {
 				var ret = '';
@@ -102,7 +150,7 @@ AUI().use(
 			}
 		);
 
-		A.Handlebars.registerHelper(
+		Handlebars.registerHelper(
 			'createLink',
 			function(context, options) {
 				var number = this.number;
@@ -124,7 +172,7 @@ AUI().use(
 
 				title = title.replace(/^\s*-\s*/, '');
 
-				title = A.Lang.trim(title);
+				title = $.trim(title);
 
 				var buffer = ['<a class="external-link" href="' + url + '">' + number + '</a>'];
 
@@ -136,26 +184,30 @@ AUI().use(
 					buffer.push('<a class="external-link" href="' + url + '">' + title + '</a>');
 				}
 
-				return new A.Handlebars.SafeString(buffer.join(' - '));
+				return new Handlebars.SafeString(buffer.join(' - '));
 			}
 		);
 
 		var defaultFailureFn = function(e) {
-			var body = A.getBody();
+			var body = $.body;
 
-			var pullsTitle = A.one('#pullsTitle') || A.one('#accountBar');
+			var pullsTitle = $('#pullsTitle');
+
+			if (!pullsTitle.length) {
+				 pullsTitle = $('#accountBar');
+			}
 
 			if (!e.statusText) {
 				e.statusText = 'An Unknown error occured when trying to load ' + url;
 			}
 
-			var errorResponse = A.Node.create(errorTemplate(e));
+			var errorResponse = $(errorTemplate(e));
 
 			if (pullsTitle) {
-				var currentError = A.one('.error-warning');
+				var currentError = $('.error-warning');
 
 				var showError = function() {
-					pullsTitle.placeAfter(errorResponse);
+					pullsTitle.after(errorResponse);
 
 					body.addClass('status-error').removeClass('status-offline').removeClass('loading');
 
@@ -177,7 +229,7 @@ AUI().use(
 		};
 
 		var ghApiRequest = function(path, callback, failure, config) {
-			var url = Lang.sub(API_URL, [path]);
+			var url = _.sub(API_URL, path);
 
 			var headers = {
 				'Authorization': 'token ' + settings.val('token'),
@@ -189,27 +241,26 @@ AUI().use(
 			var method = 'GET';
 
 			if (config) {
-				headers = A.mix(headers, config.headers, true);
+				headers = _.extend(headers, config.headers);
 				data = config.data || data;
 				method = config.method || method;
 			}
 
-			var x = Y.io(
+			var x = $.ajax(
 				url,
 				{
 					headers: headers,
 					data: data,
-					method: method,
-					on: {
-						failure: function(id, e) {
-							(failure || defaultFailureFn)(e);
-						},
-						complete: function(id, e) {
-							if (Lang.isFunction(callback)) {
-								var json = JSON.parse(e.responseText);
+					type: method,
+					error: function(xhr) {
+						(failure || defaultFailureFn)(xhr);
+					},
+					crossDomain: true,
+					complete: function(xhr, response) {
+						if (_.isFunction(callback)) {
+							var json = JSON.parse(xhr.responseText);
 
-								callback(json, e);
-							}
+							callback(json, xhr);
 						}
 					}
 				}
@@ -222,7 +273,7 @@ AUI().use(
 			async.map(
 				repos,
 				function(item, cb){
-					ghApiRequest(Lang.sub('repos/{path}/pulls', item),
+					ghApiRequest(_.sub('repos/{path}/pulls', item),
 						function(json) {
 							cb(
 								null,
@@ -239,7 +290,7 @@ AUI().use(
 
 					var allTotal = 0;
 
-					A.each(
+					_.each(
 						results,
 						function(repo, index, collection) {
 							var currentBranchName = '';
@@ -249,7 +300,7 @@ AUI().use(
 							repo.total = 0;
 							var repoName = repo.name;
 
-							A.each(
+							_.each(
 								repo.pulls,
 								function(pull, index, collection) {
 									var branchName = pull.base.ref;
@@ -274,7 +325,7 @@ AUI().use(
 						}
 					);
 
-					var body = A.getBody();
+					var body = $.body;
 
 					if (!body) {
 						window.reload();
@@ -287,7 +338,7 @@ AUI().use(
 
 						sessionStorage.cachedResults = cachedResults;
 
-						var template = A.Handlebars.compile(TPL_SOURCE);
+						var template = Handlebars.compile(TPL_SOURCE);
 
 						var vals = settings.load();
 
@@ -310,18 +361,19 @@ AUI().use(
 			);
 		};
 
-		A.getBody().delegate(
+		$.body.on(
 			'click',
+			'.reload-pulls',
 			function(event) {
 				event.preventDefault();
 
-				loadPullsTask.delay(0);
-			},
-			'.reload-pulls'
+				loadPulls();
+			}
 		);
 
-		A.getBody().delegate(
+		$.body.on(
 			'click',
+			'.logout',
 			function(event) {
 				event.preventDefault();
 
@@ -330,8 +382,7 @@ AUI().use(
 				loadLogin();
 
 				settings.destroy();
-			},
-			'.logout'
+			}
 		);
 
 		// Usage: debugRequest('repos/natecavanaugh/liferay-portal/pulls');
@@ -341,31 +392,31 @@ AUI().use(
 			ghApiRequest(
 				path,
 				function(json) {
-					console.log('* debugRequest - ghApiRequest: ' + A.dump(json));
+					console.log('* debugRequest - ghApiRequest: ' + JSON.stringify(''+json));
 				}
 			);
 		};
 
 		var loadLogin = function() {
-			var body = A.getBody();
+			var body = $.body;
 
 			if (navigator.onLine) {
 				body.removeClass('status-offline').removeClass('loading').addClass('loaded').addClass('login').html(loginTemplate());
 
-				A.one('#fm').on(
+				$('#fm').on(
 					'submit',
 					function(event) {
 						event.preventDefault();
 
-						var loginErrors = A.one('#loginErrors');
+						var loginErrors = $('#loginErrors');
 
-						loginErrors._hideClass = 'hide';
+						// loginErrors._hideClass = 'hide';
 
-						var usernameField = A.one('#username');
-						var passwordField = A.one('#password');
+						var usernameField = $('#username');
+						var passwordField = $('#password');
 
-						var username = Lang.trim(usernameField.val());
-						var password = Lang.trim(passwordField.val());
+						var username = $.trim(usernameField.val());
+						var password = $.trim(passwordField.val());
 
 						if (username && password) {
 							loginErrors.hide();
@@ -431,14 +482,14 @@ AUI().use(
 
 		var loadPulls = function (){
 			if (navigator.onLine) {
-				A.getBody().replaceClass('status-offline', 'loading');
+				$.body.replaceClass('status-offline', 'loading');
 
 				ghApiRequest(
 					'user/repos',
 					function(json) {
 						var repos = [];
 
-						A.Object.each(
+						_.each(
 							json,
 							function(item, index, collection) {
 								if (!avatar && item.owner.login == settings.val('username')) {
@@ -464,11 +515,11 @@ AUI().use(
 				);
 			}
 			else {
-				A.getBody().replaceClass('loading', 'status-offline');
+				$.body.replaceClass('loading', 'status-offline');
 			}
 		};
 
-		var loadPullsTask = A.debounce(loadPulls, REFRESH_TIME);
+		var loadPullsTask = debounce(loadPulls, REFRESH_TIME);
 
 		window.loadPullsTask = loadPullsTask;
 
@@ -483,31 +534,114 @@ AUI().use(
 
 		init();
 
-		AUI.Env.add(
-			window,
+		$(window).on(
 			'online',
 			function(event) {
-				loadPullsTask.delay(0);
+				loadPulls();
 			}
 		);
 
-		AUI.Env.add(
-			window,
+		$(window).on(
 			'offline',
 			function(event) {
 				loadPullsTask.cancel();
 
-				A.getBody().replaceClass('loading', 'status-offline');
+				$.body.replaceClass('loading', 'status-offline');
 			}
 		);
 
-		A.getBody().delegate(
+		$.body.on(
 			'click',
+			'.external-link',
 			function(event) {
-				gui.Shell.openExternal(event.currentTarget.attr('href'));
+				gui.Shell.openExternal($(event.currentTarget).attr('href'));
 
 				event.preventDefault();
-			},
-			'.external-link'
+			}
 		);
 });
+
+// Temporarily adding debounce until Lodash 3 is published, in order to support cancelling a debounced function
+
+var isArray = _.isArray;
+var isString = _.isString;
+var isUndefined = _.isUndefined;
+
+var DEFAULT_ARGS = [];
+
+var toArray = function(arr, fallback, index) {
+	return !isUndefined(arr) ? _.toArray(arr).slice(index || 0) : fallback;
+};
+
+function debounce(fn, delay, context, args) {
+	var id;
+	var tempArgs;
+
+	if (isString(fn) && context) {
+		fn = _.bindKey(context, fn);
+	}
+
+	delay = delay || 0;
+
+	args = toArray(arguments, DEFAULT_ARGS, 3);
+
+	var clearFn = function() {
+		clearInterval(id);
+
+		id = null;
+	};
+
+	var base = function() {
+		clearFn();
+
+		var result = fn.apply(context, tempArgs || args || DEFAULT_ARGS);
+
+		tempArgs = null;
+
+		return result;
+	};
+
+	var delayFn = function(delayTime, newArgs, newContext, newFn) {
+		wrapped.cancel();
+
+		delayTime = !isUndefined(delayTime) ? delayTime : delay;
+
+		fn = newFn || fn;
+		context = newContext || context;
+
+		if (newArgs != args) {
+			tempArgs = toArray(newArgs, DEFAULT_ARGS, 0, false).concat(args);
+		}
+
+		if (delayTime > 0) {
+			id = setInterval(base, delayTime);
+		}
+		else {
+			return base();
+		}
+	};
+
+	var cancelFn = function() {
+		if (id) {
+			clearFn();
+		}
+	};
+
+	var setDelay = function(delay) {
+		cancelFn();
+
+		delay = delay || 0;
+	};
+
+	var wrapped = function() {
+		var currentArgs = arguments.length ? arguments : args;
+
+		return wrapped.delay(delay, currentArgs, context || this);
+	};
+
+	wrapped.cancel = cancelFn;
+	wrapped.delay = delayFn;
+	wrapped.setDelay = setDelay;
+
+	return wrapped;
+};
