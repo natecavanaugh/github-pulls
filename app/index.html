@@ -4,11 +4,68 @@
 <link rel="stylesheet" href="css/bootstrap.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="css/bootstrap-responsive.css" type="text/css" media="screen" />
 <style>
-	body.loading {
-		background: url(aui/build/aui-skin-classic/images/loading_indicator.gif) no-repeat 50%;
+	body.loading .loader {
+		font-size: 90px;
+		text-indent: -9999em;
+		overflow: hidden;
+		width: 1em;
+		height: 1em;
+		border-radius: 50%;
+		/*margin: 0.8em auto;*/
+		position: fixed;
+		margin-top: -0.5em;
+		margin-left: -0.5em;
+		top: 50%;
+		left: 50%;
+		-webkit-animation: load6 1.5s infinite ease;
+		animation: load6 1.5s infinite ease;
 	}
-	body.loaded {
-		background-image: none;
+
+	body.loaded .loader {
+		display: none;
+	}
+
+	@-webkit-keyframes load6 {
+		0% {
+			-webkit-transform: rotate(0deg);
+			transform: rotate(0deg);
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.11em -0.83em 0 -0.42em #444, -0.11em -0.83em 0 -0.44em #444, -0.11em -0.83em 0 -0.46em #444, -0.11em -0.83em 0 -0.477em #444;
+		}
+		5%, 95% {
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.11em -0.83em 0 -0.42em #444, -0.11em -0.83em 0 -0.44em #444, -0.11em -0.83em 0 -0.46em #444, -0.11em -0.83em 0 -0.477em #444;
+		}
+		30% {
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.51em -0.66em 0 -0.42em #444, -0.75em -0.36em 0 -0.44em #444, -0.83em -0.03em 0 -0.46em #444, -0.81em 0.21em 0 -0.477em #444;
+		}
+		55% {
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.29em -0.78em 0 -0.42em #444, -0.43em -0.72em 0 -0.44em #444, -0.52em -0.65em 0 -0.46em #444, -0.57em -0.61em 0 -0.477em #444;
+		}
+		100% {
+			-webkit-transform: rotate(360deg);
+			transform: rotate(360deg);
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.11em -0.83em 0 -0.42em #444, -0.11em -0.83em 0 -0.44em #444, -0.11em -0.83em 0 -0.46em #444, -0.11em -0.83em 0 -0.477em #444;
+		}
+	}
+	@keyframes load6 {
+		0% {
+			-webkit-transform: rotate(0deg);
+			transform: rotate(0deg);
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.11em -0.83em 0 -0.42em #444, -0.11em -0.83em 0 -0.44em #444, -0.11em -0.83em 0 -0.46em #444, -0.11em -0.83em 0 -0.477em #444;
+		}
+		5%, 95% {
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.11em -0.83em 0 -0.42em #444, -0.11em -0.83em 0 -0.44em #444, -0.11em -0.83em 0 -0.46em #444, -0.11em -0.83em 0 -0.477em #444;
+		}
+		30% {
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.51em -0.66em 0 -0.42em #444, -0.75em -0.36em 0 -0.44em #444, -0.83em -0.03em 0 -0.46em #444, -0.81em 0.21em 0 -0.477em #444;
+		}
+		55% {
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.29em -0.78em 0 -0.42em #444, -0.43em -0.72em 0 -0.44em #444, -0.52em -0.65em 0 -0.46em #444, -0.57em -0.61em 0 -0.477em #444;
+		}
+		100% {
+			-webkit-transform: rotate(360deg);
+			transform: rotate(360deg);
+			box-shadow: -0.11em -0.83em 0 -0.4em #444, -0.11em -0.83em 0 -0.42em #444, -0.11em -0.83em 0 -0.44em #444, -0.11em -0.83em 0 -0.46em #444, -0.11em -0.83em 0 -0.477em #444;
+		}
 	}
 
 	.network-status, body.loaded.status-offline .network-status, h1 .status-icon {
@@ -308,5 +365,7 @@
 	</script>
 
 	<div class="network-status"><p><span class="icon-exclamation-sign"></span> Not connected to a network</p></div>
+
+	<div class="loader">Loading...</div>
 </body>
 </html>
