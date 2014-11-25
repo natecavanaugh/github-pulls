@@ -1,0 +1,18 @@
+{
+  "name": "github-pulls",
+  "version": "0.2.0",
+  "authors": [
+    "Nate Cavanaugh"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~2.1.1"
+  }
+}
