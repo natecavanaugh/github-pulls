@@ -640,8 +640,6 @@ $(document).ready(
 			}
 
 			html.toggleClass('devtools-loaded', open);
-
-			console.log(open);
 		}
 
 
@@ -654,8 +652,6 @@ $(document).ready(
 				var showDevTools = html.hasClass('devtools-loaded');
 
 				toggleDevTools(!showDevTools, true);
-
-				console.log(!showDevTools);
 			}
 		);
 });
