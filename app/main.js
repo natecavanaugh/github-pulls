@@ -3,12 +3,17 @@ global.console = console;
 var async = require('async');
 var gui = require('nw.gui');
 
-// require('nw.gui').Window.get().showDevTools();
-// window.focus();
+var Window = gui.Window.get();
+
+var mb = new gui.Menu({type:'menubar'});
+
+mb.createMacBuiltin('Github Pulls');
+
+Window.menu = mb;
 
 window.resizeTo(window.innerWidth, Math.max(window.innerWidth, screen.height - 100, 930));
 
-var $ = require('jquery')(window);
+var $ = window.jQuery;
 var Handlebars = require('handlebars');
 var _ = require('lodash');
 
@@ -76,7 +81,7 @@ $(document).ready(
 		var loginTemplate = Handlebars.compile(TPL_LOGIN);
 		var loginErrorTemplate = Handlebars.compile(TPL_LOGIN_ERROR);
 
-		var settings = {
+		var settings = window.settings = {
 			data: {},
 
 			destroy: function() {
@@ -91,7 +96,7 @@ $(document).ready(
 				var data = instance.data;
 
 				if (instance._loaded || !localStorage.settings) {
-					localStorage.settings = JSON.stringify(data);
+					instance._save();
 				}
 				else {
 					var parsed = JSON.parse(localStorage.settings);
@@ -103,10 +108,11 @@ $(document).ready(
 
 				return data;
 			},
+
 			val: function(key, value) {
 				var instance = this;
 
-				var settings = instance.load();
+				var data = instance.load();
 
 				var setting;
 
@@ -118,20 +124,27 @@ $(document).ready(
 				}
 
 				if (get) {
-					setting = settings[key];
+					setting = data[key];
 				}
 				else {
 					if (objectKey) {
-						_.extend(settings, key);
+						_.extend(data, key);
 					}
 					else {
-						settings[key] = value;
+						data[key] = value;
 					}
 
-					setting = settings;
+					// This second calls saves the data back in
+					setting = instance._save();
 				}
 
 				return setting;
+			},
+
+			_save: function() {
+				var instance = this;
+
+				localStorage.settings = JSON.stringify(instance.data);
 			}
 		};
 
@@ -421,52 +434,97 @@ $(document).ready(
 						if (username && password) {
 							loginErrors.hide();
 
+							var scriptNote = 'Github Pulls (by Liferay)';
+
 							var data = JSON.stringify(
 								{
 									scopes: ['repo'],
-									note: 'Github Pulls (by Liferay)'
+									note: scriptNote
 								}
 							);
 
 							body.addClass('loading');
 
-							ghApiRequest(
-								'authorizations',
-								function(json, response) {
-									var token = json.token;
-
-									if (token) {
-										var val = {
-											token: json.token,
-											username: username
-										};
-
-										settings.val(val);
-
-										body.removeClass('loaded').html('');
-
-										loadPulls();
-									}
-									else {
-										response.errorText = 'Could not log into Github.';
-										response.message = json.message;
-
-										loginErrors.html(loginErrorTemplate(response)).show();
-
-										body.removeClass('loading');
-									}
+							var loginData = {
+								data: data,
+								headers: {
+									'Authorization': 'Basic ' + btoa(username + ':' + password),
+									'Content-Type': 'application/x-www-form-urlencoded'
 								},
-								function(response) {
-								},
-								{
-									data: data,
-									headers: {
-										'Authorization': 'Basic ' + btoa(username + ':' + password),
-										'Content-Type': 'application/x-www-form-urlencoded'
-									},
-									method: 'POST'
+								method: 'GET'
+							};
+
+							var setToken = function(token) {
+								var val = {
+									token: token,
+									username: username
+								};
+
+								settings.val(val);
+
+								body.removeClass('loaded').html('');
+
+								loadPulls();
+							};
+
+							var handleAuthError = function(json, response) {
+								response.errorText = 'Could not log into Github.';
+								response.message = json.message;
+
+								loginErrors.html(loginErrorTemplate(response)).show();
+
+								body.removeClass('loading');
+							};
+
+							var checkExistingToken = function(json, response) {
+								// First pass to see if we have it
+								var token = _.find(
+									json,
+									{
+										note: scriptNote
+									}
+								);
+
+								if (token && token.token) {
+									setToken(token.token);
 								}
-							);
+								else {
+									// Second passs to create it
+									loginData.method = 'POST';
+
+									authRequest(loginData, handleNewTokenResponse, tmpFailure);
+								}
+							};
+
+							var handleNewTokenResponse = function(json, response, loginData) {
+								var token = json.token;
+
+								if (token) {
+									setToken(token);
+								}
+								else {
+									handleAuthError(json, response, loginData);
+								}
+							};
+
+							var authRequest = function(loginData, success, failure) {
+								ghApiRequest(
+									'authorizations',
+									function(json, response){
+										success(json, response, loginData)
+									},
+									function(json, response){
+										failure(json, response, loginData)
+									},
+									loginData
+								);
+							};
+
+							var tmpFailure = function(response) {
+								console.log('failure', response);
+							};
+
+							authRequest(loginData, checkExistingToken, tmpFailure);
 						}
 						else {
 							loginErrors.html('Please enter both your username and password').show();
@@ -557,6 +615,47 @@ $(document).ready(
 				gui.Shell.openExternal($(event.currentTarget).attr('href'));
 
 				event.preventDefault();
+			}
+		);
+
+		// appending to the HTML to always persist
+		var html = $('html');
+
+		html.append('<span class="load-devtools" title="Keep DevTools Open"><i class="icon-cog"></i></span>');
+
+
+		function toggleDevTools(open, persist) {
+			open = !!open;
+
+			var dtWin = Window[open ? 'showDevTools' : 'closeDevTools']();
+
+			if (open) {
+				dtWin.x = Window.x + 400;
+			}
+
+			window.focus();
+
+			if (persist) {
+				settings.val('load_devtools', open);
+			}
+
+			html.toggleClass('devtools-loaded', open);
+
+			console.log(open);
+		}
+
+
+		toggleDevTools(settings.val('load_devtools'));
+
+		html.on(
+			'click',
+			'.load-devtools',
+			function(event) {
+				var showDevTools = html.hasClass('devtools-loaded');
+
+				toggleDevTools(!showDevTools, true);
+
+				console.log(!showDevTools);
 			}
 		);
 });
