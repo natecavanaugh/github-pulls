@@ -6,7 +6,10 @@ bin
 Icon
 
 node_modules
+bower_components
 
 build/osx/post_build.sh
+build/osx/cache/
+build/osx/Github Pulls/
 
 npm-debug.log
