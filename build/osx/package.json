@@ -2,7 +2,8 @@
   "name": "github-pulls-build",
   "dependencies": {
     "async": "~0.2.9",
-    "optimist": "*",
-    "fs-extra": "*"
+    "fs-extra": "*",
+    "node-webkit-builder": "^0.3.0",
+    "optimist": "*"
   }
 }

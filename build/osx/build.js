@@ -6,6 +6,7 @@ var fs = require('fs-extra');
 var path = require('path');
 var exec = require('child_process').exec;
 
+
 var NW_VER = argv.version || '';
 
 var NW_APP = 'node-webkit' + NW_VER + '.app';
@@ -15,58 +16,81 @@ var USER_APPLICATIONS_PATH = path.join(process.env.HOME, ROOT_APPLICATIONS_PATH)
 
 var NW = path.join(ROOT_APPLICATIONS_PATH, NW_APP);
 
-var APP = 'Github Pulls.app';
+
+var APP_NAME = 'Github Pulls';
+var APP_NAME_FULL = APP_NAME + '.app';
 
 var BASE_PATH = __dirname;
 var ROOT_PATH = path.join(BASE_PATH, '../..');
-var APP_PATH = path.join(BASE_PATH, APP);
+
 var APP_SRC_PATH = path.join(ROOT_PATH, 'app');
 var BIN_PATH = path.join(ROOT_PATH, 'bin');
-var BUILD_APP_PATH = path.join(BIN_PATH, APP);
+var BUILD_APP_DIR = path.join(BASE_PATH, APP_NAME);
+var BUILD_APP_PATH = path.join(BUILD_APP_DIR, 'osx', APP_NAME_FULL);
 
-async.detect(
-	[NW, path.join(USER_APPLICATIONS_PATH, NW_APP)],
-	fs.exists,
-	checkNodeWebkit
+var NwBuilder = require('node-webkit-builder');
+
+var nw = new NwBuilder(
+	{
+		files: APP_SRC_PATH + '/**/**',
+		platforms: ['osx'],
+		appName: APP_NAME,
+		buildDir: BASE_PATH,
+		macIcns: path.join(BASE_PATH, 'app.icns'),
+		macPlist: path.join(BASE_PATH, 'Info.plist')
+	}
 );
 
-function checkNodeWebkit(result) {
-	if (!result) {
-		console.log('This script requires ' + NW_APP + ' to be in your applications directory');
+nw.on('log',  console.log);
 
-		return process.exit(1);
+async.series(
+	[
+		installNpmModules,
+		installBowerComponents,
+		build,
+		install
+	],
+	function(err) {
+		console.log('done');
 	}
+);
 
-	NW = result;
-
-	init();
-}
-
-function copy(from, to) {
-	return fs.copy.bind(fs, from, to);
-}
-
-function init() {
-	async.series(
-		[
-			installModules,
-			copy(NW, APP_PATH),
-			copy(APP_SRC_PATH, path.join(APP_PATH, 'Contents/Resources/app.nw')),
-			copy(path.join(BASE_PATH, 'app.icns'), path.join(APP_PATH, 'Contents/Resources/app.icns')),
-			copy(path.join(BASE_PATH, 'Info.plist'), path.join(APP_PATH, 'Contents/Info.plist')),
-			fs.remove.bind(fs, BUILD_APP_PATH),
-			fs.rename.bind(fs, path.join(BASE_PATH, APP), BUILD_APP_PATH),
-			install,
-		],
-		function(err) {
-			console.log('done');
+function build(callback) {
+	nw.build().then(
+		function() {
+			console.log('build success');
+			callback();
 		}
-	)
+	).catch(
+		function (error) {
+			console.error(error);
+			callback(error);
+		}
+	);
 }
 
-function installModules(callback) {
+function installNpmModules(callback) {
 	exec(
 		'npm install --loglevel error',
+		{
+			cwd: APP_SRC_PATH
+		},
+		function(err, stdout, stderr) {
+			if (err) {
+				callback(err);
+			}
+			else {
+				console.log(stdout || stderr);
+
+				callback();
+			}
+		}
+	);
+}
+
+function installBowerComponents(callback) {
+	exec(
+		'bower install --loglevel=error',
 		{
 			cwd: APP_SRC_PATH
 		},
@@ -89,16 +113,20 @@ function install(callback) {
 			[USER_APPLICATIONS_PATH, ROOT_APPLICATIONS_PATH],
 			fs.exists,
 			function(result) {
-				var destination = path.join(result, APP);
+				var destination = path.join(result, APP_NAME_FULL);
 
 				async.series(
 					[
 						fs.remove.bind(fs, destination),
-						fs.rename.bind(fs, BUILD_APP_PATH, destination)
+						fs.rename.bind(fs, BUILD_APP_PATH, destination),
+						fs.remove.bind(fs, BUILD_APP_DIR)
 					],
-					function(results) {
-						console.log('copied?', BUILD_APP_PATH, destination);
-						callback(results);
+					function(err, results) {
+						if (err) {
+							console.log('Could not copy %s to %s', BUILD_APP_PATH, destination);
+							return callback(err);
+						}
+						callback(err, results);
 					}
 				);
 			}
