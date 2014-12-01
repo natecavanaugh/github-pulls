@@ -11,6 +11,20 @@ mb.createMacBuiltin('Github Pulls');
 
 Window.menu = mb;
 
+var reloadMenuItem = new gui.MenuItem(
+	{
+		click: function(event) {
+			Window.reload();
+		},
+		key: 'r',
+		label: 'Refresh',
+		modifiers: 'cmd',
+		type: 'normal'
+	}
+);
+
+mb.items[1].submenu.insert(reloadMenuItem);
+
 window.resizeTo(window.innerWidth, Math.max(window.innerWidth, screen.height - 100, 930));
 
 var $ = window.jQuery;
