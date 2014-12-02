@@ -3,6 +3,10 @@ global.console = console;
 var async = require('async');
 var gui = require('nw.gui');
 
+var $ = window.jQuery;
+var Handlebars = require('handlebars');
+var _ = require('lodash');
+
 var Window = gui.Window.get();
 
 var mb = new gui.Menu({type:'menubar'});
@@ -23,13 +27,37 @@ var reloadMenuItem = new gui.MenuItem(
 	}
 );
 
-mb.items[1].submenu.insert(reloadMenuItem);
+var reloadFullMenuItem = new gui.MenuItem(
+	{
+		click: function(event) {
+			var cache = global.require.cache;
+
+			_.each(
+				cache,
+				function(item, index) {
+					delete cache[index];
+				}
+			);
+
+			Window.reload();
+		},
+		key: 'r',
+		label: 'Refresh (clear all cache)',
+		modifiers: 'cmd-shift',
+		type: 'normal'
+	}
+);
+
+process.once('uncaughtException', function (err) {
+    console.log(err);
+});
+
+var editMenu = mb.items[1];
+
+editMenu.submenu.insert(reloadMenuItem, 0);
+editMenu.submenu.insert(reloadFullMenuItem, 1);
 
 window.resizeTo(window.innerWidth, Math.max(window.innerWidth, screen.height - 100, 930));
-
-var $ = window.jQuery;
-var Handlebars = require('handlebars');
-var _ = require('lodash');
 
 var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 
