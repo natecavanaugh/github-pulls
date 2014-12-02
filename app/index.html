@@ -129,7 +129,7 @@
 		float: right;
 	}
 
-	.error-status .icon-exclamation-sign {
+	.error-status .glyphicon-exclamation-sign {
 		vertical-align: top;
 		margin: 5px;
 	}
@@ -332,7 +332,7 @@
 
 			<span class="app-title">Github Pulls <span class="pull-count">{{total}}</span></span>
 
-			<a class="logout" href="javascript:;"><i class="icon-off"></i> Logout</a>
+			<a class="logout" href="javascript:;"><i class="glyphicon glyphicon-off"></i> Logout</a>
 
 			<div class="loading-bar"></div>
 		</div>
@@ -362,7 +362,7 @@
 	<script id="loginTemplate" type="text/x-handlebars-template">
 		<div class="container">
 			<form action="" id="fm">
-				<h1 id="pullsTitle">Github Pulls <span class="status-icon icon-exclamation-sign"></span></h1>
+				<h1 id="pullsTitle">Github Pulls <span class="status-icon glyphicon glyphicon-exclamation-sign"></span></h1>
 
 				<div class="alert alert-error hide" id="loginErrors"></div>
 
@@ -379,20 +379,20 @@
 	<script id="errorTemplate" type="text/x-handlebars-template">
 		<div class="error-warning">
 			<h1>Github Pulls Error</h1>
-			<div class="error-status"><p><span class="icon-exclamation-sign"></span><span>{{statusText}}<br />
+			<div class="error-status"><p><span class="glyphicon glyphicon-exclamation-sign"></span><span>{{statusText}}<br />
 			{{responseText.message}}</span> <a class="reload-pulls" href="javascript:;">Reload Pulls</a></p></div>
 		</div>
 	</script>
 
 	<script id="loginErrorTemplate" type="text/x-handlebars-template">
 		<p>{{errorText}}</p>
-		<p><span class="icon-exclamation-sign"></span> {{statusText}}</p>
+		<p><span class="glyphicon glyphicon-exclamation-sign"></span> {{statusText}}</p>
 		<p>Server responded with:<br />
 			<b>{{message}}</b>
 		</p>
 	</script>
 
-	<div class="network-status"><p><span class="icon-exclamation-sign"></span> Not connected to a network</p></div>
+	<div class="network-status"><p><span class="glyphicon glyphicon-exclamation-sign"></span> Not connected to a network</p></div>
 
 	<div class="loader">Loading...</div>
 </body>
