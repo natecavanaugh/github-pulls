@@ -5,6 +5,10 @@
 <link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css" />
 
 <style>
+	body {
+		background: #F5F5F5;
+	}
+
 	body.loading .loader {
 		font-size: 90px;
 		text-indent: -9999em;
@@ -139,18 +143,33 @@
 		min-height: 20px;
 		border-radius: 2px;
 		border: 1px solid #ccc;
+		margin-right: 0.5rem;
+	}
+
+	.pulls-branch {
+		margin-bottom: 15px;
+	}
+
+	.pulls-branch:last-of-type {
+		margin-bottom: 0;
 	}
 
 	.pulls {
-		/*padding-left: 1em;*/
 		border-top: 1px solid #eee;
-		padding-top: 0.25em;
+		margin-top: 5px;
+		padding: 0.6em 0 0;
 	}
 
 	.pull {
 		margin-bottom: 0.25em;
 		padding-bottom: 0.25em;
 		border-bottom: 1px solid #fafafa;
+	}
+
+	.pull:last-child {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		border-width: 0;
 	}
 
 	.property-title {
@@ -297,6 +316,38 @@
 		-webkit-animation-delay: .4s;
 	}
 
+	.repo {
+		border: 1px solid #EEE;
+		border-radius: 4px;
+		box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
+		border-radius: 2px;
+		background-clip: padding-box;
+		margin-top: 10px;
+		background-color: #FFF;
+	}
+	.repo > h2 {
+		font-size: 24px;
+		line-height: 48px;
+		padding: 16px;
+		padding-top: 8px;
+		margin: 0;
+		padding-bottom: 0;
+
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+	}
+
+	.repo > h2 .repo-name, .repo > h2 .pull-count {
+
+	}
+
+	.repo > ul {
+		padding: 16px;
+		border-radius: 0 0 2px 2px;
+		background-clip: padding-box;
+		padding-top: 0;
+	}
 /*
 	.loading .account-bar .pull-count {
 		-webkit-animation: rotateplane 1.2s infinite ease-in-out;
@@ -340,11 +391,12 @@
 		<div class="container">
 			{{#results}}
 				<div class="repo">
-					<h2>{{this.name}} <span class="pull-count">{{this.total}}</span></h2>
+					<h2><span class="repo-name">{{this.name}}</span> <span class="pull-count">{{this.total}}</span></h2>
 
 					<ul class="list-unstyled">
 						{{#eachProperty this.branchPulls}}
-								<li><b class="property-title">{{property}}</b>
+								<li class="pulls-branch">
+									<b class="property-title">{{property}}</b>
 
 									<ul class="list-unstyled pulls">
 										{{#each value}}
