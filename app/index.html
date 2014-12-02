@@ -1,8 +1,9 @@
 <html>
 <head>
 <title>Github Pull Requests</title>
-<link rel="stylesheet" href="css/bootstrap.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="css/bootstrap-responsive.css" type="text/css" media="screen" />
+
+<link rel="stylesheet" type="text/css" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+
 <style>
 	body.loading .loader {
 		font-size: 90px;
@@ -295,6 +296,7 @@
 		-webkit-animation: shift-rightwards 1s ease-in-out infinite;
 		-webkit-animation-delay: .4s;
 	}
+
 /*
 	.loading .account-bar .pull-count {
 		-webkit-animation: rotateplane 1.2s infinite ease-in-out;
@@ -317,6 +319,7 @@
 </style>
 <script src="bower_components/jquery/dist/jquery.js" type="text/javascript"></script>
 <script src="main.js" type="text/javascript"></script>
+<script src="main_react.js" type="text/javascript"></script>
 </head>
 
 <body class="loading">
@@ -334,37 +337,43 @@
 			<div class="loading-bar"></div>
 		</div>
 
-		{{#results}}
-			<h2>{{this.name}} <span class="pull-count">{{this.total}}</span></h2>
+		<div class="container">
+			{{#results}}
+				<div class="repo">
+					<h2>{{this.name}} <span class="pull-count">{{this.total}}</span></h2>
 
-			<ul class="unstyled">
-				{{#eachProperty this.branchPulls}}
-						<li><b class="property-title">{{property}}</b>
+					<ul class="list-unstyled">
+						{{#eachProperty this.branchPulls}}
+								<li><b class="property-title">{{property}}</b>
 
-							<ul class="unstyled pulls">
-								{{#each value}}
-									<li class="pull"><img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}} ({{this.fromUser}})</li>
-								{{/each}}
-							</ul>
-						</li>
-				{{/eachProperty}}
-			</ul>
-		{{/results}}
+									<ul class="list-unstyled pulls">
+										{{#each value}}
+											<li class="pull"><img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}} ({{this.fromUser}})</li>
+										{{/each}}
+									</ul>
+								</li>
+						{{/eachProperty}}
+					</ul>
+				</div>
+			{{/results}}
+		</div>
 	</script>
 
 	<script id="loginTemplate" type="text/x-handlebars-template">
-		<form action="" id="fm">
-			<h1 id="pullsTitle">Github Pulls <span class="status-icon icon-exclamation-sign"></span></h1>
+		<div class="container">
+			<form action="" id="fm">
+				<h1 id="pullsTitle">Github Pulls <span class="status-icon icon-exclamation-sign"></span></h1>
 
-			<div class="alert alert-error hide" id="loginErrors"></div>
+				<div class="alert alert-error hide" id="loginErrors"></div>
 
-			<input class="input-large" id="username" placeholder="Github username" type="text" /><br />
-			<input class="input-large" id="password" placeholder="Github password" type="password" /><br />
+				<input class="input-large" id="username" placeholder="Github username" type="text" /><br />
+				<input class="input-large" id="password" placeholder="Github password" type="password" /><br />
 
-			<input class="btn btn-primary" type="submit" value="Login" />
-		</form>
+				<input class="btn btn-primary" type="submit" value="Login" />
+			</form>
 
-		<div class="loading-bar"></div>
+			<div class="loading-bar"></div>
+		</div>
 	</script>
 
 	<script id="errorTemplate" type="text/x-handlebars-template">
