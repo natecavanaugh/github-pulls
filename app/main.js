@@ -465,8 +465,6 @@ $(document).ready(
 
 						var loginErrors = $('#loginErrors');
 
-						// loginErrors._hideClass = 'hide';
-
 						var usernameField = $('#username');
 						var passwordField = $('#password');
 
@@ -474,7 +472,7 @@ $(document).ready(
 						var password = $.trim(passwordField.val());
 
 						if (username && password) {
-							loginErrors.hide();
+							loginErrors.addClass('hide');
 
 							var scriptNote = 'Github Pulls (by Liferay)';
 
@@ -513,7 +511,7 @@ $(document).ready(
 								response.errorText = 'Could not log into Github.';
 								response.message = json.message;
 
-								loginErrors.html(loginErrorTemplate(response)).show();
+								loginErrors.html(loginErrorTemplate(response)).removeClass('hide');
 
 								body.removeClass('loading');
 							};
@@ -569,7 +567,7 @@ $(document).ready(
 							authRequest(loginData, checkExistingToken, tmpFailure);
 						}
 						else {
-							loginErrors.html('Please enter both your username and password').show();
+							loginErrors.html('Please enter both your username and password').removeClass('hide');
 						}
 					}
 				)
