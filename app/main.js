@@ -661,7 +661,7 @@ $(document).ready(
 		// appending to the HTML to always persist
 		var html = $('html');
 
-		html.append('<span class="load-devtools" title="Keep DevTools Open"><i class="glyphicon glyphicon-cog"></i></span>');
+		html.append('<span class="load-devtools" title="Keep DevTools Open"><i class="glyphicon glyphicon-wrench"></i></span>');
 
 
 		function toggleDevTools(open, persist) {
