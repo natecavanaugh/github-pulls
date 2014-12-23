@@ -609,6 +609,12 @@ $(document).ready(
 						);
 
 						getPullRequests(repos);
+					},
+					null,
+					{
+						data: {
+							per_page: 100
+						}
 					}
 				);
 			}
