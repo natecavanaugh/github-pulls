@@ -349,6 +349,16 @@
 		background-clip: padding-box;
 		padding-top: 0;
 	}
+
+	.create-date {
+		display: inline-block;
+		padding: 4px 7px;
+		background-color: #EEE;
+		border-radius: 1.5em;
+		vertical-align: middle;
+		font-size: 10px;
+		border: 1px solid #EEE;
+	}
 /*
 	.loading .account-bar .pull-count {
 		-webkit-animation: rotateplane 1.2s infinite ease-in-out;
@@ -369,6 +379,7 @@
 	}
 */
 </style>
+<script src="bower_components/momentjs/moment.js" type="text/javascript"></script>
 <script src="bower_components/jquery/dist/jquery.js" type="text/javascript"></script>
 <script src="main.js" type="text/javascript"></script>
 </head>
@@ -400,7 +411,7 @@
 
 									<ul class="list-unstyled pulls">
 										{{#each value}}
-											<li class="pull"><img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}} ({{this.fromUser}})</li>
+											<li class="pull"><img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}} ({{this.fromUser}} <span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span>)</li>
 										{{/each}}
 									</ul>
 								</li>

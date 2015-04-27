@@ -371,6 +371,23 @@ $(document).ready(
 
 									pull.fromUser = pull.user.login;
 
+									var createdAt = pull.created_at;
+
+									var createDate = moment(createdAt);
+
+									var timeAgo = '';
+
+									if (createDate.isValid()) {
+										timeAgo = createDate.fromNow();
+										createDate = createDate.format('dddd MMMM Do YYYY @ h:mm:ss a');
+									}
+									else {
+										createDate = '';
+									}
+
+									pull.createDate = createDate;
+									pull.timeAgo = timeAgo;
+
 									repo.total += 1;
 									allTotal += 1;
 								}
