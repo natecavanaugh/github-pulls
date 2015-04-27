@@ -3,7 +3,7 @@
   "dependencies": {
     "async": "~0.2.9",
     "fs-extra": "*",
-    "node-webkit-builder": "^0.3.0",
+    "node-webkit-builder": "^1.0.11",
     "optimist": "*"
   }
 }

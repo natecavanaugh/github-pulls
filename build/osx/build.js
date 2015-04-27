@@ -26,14 +26,14 @@ var ROOT_PATH = path.join(BASE_PATH, '../..');
 var APP_SRC_PATH = path.join(ROOT_PATH, 'app');
 var BIN_PATH = path.join(ROOT_PATH, 'bin');
 var BUILD_APP_DIR = path.join(BASE_PATH, APP_NAME);
-var BUILD_APP_PATH = path.join(BUILD_APP_DIR, 'osx', APP_NAME_FULL);
+var BUILD_APP_PATH = path.join(BUILD_APP_DIR, 'osx64', APP_NAME_FULL);
 
 var NwBuilder = require('node-webkit-builder');
 
 var nw = new NwBuilder(
 	{
 		files: APP_SRC_PATH + '/**/**',
-		platforms: ['osx'],
+		platforms: ['osx64'],
 		appName: APP_NAME,
 		buildDir: BASE_PATH,
 		macIcns: path.join(BASE_PATH, 'app.icns'),
