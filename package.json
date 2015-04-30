@@ -7,5 +7,9 @@
     "handlebars": "^2.0.0",
     "lodash": "^2.4.1",
     "xmlhttprequest": "^1.6.0"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11",
+    "gulp-load-plugins": "^0.10.0"
   }
 }
