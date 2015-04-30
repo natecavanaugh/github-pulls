@@ -6,6 +6,8 @@ var fs = require('fs-extra');
 var path = require('path');
 var exec = require('child_process').exec;
 
+var glob = require('glob');
+var fsCompare = require('fs-compare');
 
 var NW_VER = argv.version || '';
 
@@ -28,11 +30,144 @@ var BIN_PATH = path.join(ROOT_PATH, 'bin');
 var BUILD_APP_DIR = path.join(BASE_PATH, APP_NAME);
 var BUILD_APP_PATH = path.join(BUILD_APP_DIR, 'osx64', APP_NAME_FULL);
 
+var BASE_FILES_GLOB = APP_SRC_PATH + '/*';
+var FILES_GLOB = BASE_FILES_GLOB + '*/**';
+
+var getAppPath = function(cb) {
+	async.detectSeries(
+		[USER_APPLICATIONS_PATH, ROOT_APPLICATIONS_PATH],
+		fs.exists,
+		function(result) {
+			cb(path.join(result, APP_NAME_FULL));
+		}
+	);
+};
+
+function update(files) {
+	async.reduce(
+		files,
+		[],
+		function(memo, item, cb) {
+			var filePath = item;
+			var deployedFilePath = item.replace(APP_SRC_PATH, path.join(USER_APPLICATIONS_PATH, APP_NAME_FULL, 'Contents/Resources/app.nw'));
+
+			fs.stat(
+				filePath,
+				function(err, stat) {
+					if (err) {
+						return cb(null, memo);
+					}
+
+					var fpStat = stat;
+
+					fs.stat(
+						deployedFilePath,
+						function(err, stat) {
+							if (err) {
+								return cb(null, memo);
+							}
+
+							var dfpStat = stat;
+
+							if (fpStat.mtime > dfpStat.mtime) {
+								memo.push([filePath, deployedFilePath]);
+							}
+
+							cb(null, memo);
+						}
+					);
+				}
+			);
+		},
+		function(err, results) {
+			if (err) {
+				console.log('Could not copy files');
+				return;
+			}
+
+			if (!results.length) {
+				console.log('No newer files');
+				return;
+			}
+
+			results.forEach(
+				function(item, index) {
+					fs.copy(
+						item[0],
+						item[1],
+						function(err) {
+							if (err) {
+								console.log(err);
+								return;
+							}
+
+							console.log('Copied %s to %s', item[0], item[1]);
+						}
+					);
+				}
+			);
+		}
+	);
+}
+
+if (argv.update || argv.watch) {
+	getAppPath(
+		function(result) {
+			if (!fs.existsSync(result)) {
+				console.log('App hasn\'t been installed');
+				return;
+			}
+
+			if (argv.update) {
+				glob(
+					BASE_FILES_GLOB,
+					function(err, files) {
+						update(files);
+					}
+				);
+			}
+			else {
+				var watch = require('watch');
+
+				watch.watchTree(
+					APP_SRC_PATH,
+					{
+						ignoreDotFiles: true,
+						ignoreUnreadableDir: true,
+						ignoreNotPermitted: true,
+						filter: function(file, stat) {
+							var rootFile = stat.isFile() && path.dirname(file) === APP_SRC_PATH;
+
+							if (rootFile) {
+								console.log('Watching %s', file);
+							}
+							return rootFile;
+						}
+					},
+					function(f, curr, prev) {
+						var msg = '';
+
+						if (typeof f !== 'object' && (prev === null || curr.nlink !== 0)) {
+							update([f]);
+						}
+						else if (curr && curr.nlink === 0) {
+							msg = 'deleted';
+						}
+					}
+				);
+			}
+		}
+	);
+
+	return;
+}
+
+
 var NwBuilder = require('node-webkit-builder');
 
 var nw = new NwBuilder(
 	{
-		files: APP_SRC_PATH + '/**/**',
+		files: FILES_GLOB,
 		platforms: ['osx64'],
 		appName: APP_NAME,
 		buildDir: BASE_PATH,
@@ -109,12 +244,8 @@ function installBowerComponents(callback) {
 
 function install(callback) {
 	if (argv.install) {
-		async.detectSeries(
-			[USER_APPLICATIONS_PATH, ROOT_APPLICATIONS_PATH],
-			fs.exists,
-			function(result) {
-				var destination = path.join(result, APP_NAME_FULL);
-
+		getAppPath(
+			function(destination) {
 				async.series(
 					[
 						fs.remove.bind(fs, destination),
