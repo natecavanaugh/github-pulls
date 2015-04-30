@@ -350,11 +350,24 @@
 		padding-top: 0;
 	}
 
+	.pull {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.pull-info {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
 	.pull-meta {
-		display: inline-block;
 		border-radius: 1.5em;
-		font-size: 10px;
 		border: 1px solid #EEE;
+		display: inline-block;
+		font-size: 10px;
+		white-space: nowrap;
 	}
 
 	.pull-meta .create-date, .pull-meta .from-user {
@@ -425,7 +438,11 @@
 
 									<ul class="list-unstyled pulls">
 										{{#each value}}
-											<li class="pull"><img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}} <span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span></li>
+											<li class="pull">
+												<span class="pull-info">
+													<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
+												</span>
+												<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span></li>
 										{{/each}}
 									</ul>
 								</li>
