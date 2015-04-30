@@ -1,7 +1,7 @@
 {
   "name": "github-pulls",
   "main": "index.html",
-  "version": "0.2.0",
+  "version": "0.2.5",
   "dependencies": {
     "async": "~0.2.9",
     "handlebars": "^2.0.0",
