@@ -7,6 +7,14 @@ var fs = require('fs-extra');
 
 var exec = require('child_process').exec;
 
+var APP_FILES_GLOB = [
+	'./**/*',
+	'!./gulpfile.js',
+	'!./build{,/**}',
+	'!./node_modules{,/**}',
+	'!./bower_components{,/**}'
+];
+
 var ROOT_APPLICATIONS_PATH = '/Applications';
 var USER_APPLICATIONS_PATH = path.join(process.env.HOME, ROOT_APPLICATIONS_PATH);
 
@@ -73,12 +81,7 @@ function installBowerComponents(callback) {
 gulp.task(
 	'copy-files',
 	function() {
-		return gulp.src([
-			'./**/*',
-			'!./build{,/**}',
-			'!./node_modules{,/**}',
-			'!./bower_components{,/**}'
-		])
+		return gulp.src(APP_FILES_GLOB)
 		.pipe(plugins.debug())
 		.pipe(gulp.dest(BUILD_APP_DIR));
 	}
@@ -139,7 +142,6 @@ gulp.task(
 	function(done) {
 		getAppPath(
 			function(destination) {
-				console.log(destination, BUILD_APP_PATH, BUILD_APP_DIR);
 				async.series(
 					[
 						fs.remove.bind(fs, destination),
@@ -155,6 +157,51 @@ gulp.task(
 						done();
 					}
 				);
+			}
+		);
+	}
+);
+
+var appExists = function(destination) {
+	var exists = fs.existsSync(destination);
+
+	if (!exists) {
+		console.log('App hasn\'t been installed. Run "gulp build" first.');
+	}
+
+	return exists;
+};
+
+gulp.task(
+	'build:update',
+	function(done) {
+		getAppPath(
+			function(destination) {
+				if (!appExists(destination)) {
+					return;
+				}
+
+				var deployedPath = path.join(destination, 'Contents/Resources/app.nw');
+
+				gulp.src(APP_FILES_GLOB)
+				.pipe(plugins.newer(deployedPath))
+				// .pipe(plugins.debug())
+				.pipe(gulp.dest(deployedPath))
+			}
+		);
+	}
+);
+
+gulp.task(
+	'build:watch',
+	function(done) {
+		getAppPath(
+			function(destination) {
+				if (!appExists(destination)) {
+					return;
+				}
+
+				gulp.watch(APP_FILES_GLOB, ['build:update']);
 			}
 		);
 	}

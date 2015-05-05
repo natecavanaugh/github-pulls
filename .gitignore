@@ -8,9 +8,10 @@ Icon
 node_modules
 bower_components
 
-build/cache/
+build/app_files
+build/cache
 build/osx/post_build.sh
-build/osx/cache/
-build/osx/Github Pulls/
+build/osx/cache
+build/osx/Github Pulls
 
 npm-debug.log
