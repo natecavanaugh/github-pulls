@@ -9,7 +9,11 @@
     "xmlhttprequest": "^1.6.0"
   },
   "devDependencies": {
+    "fs-extra": "^0.18.2",
     "gulp": "^3.8.11",
-    "gulp-load-plugins": "^0.10.0"
+    "gulp-debug": "^2.0.1",
+    "gulp-load-plugins": "^0.10.0",
+    "node-webkit-builder": "^1.0.11",
+    "run-sequence": "^1.1.0"
   }
 }
