@@ -15,5 +15,6 @@ build/cache
 build/osx/post_build.sh
 build/osx/cache
 build/osx/Github Pulls
+build/releases/**
 
 npm-debug.log
