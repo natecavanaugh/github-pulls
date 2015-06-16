@@ -8,12 +8,12 @@ To download, just go to the [Releases](https://github.com/natecavanaugh/github-p
 
 #Building locally
 
-If you want to edit and build the file locally, you can do that by going to build/osx/ and running build.sh.
-The only requirement is that you have node-webkit.app inside of your Applications directory (and it must be version 0.3.2, which you can get from [here](https://github.com/rogerwang/node-webkit/wiki/Downloads-of-old-versions#v032-nov-7-2012))
+You can now build locally using gulp. Make sure you have gulp installed globally (`npm -g install gulp`), and from the root of this project, run:
+`npm install`.
+Once the dependencies are all installed, you can run a few different tasks:
 
-#TODO
-* node-webkit v.0.3.3 introduced [injecting of a global window object into require(d) files](https://github.com/rogerwang/node-webkit/issues/164) and for whatever reason, this is causing a JS error inside of the YUI files.
-I'm not sure why, but need to investigate more.
-* I'd like to support building this for Windows and Linux, which should be doable, but haven't had time to attempt it.
-* The code is far below my usual standards, architecture-wise. Again, it was done to get it out the door, but want to reorganize to be much cleaner.
+To just build the file, run: `gulp build`.
+To build, and install the Application, run: `gulp build:install`
+If you'd like to modify the files, and have it update on the fly, you can do: `gulp build:watch`
 
+Note: *This currently only works on the mac, still need to add build/deploy functionality for Windows/Linux, though if you're running locally, you could modify the build task to add build support for Linux and Windows*
