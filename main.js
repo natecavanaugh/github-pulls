@@ -64,7 +64,7 @@ var XMLHttpRequest = require('xmlhttprequest').XMLHttpRequest;
 $.support.cors = true;
 
 $.ajaxSettings.xhr = function () {
-    return new XMLHttpRequest();
+	return new XMLHttpRequest();
 };
 
 $.fn.replaceClass = function(oldClass, newClass) {
@@ -345,7 +345,7 @@ $(document).ready(
 
 					var allTotal = 0;
 
-					_.each(
+					var repos = _.filter(
 						results,
 						function(repo, index, collection) {
 							var currentBranchName = '';
@@ -394,6 +394,8 @@ $(document).ready(
 							);
 
 							delete repo.pulls;
+
+							return !!allTotal;
 						}
 					);
 
@@ -405,8 +407,8 @@ $(document).ready(
 						return;
 					}
 
-					if (!cachedResults || cachedResults !== JSON.stringify(results)) {
-						cachedResults = JSON.stringify(results);
+					if (!cachedResults || cachedResults !== JSON.stringify(repos)) {
+						cachedResults = JSON.stringify(repos);
 
 						sessionStorage.cachedResults = cachedResults;
 
@@ -417,7 +419,7 @@ $(document).ready(
 						body.html(
 							template(
 								{
-									results: results,
+									results: repos,
 									total: allTotal,
 									avatar: vals.avatar,
 									username: vals.username
