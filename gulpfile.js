@@ -186,7 +186,9 @@ gulp.task(
 				gulp.src(APP_FILES_GLOB)
 				.pipe(plugins.newer(deployedPath))
 				// .pipe(plugins.debug())
-				.pipe(gulp.dest(deployedPath))
+				.pipe(gulp.dest(deployedPath));
+
+				done();
 			}
 		);
 	}
@@ -201,9 +203,25 @@ gulp.task(
 					return;
 				}
 
-				gulp.watch(APP_FILES_GLOB, ['build:update']);
+				var filesGlob = [].concat(APP_FILES_GLOB);
+
+				filesGlob.push('!./css/*');
+
+				gulp.watch(
+					filesGlob,
+					['scss', 'build:update']
+				);
 			}
 		);
+	}
+);
+
+gulp.task(
+	'scss',
+	function() {
+		gulp.src('./scss/*.scss')
+		.pipe(plugins.sass())
+		.pipe(gulp.dest('./css'));
 	}
 );
 
