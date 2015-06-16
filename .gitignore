@@ -8,6 +8,8 @@ Icon
 node_modules
 bower_components
 
+css
+
 build/app_files
 build/cache
 build/osx/post_build.sh
