@@ -49,7 +49,7 @@ var reloadFullMenuItem = new gui.MenuItem(
 );
 
 process.once('uncaughtException', function (err) {
-    console.log(err);
+	console.log(err);
 });
 
 var editMenu = mb.items[1];
@@ -249,7 +249,7 @@ $(document).ready(
 			var pullsTitle = $('#pullsTitle');
 
 			if (!pullsTitle.length) {
-				 pullsTitle = $('#accountBar');
+				pullsTitle = $('#accountBar');
 			}
 
 			if (!e.statusText) {
@@ -258,7 +258,7 @@ $(document).ready(
 
 			var errorResponse = $(errorTemplate(e));
 
-			if (pullsTitle) {
+			if (pullsTitle.length) {
 				var currentError = $('.error-warning');
 
 				var showError = function() {
@@ -279,7 +279,7 @@ $(document).ready(
 				}
 			}
 			else {
-				body.prepend(errorResponse);
+				body.addClass('status-error').removeClass('status-offline').removeClass('loading').prepend(errorResponse);
 			}
 		};
 
@@ -311,11 +311,9 @@ $(document).ready(
 						(failure || defaultFailureFn)(xhr);
 					},
 					crossDomain: true,
-					complete: function(xhr, response) {
+					success: function(json, msg) {
 						if (_.isFunction(callback)) {
-							var json = JSON.parse(xhr.responseText);
-
-							callback(json, xhr);
+							callback(json, msg);
 						}
 					}
 				}
@@ -535,6 +533,13 @@ $(document).ready(
 								body.removeClass('loading');
 							};
 
+							var createToken = function() {
+								// Second passs to create it
+								loginData.method = 'POST';
+
+								authRequest(loginData, handleNewTokenResponse, tmpFailure);
+							};
+
 							var checkExistingToken = function(json, response) {
 								// First pass to see if we have it
 								var token = _.find(
@@ -544,14 +549,20 @@ $(document).ready(
 									}
 								);
 
-								if (token && token.token) {
-									setToken(token.token);
+								if (token && token.hashed_token) {
+									ghApiRequest(
+										'authorizations/' + token.id,
+										function(json, response){
+											createToken();
+										},
+										function(json, response){
+											console.log(json, response);
+										},
+										_.defaults({method: 'DELETE'}, loginData)
+									);
 								}
 								else {
-									// Second passs to create it
-									loginData.method = 'POST';
-
-									authRequest(loginData, handleNewTokenResponse, tmpFailure);
+									createToken();
 								}
 							};
 
