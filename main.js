@@ -306,9 +306,20 @@ $(document).ready(
 				{
 					headers: headers,
 					data: data,
+					dataType: 'json',
 					type: method,
 					error: function(xhr) {
-						(failure || defaultFailureFn)(xhr);
+						var json = {};
+
+						if (xhr && xhr.responseText) {
+							try {
+								json = JSON.parse(xhr.responseText);
+							}
+							catch (e) {
+								// console.log(e);
+							}
+						}
+						(failure || defaultFailureFn)(json, xhr);
 					},
 					crossDomain: true,
 					success: function(json, msg) {
@@ -525,6 +536,7 @@ $(document).ready(
 							};
 
 							var handleAuthError = function(json, response) {
+								console.log(json, response);
 								response.errorText = 'Could not log into Github.';
 								response.message = json.message;
 
@@ -537,7 +549,7 @@ $(document).ready(
 								// Second passs to create it
 								loginData.method = 'POST';
 
-								authRequest(loginData, handleNewTokenResponse, tmpFailure);
+								authRequest(loginData, handleNewTokenResponse, handleAuthError);
 							};
 
 							var checkExistingToken = function(json, response) {
@@ -590,11 +602,7 @@ $(document).ready(
 								);
 							};
 
-							var tmpFailure = function(response) {
-								console.log('failure', response);
-							};
-
-							authRequest(loginData, checkExistingToken, tmpFailure);
+							authRequest(loginData, checkExistingToken, handleAuthError);
 						}
 						else {
 							loginErrors.html('Please enter both your username and password').removeClass('hide');
@@ -699,7 +707,6 @@ $(document).ready(
 
 		html.append('<span class="load-devtools" title="Keep DevTools Open"><i class="glyphicon glyphicon-wrench"></i></span>');
 
-
 		function toggleDevTools(open, persist) {
 			open = !!open;
 
@@ -717,7 +724,6 @@ $(document).ready(
 
 			html.toggleClass('devtools-loaded', open);
 		}
-
 
 		toggleDevTools(settings.val('load_devtools'));
 
