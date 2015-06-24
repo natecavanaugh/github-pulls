@@ -651,7 +651,8 @@ $(document).ready(
 					null,
 					{
 						data: {
-							per_page: 100
+							per_page: 100,
+							type: 'owner'
 						}
 					}
 				);
