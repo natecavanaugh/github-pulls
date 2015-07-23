@@ -42,7 +42,12 @@
 												<span class="pull-info">
 													<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
 												</span>
-												<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span></li>
+												<span class="pull-meta">
+													<span class="pull-ci-status" data-statuses-url="{{this.statuses_url}}"></span>
+													<span class="from-user">{{this.fromUser}}</span>
+													<span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span>
+												</span>
+											</li>
 										{{/each}}
 									</ul>
 								</li>

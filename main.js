@@ -110,7 +110,8 @@ Object.defineProperty(
 
 $(document).ready(
 	function($) {
-		var API_URL = 'https://api.github.com/{0}';
+		var API_BASE_URL = 'https://api.github.com/';
+		var API_URL = API_BASE_URL + '{0}';
 
 		var REFRESH_TIME = 30 * 1000;
 
@@ -439,6 +440,8 @@ $(document).ready(
 
 					body.replaceClass('loading', 'loaded');
 
+					$.body.trigger('loaded');
+
 					loadPullsTask();
 				}
 			);
@@ -465,6 +468,40 @@ $(document).ready(
 				loadLogin();
 
 				settings.destroy();
+			}
+		);
+
+		$.body.on(
+			'loaded',
+			function() {
+				var statusTags = $('.pull-ci-status');
+
+				async.eachLimit(
+					statusTags,
+					5,
+					function(statusTag, cb) {
+						var statusesURL = $(statusTag).attr('data-statuses-url');
+
+						statusesURL = statusesURL.replace(API_BASE_URL, '');
+
+						ghApiRequest(
+							statusesURL,
+							function(response) {
+								if (response.length) {
+									var state = response[0].state;
+
+									var stateCssClass = 'state-' + state;
+
+									$(statusTag).addClass('complete');
+									$(statusTag).addClass(stateCssClass);
+									$(statusTag).text(state);
+								}
+
+								cb();
+							}
+						);
+					}
+				);
 			}
 		);
 
