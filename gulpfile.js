@@ -1,5 +1,5 @@
 var async = require('async');
-var gulp = require('gulp');
+var gulp = require('gulp-help')(require('gulp'));
 var plugins = require('gulp-load-plugins')();
 var path = require('path');
 var runSequence = require('run-sequence');
