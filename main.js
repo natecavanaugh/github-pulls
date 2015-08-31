@@ -337,20 +337,41 @@ $(document).ready(
 			async.map(
 				repos,
 				function(item, cb){
-					ghApiRequest(_.sub('repos/{path}/pulls', item),
+					ghApiRequest(
+						_.sub('repos/{path}/pulls', item),
 						function(json) {
-							cb(
-								null,
-								{
-									name: item.name,
-									pulls: json
-								}
-							);
+							if (json.length) {
+								cb(
+									null,
+									{
+										name: item.name,
+										pulls: json
+									}
+								);
+							}
+							else {
+								ghApiRequest(
+									_.sub('repos/{path}/issues', item),
+									function(json) {
+										cb(
+											null,
+											{
+												issues: json,
+												name: item.name
+											}
+										);
+									},
+									null,
+									{
+										filter: 'all'
+									}
+								);
+							}
 						}
 					);
 				},
 				function (err, results) {
-					var result = [];
+					var issueRepos = [];
 
 					var allTotal = 0;
 
@@ -362,49 +383,62 @@ $(document).ready(
 
 							repo.branchPulls = branchPulls;
 							repo.total = 0;
+
 							var repoName = repo.name;
+
+							var iteratePullsIssues = function(pull, index, collection) {
+								var pullRequest = !!pull.base;
+
+								var branchName = pullRequest ? pull.base.ref : 'master';
+
+								var branch = branchPulls[branchName];
+
+								if (!branch) {
+									branch = [];
+									branchPulls[branchName] = branch;
+								}
+
+								branch.push(pull);
+
+								pull.fromUser = pull.user.login;
+
+								var createdAt = pull.created_at;
+
+								var createDate = moment(createdAt);
+
+								var timeAgo = '';
+
+								if (createDate.isValid()) {
+									timeAgo = createDate.fromNow();
+									createDate = createDate.format('dddd MMMM Do YYYY @ h:mm:ss a');
+								}
+								else {
+									createDate = '';
+								}
+
+								pull.createDate = createDate;
+								pull.timeAgo = timeAgo;
+
+								pull.pullRequest = pullRequest;
+
+								repo.total += 1;
+								allTotal += 1;
+							}
 
 							_.each(
 								repo.pulls,
-								function(pull, index, collection) {
-									var branchName = pull.base.ref;
-
-									var branch = branchPulls[branchName];
-
-									if (!branch) {
-										branch = [];
-										branchPulls[branchName] = branch;
-									}
-
-									branch.push(pull);
-
-									pull.fromUser = pull.user.login;
-
-									var createdAt = pull.created_at;
-
-									var createDate = moment(createdAt);
-
-									var timeAgo = '';
-
-									if (createDate.isValid()) {
-										timeAgo = createDate.fromNow();
-										createDate = createDate.format('dddd MMMM Do YYYY @ h:mm:ss a');
-									}
-									else {
-										createDate = '';
-									}
-
-									pull.createDate = createDate;
-									pull.timeAgo = timeAgo;
-
-									repo.total += 1;
-									allTotal += 1;
-								}
+								iteratePullsIssues
 							);
 
+							_.each(
+								repo.issues,
+								iteratePullsIssues
+							);
+
+							delete repo.issues;
 							delete repo.pulls;
 
-							return !!allTotal;
+							return !!repo.total;
 						}
 					);
 
@@ -635,6 +669,7 @@ $(document).ready(
 								}
 
 								if (item.open_issues > 0) {
+
 									repos.push(
 										{
 											name: item.name,

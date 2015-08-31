@@ -38,11 +38,31 @@
 
 									<ul class="list-unstyled pulls">
 										{{#each value}}
-											<li class="pull">
-												<span class="pull-info">
-													<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
-												</span>
-												<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span></li>
+											{{#if pullRequest}}
+												<li class="pull">
+													<span class="pull-info">
+														<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
+													</span>
+													<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span>
+												</li>
+											{{else}}
+												<li class="pull issue">
+													<span class="pull-info">
+														<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
+
+													</span>
+														<span class="issue-labels">
+															{{#if labels.length}}
+																{{#each labels}}
+																	<span class="label" style="background-color: #{{color}}">{{name}}</span>
+																{{/each}}
+															{{else}}
+																<span class="label label-info">Issue</span>
+															{{/if}}
+														</span>
+													<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span>
+												</li>
+											{{/if}}
 										{{/each}}
 									</ul>
 								</li>

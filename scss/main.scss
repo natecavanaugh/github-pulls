@@ -354,6 +354,11 @@ body.loaded.loading .account-bar .app-title {
 	white-space: nowrap;
 	overflow: hidden;
 	text-overflow: ellipsis;
+	flex-grow: 1;
+}
+
+.issue-labels {
+	flex-shrink: 0;
 }
 
 .pull-meta {
