@@ -1,72 +1,45 @@
-module.exports = function(win) {
-	var _ = require('lodash');
+var _ = require('lodash');
+var jsop = require('jsop');
 
-	var localStorage = win.localStorage;
+module.exports = {
+	db: jsop('settings.json'),
 
-	return {
-		data: {},
+	destroy: function() {
+		_.forOwn(this.db, this._clearDB);
+	},
 
-		destroy: function() {
-			cachedResults = '';
-			delete sessionStorage.cachedResults;
-			delete localStorage.settings;
-		},
+	load: function() {
+		return this.db;
+	},
 
-		load: function() {
-			var instance = this;
+	val: function(key, value) {
+		var setting;
 
-			var data = instance.data;
+		var db = this.db;
 
-			if (instance._loaded || !localStorage.settings) {
-				instance._save();
-			}
-			else {
-				var parsed = JSON.parse(localStorage.settings);
+		var get = (arguments.length === 1 && _.isString(key));
+		var objectKey = _.isObject(key);
 
-				_.extend(data, parsed);
-
-				instance._loaded = true;
-			}
-
-			return data;
-		},
-
-		val: function(key, value) {
-			var instance = this;
-
-			var data = instance.load();
-
-			var setting;
-
-			var get = (arguments.length === 1 && _.isString(key));
-			var objectKey = _.isObject(key);
-
-			if (objectKey || arguments.length > 1) {
-				get = false;
-			}
-
-			if (get) {
-				setting = data[key];
-			}
-			else {
-				if (objectKey) {
-					_.extend(data, key);
-				}
-				else {
-					data[key] = value;
-				}
-
-				// This second calls saves the data back in
-				setting = instance._save();
-			}
-
-			return setting;
-		},
-
-		_save: function() {
-			var instance = this;
-
-			localStorage.settings = JSON.stringify(instance.data);
+		if (objectKey || arguments.length > 1) {
+			get = false;
 		}
-	};
+
+		if (get) {
+			setting = db[key];
+		}
+		else {
+			if (objectKey) {
+				_.extend(db, key);
+			}
+			else {
+				db[key] = value;
+			}
+		}
+
+		return setting;
+	},
+
+	_clearDB: function(item, index, obj) {
+		delete obj[index];
+	}
 };

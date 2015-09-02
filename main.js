@@ -105,7 +105,9 @@ $(document).ready(
 		var loginTemplate = Handlebars.compile(TPL_LOGIN);
 		var loginErrorTemplate = Handlebars.compile(TPL_LOGIN_ERROR);
 
-		var settings = require('./util/settings')(window);
+		var settings = require('./util/settings');
+
+		window.settings = settings;
 
 		var avatar = settings.val('avatar');
 

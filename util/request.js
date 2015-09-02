@@ -4,7 +4,7 @@ var sub = require('string-sub');
 var API_URL = 'https://api.github.com/{0}';
 
 module.exports = function(win) {
-	var settings = require('./settings')(win);
+	var settings = require('./settings');
 
 	var $ = win.jQuery;
 
