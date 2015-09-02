@@ -6,6 +6,7 @@ var gui = require('nw.gui');
 var $ = window.jQuery;
 var Handlebars = require('handlebars');
 var _ = require('lodash');
+var sub = require('string-sub');
 
 var Window = gui.Window.get();
 
@@ -77,25 +78,6 @@ $.fn.replaceClass = function(oldClass, newClass) {
 		}
 	);
 };
-
-var REGEX_SUB = /\{\s*([^|}]+?)\s*(?:\|([^}]*))?\s*\}/g;
-
-_.mixin(
-	{
-		sub: function(string, data) {
-			if (arguments.length > 2 || !_.isObject(data)) {
-				data = _.toArray(arguments).slice(1);
-			}
-
-			return string.replace ? string.replace(
-				REGEX_SUB,
-				function (match, key) {
-					return _.isUndefined(data[key]) ? match : data[key];
-				}
-			) : string;
-		}
-	}
-);
 
 Object.defineProperty(
 	$,
@@ -219,7 +201,7 @@ $(document).ready(
 		};
 
 		var ghApiRequest = function(path, callback, failure, config) {
-			var url = _.sub(API_URL, path);
+			var url = sub(API_URL, path);
 
 			var headers = {
 				'Authorization': 'token ' + settings.val('token'),
@@ -273,7 +255,7 @@ $(document).ready(
 				repos,
 				function(item, cb){
 					ghApiRequest(
-						_.sub('repos/{path}/pulls', item),
+						sub('repos/{path}/pulls', item),
 						function(json) {
 							if (json.length) {
 								cb(
@@ -286,7 +268,7 @@ $(document).ready(
 							}
 							else {
 								ghApiRequest(
-									_.sub('repos/{path}/issues', item),
+									sub('repos/{path}/issues', item),
 									function(json) {
 										cb(
 											null,
