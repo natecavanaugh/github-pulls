@@ -5,7 +5,7 @@ var gui = require('nw.gui');
 
 var $ = window.jQuery;
 var Handlebars = require('handlebars');
-var _ = require('lodash');
+var _ = require('lodash-bindright')(require('lodash'));
 var sub = require('string-sub');
 
 var Window = gui.Window.get();
@@ -92,8 +92,6 @@ Object.defineProperty(
 
 $(document).ready(
 	function($) {
-		var API_URL = 'https://api.github.com/{0}';
-
 		var REFRESH_TIME = 30 * 1000;
 
 		var TPL_LOGIN = $('#loginTemplate').html();
@@ -168,46 +166,46 @@ $(document).ready(
 
 		var cachedResults = '';
 
-		var getPullRequests = function(repos) {
-			async.map(
-				repos,
-				function(item, cb){
-					ghApiRequest(
-						sub('repos/{path}/pulls', item),
-						function(json) {
-							if (json.length) {
+		var mapRequests = function(item, cb){
+			ghApiRequest(
+				sub('repos/{path}/pulls', item),
+				function(pulls) {
+					if (pulls.length) {
+						cb(
+							null,
+							{
+								name: item.name,
+								pulls: pulls
+							}
+						);
+					}
+					else {
+						ghApiRequest(
+							sub('repos/{path}/issues', item),
+							function(issues) {
 								cb(
 									null,
 									{
-										name: item.name,
-										pulls: json
+										issues: issues,
+										name: item.name
 									}
 								);
+							},
+							null,
+							{
+								filter: 'all'
 							}
-							else {
-								ghApiRequest(
-									sub('repos/{path}/issues', item),
-									function(json) {
-										cb(
-											null,
-											{
-												issues: json,
-												name: item.name
-											}
-										);
-									},
-									null,
-									{
-										filter: 'all'
-									}
-								);
-							}
-						}
-					);
-				},
-				function (err, results) {
-					var issueRepos = [];
+						);
+					}
+				}
+			);
+		};
 
+		var getPullRequests = function(repos, cb) {
+			async.map(
+				repos,
+				mapRequests,
+				function (err, results) {
 					var allTotal = 0;
 
 					var repos = _.filter(
@@ -258,7 +256,7 @@ $(document).ready(
 
 								repo.total += 1;
 								allTotal += 1;
-							}
+							};
 
 							_.each(
 								repo.pulls,
@@ -277,38 +275,12 @@ $(document).ready(
 						}
 					);
 
-					var body = $.body;
-
-					if (!body) {
-						window.reload();
-
-						return;
-					}
-
-					if (!cachedResults || cachedResults !== JSON.stringify(repos)) {
-						cachedResults = JSON.stringify(repos);
-
-						sessionStorage.cachedResults = cachedResults;
-
-						var template = Handlebars.compile(TPL_SOURCE);
-
-						var vals = settings.load();
-
-						body.html(
-							template(
-								{
-									results: repos,
-									total: allTotal,
-									avatar: vals.avatar,
-									username: vals.username
-								}
-							)
-						);
-					}
-
-					body.replaceClass('loading', 'loaded');
-
-					loadPullsTask();
+					cb(
+						{
+							total: allTotal,
+							repos: repos
+						}
+					);
 				}
 			);
 		};
@@ -333,12 +305,15 @@ $(document).ready(
 
 				loadLogin();
 
+				cachedResults = '';
+				delete sessionStorage.cachedResults;
+
 				settings.destroy();
 			}
 		);
 
 		// Usage: debugRequest('repos/natecavanaugh/liferay-portal/pulls');
-		debugRequest = function(path) {
+		var debugRequest = function(path) {
 			console.log('**** debugRequest: ' + path);
 
 			ghApiRequest(
@@ -399,9 +374,22 @@ $(document).ready(
 
 								settings.val(val);
 
-								body.removeClass('loaded').html('');
+								ghApiRequest(
+									'users/' + username,
+									function(json, response) {
+										if (json.avatar_url) {
+											avatar = json.avatar_url;
 
-								loadPulls();
+											settings.val('avatar', avatar);
+										}
+
+										body.removeClass('loaded');
+										//.html('');
+
+										loadPulls();
+									},
+									loadPulls
+								);
 							};
 
 							var handleAuthError = function(json, response) {
@@ -462,10 +450,10 @@ $(document).ready(
 								ghApiRequest(
 									'authorizations',
 									function(json, response){
-										success(json, response, loginData)
+										success(json, response, loginData);
 									},
 									function(json, response){
-										failure(json, response, loginData)
+										failure(json, response, loginData);
 									},
 									loginData
 								);
@@ -477,55 +465,104 @@ $(document).ready(
 							loginErrors.html('Please enter both your username and password').removeClass('hide');
 						}
 					}
-				)
-
+				);
 			}
 			else {
 				body.replaceClass('loading', 'status-offline');
 			}
 		};
 
+		var getAllRepos = function(cb) {
+			ghApiRequest(
+				'user/repos',
+				cb,
+				null,
+				{
+					data: {
+						per_page: 100,
+						type: 'owner'
+					}
+				}
+			);
+		};
+
+		var filterRepos = function(repos) {
+			return _.reduce(
+				repos,
+				function(prev, item, index, collection) {
+					if (item.open_issues > 0) {
+						prev.push(
+							{
+								name: item.name,
+								path: [item.owner.login, item.name].join('/'),
+								pulls: []
+							}
+						);
+					}
+
+					return prev;
+				},
+				[]
+			);
+		};
+
+		var handleProcessedRepos = function(result) {
+			var repos = result.repos;
+
+			var body = $.body;
+
+			if (!body) {
+				window.reload();
+
+				return;
+			}
+
+			if (!cachedResults || cachedResults !== JSON.stringify(repos)) {
+				cachedResults = JSON.stringify(repos);
+
+				sessionStorage.cachedResults = cachedResults;
+
+				var template = Handlebars.compile(TPL_SOURCE);
+
+				var vals = settings.load();
+
+				body.html(
+					template(
+						{
+							results: repos,
+							total: result.total,
+							avatar: vals.avatar,
+							username: vals.username
+						}
+					)
+				);
+			}
+
+			body.replaceClass('loading', 'loaded');
+
+			loadPullsTask();
+		};
+
 		var loadPulls = function (){
 			if (navigator.onLine) {
 				$.body.replaceClass('status-offline', 'loading');
 
-				ghApiRequest(
-					'user/repos',
-					function(json) {
-						var repos = [];
+				getAllRepos(_.flow(filterRepos, _.bindRight(getPullRequests, null, handleProcessedRepos)));
 
-						_.each(
-							json,
-							function(item, index, collection) {
-								if (!avatar && item.owner.login == settings.val('username')) {
-									avatar = item.owner.avatar_url;
+				/*function(repos) {
+					// if (!avatar) {
+					//	var username = settings.val('username');
+					//	var avatarURL = _.result(_.findWhere(repos, {owner: {login: username}}), 'owner.avatar_url');
 
-									settings.val('avatar', avatar);
-								}
+					//	if (avatarURL) {
+					//		avatar = avatarURL;
 
-								if (item.open_issues > 0) {
+					//		settings.val('avatar', avatar);
+					//	}
+					// }
 
-									repos.push(
-										{
-											name: item.name,
-											path: [item.owner.login, item.name].join('/'),
-											pulls: []
-										}
-									);
-								}
-							}
-						);
-
-						getPullRequests(repos);
-					},
-					null,
-					{
-						data: {
-							per_page: 100,
-							type: 'owner'
-						}
-					}
-				);
+					getPullRequests(filterRepos(repos));
+				}*/
 			}
 			else {
 				$.body.replaceClass('loading', 'status-offline');
@@ -692,4 +729,4 @@ function debounce(fn, delay, context, args) {
 	wrapped.setDelay = setDelay;
 
 	return wrapped;
-};
+}
