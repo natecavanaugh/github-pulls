@@ -3,6 +3,8 @@ global.console = console;
 var async = require('async');
 var gui = require('nw.gui');
 
+global.USER_PREFS_PATH = gui.App.dataPath;
+
 var $ = window.jQuery;
 var Handlebars = require('handlebars');
 var _ = require('lodash-bindright')(require('lodash'));

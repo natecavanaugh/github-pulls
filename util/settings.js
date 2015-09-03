@@ -1,8 +1,9 @@
 var _ = require('lodash');
 var jsop = require('jsop');
+var path = require('path');
 
 module.exports = {
-	db: jsop('settings.json'),
+	db: jsop(path.join(global.USER_PREFS_PATH || '', 'settings.json')),
 
 	destroy: function() {
 		_.forOwn(this.db, this._clearDB);
