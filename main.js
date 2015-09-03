@@ -201,21 +201,12 @@ $(document).ready(
 			);
 		};
 
-		var iteratePullsIssues = function(pull, index, collection, repo) {
+		var iteratePullsIssues = function(pull, index, collection) {
 			var pullRequest = !!pull.base;
 
-			var branchName = pullRequest ? pull.base.ref : 'master';
-
-			var branchPulls = repo.branchPulls;
-
-			var branch = branchPulls[branchName];
-
-			if (!branch) {
-				branch = [];
-				branchPulls[branchName] = branch;
+			if (!pullRequest) {
+				_.set(pull, 'base.ref', 'master');
 			}
-
-			branch.push(pull);
 
 			pull.fromUser = pull.user.login;
 
@@ -237,40 +228,31 @@ $(document).ready(
 			pull.timeAgo = timeAgo;
 
 			pull.pullRequest = pullRequest;
+		};
 
-			repo.total += 1;
+		var iterateRepos = function(repo, index, collection) {
+			var allIssues = _.union(repo.issues, repo.pulls);
+
+			_.each(allIssues, iteratePullsIssues);
+
+			repo.branchPulls = _.groupBy(allIssues, 'base.ref');
+
+			repo.total = allIssues.length;
+
+			delete repo.issues;
+			delete repo.pulls;
 		};
 
 		var getPullRequests = function(repos, cb) {
 			async.map(
 				repos,
 				mapRequests,
-				function (err, results) {
-					var allTotal = 0;
-
-					var repos = _.filter(
-						results,
-						function(repo, index, collection) {
-							repo.branchPulls = {};
-							repo.total = 0;
-
-							var iterator = _.bindRight(iteratePullsIssues, null, repo);
-
-							_.each(repo.pulls, iterator);
-							_.each(repo.issues, iterator);
-
-							allTotal += repo.total;
-
-							delete repo.issues;
-							delete repo.pulls;
-
-							return !!repo.total;
-						}
-					);
+				function (err, repos) {
+					_.each(repos, iterateRepos);
 
 					cb(
 						{
-							total: allTotal,
+							total: _.sum(repos, 'total'),
 							repos: repos
 						}
 					);
