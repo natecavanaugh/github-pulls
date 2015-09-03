@@ -5,6 +5,8 @@ var gui = require('nw.gui');
 
 global.USER_PREFS_PATH = gui.App.dataPath;
 
+var GithubPulls = require('./lib');
+
 var $ = window.jQuery;
 var Handlebars = require('handlebars');
 var _ = require('lodash-bindright')(require('lodash'));
@@ -301,6 +303,118 @@ $(document).ready(
 			);
 		};
 
+		var login = function(username, password) {
+			var scriptNote = 'Github Pulls (by Liferay)';
+
+			var data = JSON.stringify(
+				{
+					scopes: ['repo'],
+					note: scriptNote
+				}
+			);
+
+			var loginData = {
+				data: data,
+				headers: {
+					'Authorization': 'Basic ' + btoa(username + ':' + password),
+					'Content-Type': 'application/x-www-form-urlencoded'
+				},
+				method: 'GET'
+			};
+
+			var setToken = function(token) {
+				var val = {
+					token: token,
+					username: username
+				};
+
+				settings.val(val);
+
+				GithubPulls.emit('login:success');
+
+				ghApiRequest(
+					'users/' + username,
+					function(json, response) {
+						if (json.avatar_url) {
+							avatar = json.avatar_url;
+
+							settings.val('avatar', avatar);
+						}
+
+						GithubPulls.emit('login:complete');
+					},
+					function() {
+						GithubPulls.emit('login:complete');
+					}
+				);
+			};
+
+			var handleAuthError = function(json, response) {
+				console.log(json, response);
+				response.errorText = 'Could not log into Github.';
+				response.message = json.message;
+
+				GithubPulls.emit('login:error', response, json);
+			};
+
+			var createToken = function() {
+				// Second passs to create it
+				loginData.method = 'POST';
+
+				authRequest(loginData, handleNewTokenResponse, handleAuthError);
+			};
+
+			var checkExistingToken = function(json, response) {
+				// First pass to see if we have it
+				var token = _.find(
+					json,
+					{
+						note: scriptNote
+					}
+				);
+
+				if (token && token.hashed_token) {
+					ghApiRequest(
+						'authorizations/' + token.id,
+						function(json, response){
+							createToken();
+						},
+						handleAuthError,
+						_.defaults({method: 'DELETE'}, loginData)
+					);
+				}
+				else {
+					createToken();
+				}
+			};
+
+			var handleNewTokenResponse = function(json, response, loginData) {
+				var token = json.token;
+
+				if (token) {
+					setToken(token);
+				}
+				else {
+					handleAuthError(json, response, loginData);
+				}
+			};
+
+			var authRequest = function(loginData, success, failure) {
+				ghApiRequest(
+					'authorizations',
+					function(json, response){
+						success(json, response, loginData);
+					},
+					function(json, response){
+						failure(json, response, loginData);
+					},
+					loginData
+				);
+			};
+
+			authRequest(loginData, checkExistingToken, handleAuthError);
+		};
+
 		var loadLogin = function() {
 			var body = $.body;
 
@@ -323,120 +437,27 @@ $(document).ready(
 						if (username && password) {
 							loginErrors.addClass('hide');
 
-							var scriptNote = 'Github Pulls (by Liferay)';
+							body.addClass('loading');
 
-							var data = JSON.stringify(
-								{
-									scopes: ['repo'],
-									note: scriptNote
+							GithubPulls.once(
+								'login:error',
+								function(response, json) {
+									loginErrors.html(loginErrorTemplate(response)).removeClass('hide');
+
+									$.body.removeClass('loading');
 								}
 							);
 
-							body.addClass('loading');
+							GithubPulls.once(
+								'login:complete',
+								function() {
+									$.body.removeClass('loaded');
 
-							var loginData = {
-								data: data,
-								headers: {
-									'Authorization': 'Basic ' + btoa(username + ':' + password),
-									'Content-Type': 'application/x-www-form-urlencoded'
-								},
-								method: 'GET'
-							};
-
-							var setToken = function(token) {
-								var val = {
-									token: token,
-									username: username
-								};
-
-								settings.val(val);
-
-								ghApiRequest(
-									'users/' + username,
-									function(json, response) {
-										if (json.avatar_url) {
-											avatar = json.avatar_url;
-
-											settings.val('avatar', avatar);
-										}
-
-										body.removeClass('loaded');
-										//.html('');
-
-										loadPulls();
-									},
-									loadPulls
-								);
-							};
-
-							var handleAuthError = function(json, response) {
-								console.log(json, response);
-								response.errorText = 'Could not log into Github.';
-								response.message = json.message;
-
-								loginErrors.html(loginErrorTemplate(response)).removeClass('hide');
-
-								body.removeClass('loading');
-							};
-
-							var createToken = function() {
-								// Second passs to create it
-								loginData.method = 'POST';
-
-								authRequest(loginData, handleNewTokenResponse, handleAuthError);
-							};
-
-							var checkExistingToken = function(json, response) {
-								// First pass to see if we have it
-								var token = _.find(
-									json,
-									{
-										note: scriptNote
-									}
-								);
-
-								if (token && token.hashed_token) {
-									ghApiRequest(
-										'authorizations/' + token.id,
-										function(json, response){
-											createToken();
-										},
-										function(json, response){
-											console.log(json, response);
-										},
-										_.defaults({method: 'DELETE'}, loginData)
-									);
+									loadPulls();
 								}
-								else {
-									createToken();
-								}
-							};
+							);
 
-							var handleNewTokenResponse = function(json, response, loginData) {
-								var token = json.token;
-
-								if (token) {
-									setToken(token);
-								}
-								else {
-									handleAuthError(json, response, loginData);
-								}
-							};
-
-							var authRequest = function(loginData, success, failure) {
-								ghApiRequest(
-									'authorizations',
-									function(json, response){
-										success(json, response, loginData);
-									},
-									function(json, response){
-										failure(json, response, loginData);
-									},
-									loginData
-								);
-							};
-
-							authRequest(loginData, checkExistingToken, handleAuthError);
+							login(username, password);
 						}
 						else {
 							loginErrors.html('Please enter both your username and password').removeClass('hide');
