@@ -201,6 +201,46 @@ $(document).ready(
 			);
 		};
 
+		var iteratePullsIssues = function(pull, index, collection, repo) {
+			var pullRequest = !!pull.base;
+
+			var branchName = pullRequest ? pull.base.ref : 'master';
+
+			var branchPulls = repo.branchPulls;
+
+			var branch = branchPulls[branchName];
+
+			if (!branch) {
+				branch = [];
+				branchPulls[branchName] = branch;
+			}
+
+			branch.push(pull);
+
+			pull.fromUser = pull.user.login;
+
+			var createdAt = pull.created_at;
+
+			var createDate = moment(createdAt);
+
+			var timeAgo = '';
+
+			if (createDate.isValid()) {
+				timeAgo = createDate.fromNow();
+				createDate = createDate.format('dddd MMMM Do YYYY @ h:mm:ss a');
+			}
+			else {
+				createDate = '';
+			}
+
+			pull.createDate = createDate;
+			pull.timeAgo = timeAgo;
+
+			pull.pullRequest = pullRequest;
+
+			repo.total += 1;
+		};
+
 		var getPullRequests = function(repos, cb) {
 			async.map(
 				repos,
@@ -211,62 +251,15 @@ $(document).ready(
 					var repos = _.filter(
 						results,
 						function(repo, index, collection) {
-							var currentBranchName = '';
-							var branchPulls = {};
-
-							repo.branchPulls = branchPulls;
+							repo.branchPulls = {};
 							repo.total = 0;
 
-							var repoName = repo.name;
+							var iterator = _.bindRight(iteratePullsIssues, null, repo);
 
-							var iteratePullsIssues = function(pull, index, collection) {
-								var pullRequest = !!pull.base;
+							_.each(repo.pulls, iterator);
+							_.each(repo.issues, iterator);
 
-								var branchName = pullRequest ? pull.base.ref : 'master';
-
-								var branch = branchPulls[branchName];
-
-								if (!branch) {
-									branch = [];
-									branchPulls[branchName] = branch;
-								}
-
-								branch.push(pull);
-
-								pull.fromUser = pull.user.login;
-
-								var createdAt = pull.created_at;
-
-								var createDate = moment(createdAt);
-
-								var timeAgo = '';
-
-								if (createDate.isValid()) {
-									timeAgo = createDate.fromNow();
-									createDate = createDate.format('dddd MMMM Do YYYY @ h:mm:ss a');
-								}
-								else {
-									createDate = '';
-								}
-
-								pull.createDate = createDate;
-								pull.timeAgo = timeAgo;
-
-								pull.pullRequest = pullRequest;
-
-								repo.total += 1;
-								allTotal += 1;
-							};
-
-							_.each(
-								repo.pulls,
-								iteratePullsIssues
-							);
-
-							_.each(
-								repo.issues,
-								iteratePullsIssues
-							);
+							allTotal += repo.total;
 
 							delete repo.issues;
 							delete repo.pulls;
