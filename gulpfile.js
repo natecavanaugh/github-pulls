@@ -195,6 +195,28 @@ gulp.task(
 );
 
 gulp.task(
+	'build:update-modules',
+	function(done) {
+		getAppPath(
+			function(destination) {
+				if (!appExists(destination)) {
+					return;
+				}
+
+				var deployedPath = path.join(destination, 'Contents/Resources/app.nw');
+
+				gulp.src('./node_modules{,/**}')
+				.pipe(plugins.newer(deployedPath))
+				.pipe(plugins.debug())
+				.pipe(gulp.dest(deployedPath));
+
+				done();
+			}
+		);
+	}
+);
+
+gulp.task(
 	'build:watch',
 	function(done) {
 		getAppPath(
