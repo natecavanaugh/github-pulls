@@ -3,16 +3,23 @@ global.console = console;
 var async = require('async');
 var gui = require('nw.gui');
 
-global.USER_PREFS_PATH = gui.App.dataPath;
-
-var GithubPulls = require('./lib');
-
 var $ = window.jQuery;
 var Handlebars = require('handlebars');
 var _ = require('lodash-bindright')(require('lodash'));
 var sub = require('string-sub');
+var success = require('success');
+
+var GithubPulls = require('./lib/');
+var pulls = require('./lib/pulls');
+
+var settings = require('./util/settings');
+var github = require('./util/github');
 
 var Window = gui.Window.get();
+
+global.USER_PREFS_PATH = gui.App.dataPath;
+
+window.github = github;
 
 var mb = new gui.Menu({type:'menubar'});
 
@@ -107,8 +114,6 @@ $(document).ready(
 		var loginTemplate = Handlebars.compile(TPL_LOGIN);
 		var loginErrorTemplate = Handlebars.compile(TPL_LOGIN_ERROR);
 
-		var settings = require('./util/settings');
-
 		window.settings = settings;
 
 		var avatar = settings.val('avatar');
@@ -166,103 +171,7 @@ $(document).ready(
 
 		window.errorTemplate = errorTemplate;
 
-		var ghApiRequest = require('./util/request')(window);
-
 		var cachedResults = '';
-
-		var mapRequests = function(item, cb){
-			ghApiRequest(
-				sub('repos/{path}/pulls', item),
-				function(pulls) {
-					if (pulls.length) {
-						cb(
-							null,
-							{
-								name: item.name,
-								pulls: pulls
-							}
-						);
-					}
-					else {
-						ghApiRequest(
-							sub('repos/{path}/issues', item),
-							function(issues) {
-								cb(
-									null,
-									{
-										issues: issues,
-										name: item.name
-									}
-								);
-							},
-							null,
-							{
-								filter: 'all'
-							}
-						);
-					}
-				}
-			);
-		};
-
-		var iteratePullsIssues = function(pull, index, collection) {
-			var pullRequest = !!pull.base;
-
-			if (!pullRequest) {
-				_.set(pull, 'base.ref', 'master');
-			}
-
-			pull.fromUser = pull.user.login;
-
-			var createdAt = pull.created_at;
-
-			var createDate = moment(createdAt);
-
-			var timeAgo = '';
-
-			if (createDate.isValid()) {
-				timeAgo = createDate.fromNow();
-				createDate = createDate.format('dddd MMMM Do YYYY @ h:mm:ss a');
-			}
-			else {
-				createDate = '';
-			}
-
-			pull.createDate = createDate;
-			pull.timeAgo = timeAgo;
-
-			pull.pullRequest = pullRequest;
-		};
-
-		var iterateRepos = function(repo, index, collection) {
-			var allIssues = _.union(repo.issues, repo.pulls);
-
-			_.each(allIssues, iteratePullsIssues);
-
-			repo.branchPulls = _.groupBy(allIssues, 'base.ref');
-
-			repo.total = allIssues.length;
-
-			delete repo.issues;
-			delete repo.pulls;
-		};
-
-		var getPullRequests = function(repos, cb) {
-			async.map(
-				repos,
-				mapRequests,
-				function (err, repos) {
-					_.each(repos, iterateRepos);
-
-					cb(
-						{
-							total: _.sum(repos, 'total'),
-							repos: repos
-						}
-					);
-				}
-			);
-		};
 
 		$.body.on(
 			'click',
@@ -291,18 +200,6 @@ $(document).ready(
 			}
 		);
 
-		// Usage: debugRequest('repos/natecavanaugh/liferay-portal/pulls');
-		var debugRequest = function(path) {
-			console.log('**** debugRequest: ' + path);
-
-			ghApiRequest(
-				path,
-				function(json) {
-					console.log('* debugRequest - ghApiRequest: ' + JSON.stringify(''+json));
-				}
-			);
-		};
-
 		var login = function(username, password) {
 			var scriptNote = 'Github Pulls (by Liferay)';
 
@@ -322,6 +219,69 @@ $(document).ready(
 				method: 'GET'
 			};
 
+			github.authenticate(
+				{
+					type: 'basic',
+					username: username,
+					password: password
+				}
+			);
+
+			var createToken = function() {
+				// Second passs to create it
+				github.authorization.create(
+					{
+						scopes: ['repo'],
+						note: scriptNote
+					},
+					success(handleAuthError, handleNewTokenResponse)
+				);
+			};
+
+			var checkExistingToken = function(response) {
+				// First pass to see if we have it
+				var token = _.find(
+					response,
+					{
+						note: scriptNote
+					}
+				);
+
+				if (token && token.hashed_token) {
+					github.authorization.delete(
+						{
+							id: token.id
+						},
+						success(handleAuthError, createToken)
+					);
+				}
+				else {
+					createToken();
+				}
+			};
+
+			var handleAuthError = function(err) {
+				console.log(err);
+				var response = {
+					errorText: 'Could not log into Github.',
+					statusText: 'Error',
+					message: JSON.parse(err.message).message
+				};
+
+				GithubPulls.emit('login:error', response, err);
+			};
+
+			var handleNewTokenResponse = function(response) {
+				var token = response.token;
+
+				if (token) {
+					setToken(token);
+				}
+				else {
+					handleAuthError(response);
+				}
+			};
+
 			var setToken = function(token) {
 				var val = {
 					token: token,
@@ -332,87 +292,26 @@ $(document).ready(
 
 				GithubPulls.emit('login:success');
 
-				ghApiRequest(
-					'users/' + username,
-					function(json, response) {
-						if (json.avatar_url) {
-							avatar = json.avatar_url;
+				github.user.get(
+					{},
+					function(err, response) {
+						if (response && response.avatar_url) {
+							avatar = response.avatar_url;
 
 							settings.val('avatar', avatar);
 						}
 
 						GithubPulls.emit('login:complete');
-					},
-					function() {
-						GithubPulls.emit('login:complete');
 					}
 				);
 			};
 
-			var handleAuthError = function(json, response) {
-				console.log(json, response);
-				response.errorText = 'Could not log into Github.';
-				response.message = json.message;
-
-				GithubPulls.emit('login:error', response, json);
-			};
-
-			var createToken = function() {
-				// Second passs to create it
-				loginData.method = 'POST';
-
-				authRequest(loginData, handleNewTokenResponse, handleAuthError);
-			};
-
-			var checkExistingToken = function(json, response) {
-				// First pass to see if we have it
-				var token = _.find(
-					json,
-					{
-						note: scriptNote
-					}
-				);
-
-				if (token && token.hashed_token) {
-					ghApiRequest(
-						'authorizations/' + token.id,
-						function(json, response){
-							createToken();
-						},
-						handleAuthError,
-						_.defaults({method: 'DELETE'}, loginData)
-					);
-				}
-				else {
-					createToken();
-				}
-			};
-
-			var handleNewTokenResponse = function(json, response, loginData) {
-				var token = json.token;
-
-				if (token) {
-					setToken(token);
-				}
-				else {
-					handleAuthError(json, response, loginData);
-				}
-			};
-
-			var authRequest = function(loginData, success, failure) {
-				ghApiRequest(
-					'authorizations',
-					function(json, response){
-						success(json, response, loginData);
-					},
-					function(json, response){
-						failure(json, response, loginData);
-					},
-					loginData
-				);
-			};
-
-			authRequest(loginData, checkExistingToken, handleAuthError);
+			github.authorization.getAll(
+				{
+					per_page: 100
+				},
+				success(handleAuthError, checkExistingToken)
+			);
 		};
 
 		var loadLogin = function() {
@@ -470,40 +369,6 @@ $(document).ready(
 			}
 		};
 
-		var getAllRepos = function(cb) {
-			ghApiRequest(
-				'user/repos',
-				cb,
-				null,
-				{
-					data: {
-						per_page: 100,
-						type: 'owner'
-					}
-				}
-			);
-		};
-
-		var filterRepos = function(repos) {
-			return _.reduce(
-				repos,
-				function(prev, item, index, collection) {
-					if (item.open_issues > 0) {
-						prev.push(
-							{
-								name: item.name,
-								path: [item.owner.login, item.name].join('/'),
-								pulls: []
-							}
-						);
-					}
-
-					return prev;
-				},
-				[]
-			);
-		};
-
 		var handleProcessedRepos = function(result) {
 			var repos = result.repos;
 
@@ -518,7 +383,7 @@ $(document).ready(
 			if (!cachedResults || cachedResults !== JSON.stringify(repos)) {
 				cachedResults = JSON.stringify(repos);
 
-				sessionStorage.cachedResults = cachedResults;
+				window.sessionStorage.cachedResults = cachedResults;
 
 				var template = Handlebars.compile(TPL_SOURCE);
 
@@ -567,12 +432,80 @@ $(document).ready(
 			}
 		};
 
+		var defaultFailureFn = function(err) {
+			var body = $.body;
+
+			var errObj;
+
+			try {
+				errObj = JSON.parse(err.message);
+			}
+			catch (e) {
+				errObj = {
+					message: 'Unknown error'
+				};
+
+				console.log(e);
+			}
+
+			var pullsTitle = $('#pullsTitle');
+
+			if (!pullsTitle.length) {
+				pullsTitle = $('#accountBar');
+			}
+
+			errObj.statusText = 'An error occured when trying to load the request';
+
+			var errorResponse = $(errorTemplate(errObj));
+
+			if (pullsTitle.length) {
+				var currentError = $('.error-warning');
+
+				var showError = function() {
+					pullsTitle.after(errorResponse);
+
+					body.addClass('status-error').removeClass('status-offline').removeClass('loading');
+
+					errorResponse.addClass('alert alert-warning');
+				};
+
+				if (currentError) {
+					currentError.remove();
+
+					setTimeout(showError, 200);
+				}
+				else {
+					showError();
+				}
+			}
+			else {
+				body.addClass('status-error').removeClass('status-offline').removeClass('loading').prepend(errorResponse);
+			}
+		};
+
+		GithubPulls.on(
+			'request:error',
+			function(err) {
+				defaultFailureFn(err);
+			}
+		);
+
 		var loadPullsTask = debounce(loadPulls, REFRESH_TIME);
 
 		window.loadPullsTask = loadPullsTask;
 
 		var init = function() {
-			if (settings.val('token')) {
+			var token = settings.val('token');
+
+			if (token) {
+				github.authenticate(
+					{
+						type: 'token',
+						username: settings.val('username'),
+						token: token
+					}
+				);
+
 				loadPulls();
 			}
 			else {
@@ -618,9 +551,9 @@ $(document).ready(
 
 			var dtWin = Window[open ? 'showDevTools' : 'closeDevTools']();
 
-			if (open) {
-				dtWin.x = Window.x + 400;
-			}
+			// if (open) {
+			// 	dtWin.x = Window.x + 400;
+			// }
 
 			window.focus();
 

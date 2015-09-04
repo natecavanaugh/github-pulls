@@ -4,11 +4,14 @@
   "version": "0.3.0",
   "dependencies": {
     "async": "~0.2.9",
+    "github": "^0.2.4",
     "handlebars": "^2.0.0",
     "jsop": "^0.3.1",
     "lodash": "^3.10.1",
     "lodash-bindright": "^1.0.1",
+    "moment": "^2.10.6",
     "string-sub": "0.0.1",
+    "success": "^0.1.0",
     "xmlhttprequest": "^1.6.0"
   },
   "devDependencies": {
