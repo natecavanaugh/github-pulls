@@ -100,7 +100,7 @@ gulp.task(
 gulp.task(
 	'build:app',
 	function(done) {
-		var NwBuilder = require('node-webkit-builder');
+		var NwBuilder = require('nw-builder');
 
 		var nw = new NwBuilder(
 			{
@@ -113,7 +113,7 @@ gulp.task(
 				},
 				cacheDir: path.join(BUILD_DIR, 'cache'),
 				macIcns: path.join(BUILD_DIR, 'app.icns'),
-				macPlist: path.join(BUILD_DIR, 'Info.plist')
+				version: '0.12.2'
 			}
 		);
 
