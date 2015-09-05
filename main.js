@@ -350,8 +350,6 @@ $(document).ready(
 							GithubPulls.once(
 								'login:complete',
 								function() {
-									$.body.removeClass('loaded');
-
 									loadPulls();
 								}
 							);
