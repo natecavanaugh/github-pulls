@@ -330,7 +330,7 @@ $(document).ready(
 					message: 'Unknown error'
 				};
 
-				console.log(e);
+				console.log(e, err);
 			}
 
 			var pullsTitle = $('#pullsTitle');
