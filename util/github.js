@@ -7,7 +7,6 @@ var github = new GitHubApi(
 		// optional
 		debug: false,
 		protocol: 'https',
-		timeout: 5000,
 		headers: {
 			'user-agent': 'Github Pulls app v1.0' // GitHub is happy with a unique user agent
 		}
