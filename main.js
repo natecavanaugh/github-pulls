@@ -145,7 +145,7 @@ $(document).ready(
 					/(?:[A-Z]{3,}-\d+)/,
 					function(match, key, str) {
 						if (match) {
-							jiraLink = '<a class="external-link" href="https://issues.liferay.com/browse/' + match + '">' + match + '</a>';
+							jiraLink = `<a class="external-link" href="https://issues.liferay.com/browse/${match}">${match}</a>`;
 						}
 
 						return '';
@@ -156,14 +156,14 @@ $(document).ready(
 
 				title = $.trim(title);
 
-				var buffer = ['<a class="external-link" href="' + url + '">' + number + '</a>'];
+				var buffer = [`<a class="external-link" href="${url}">${number}</a>`];
 
 				if (jiraLink) {
 					buffer.push(jiraLink);
 				}
 
 				if (title) {
-					buffer.push('<a class="external-link" href="' + url + '">' + title + '</a>');
+					buffer.push(`<a class="external-link" href="${url}">${title}</a>`);
 				}
 
 				return new Handlebars.SafeString(buffer.join(' - '));
