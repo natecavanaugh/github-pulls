@@ -436,9 +436,30 @@ $(document).ready(
 
 			var dtWin = Window[open ? 'showDevTools' : 'closeDevTools']();
 
-			// if (open) {
-			// 	dtWin.x = Window.x + 400;
-			// }
+			if (open) {
+				var intersects = require('intersects');
+
+				var getObj = function(winObj) {
+					return {
+						left: winObj.x,
+						top: winObj.y,
+						height: winObj.height,
+						width: winObj.width,
+						bottom: winObj.y + winObj.height,
+						right: winObj.x + winObj.width
+					};
+				};
+
+				var winDetails = getObj(Window);
+				var dtWinDetails = getObj(dtWin);
+
+				while (intersects(winDetails, dtWinDetails, 0.5)) {
+					dtWinDetails.left += 10;
+					dtWinDetails.right += 10;
+				}
+
+				dtWin.x = dtWinDetails.left;
+			}
 
 			window.focus();
 
