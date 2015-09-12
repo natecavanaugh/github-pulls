@@ -295,7 +295,7 @@ $(document).ready(
 			if (navigator.onLine) {
 				$.body.replaceClass('status-offline', 'loading');
 
-				getAllRepos(_.flow(filterRepos, _.bindRight(getPullRequests, null, handleProcessedRepos)));
+				pulls.getAllRepos(_.flow(pulls.filterRepos, _.bindRight(pulls.getPullRequests, null, handleProcessedRepos)));
 
 				/*function(repos) {
 					// if (!avatar) {
