@@ -52,7 +52,7 @@ var reloadFullMenuItem = new gui.MenuItem(
 				}
 			);
 
-			Window.reload();
+			Window.reloadDev();
 		},
 		key: 'r',
 		label: 'Refresh (clear all cache)',
