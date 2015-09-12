@@ -5,7 +5,7 @@
   "dependencies": {
     "async": "~0.2.9",
     "github": "^0.2.4",
-    "handlebars": "^2.0.0",
+    "handlebars": "^4.0.2",
     "intersects": "^1.0.0",
     "jsop": "^0.3.1",
     "lodash": "^3.10.1",
