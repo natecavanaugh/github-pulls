@@ -4,7 +4,7 @@
   "version": "0.3.0",
   "dependencies": {
     "async": "~0.2.9",
-    "github": "^0.2.4",
+    "github-cache": "^1.0.1",
     "handlebars": "^4.0.2",
     "intersects": "^1.0.0",
     "jsop": "^0.3.1",
