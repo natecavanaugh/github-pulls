@@ -184,20 +184,26 @@ $(document).ready(
 			}
 		);
 
+		var logout = function() {
+			loadPullsTask.cancel();
+
+			loadLogin();
+
+			cachedResults = '';
+			delete sessionStorage.cachedResults;
+
+			settings.destroy();
+		};
+
+		window.logout = logout;
+
 		$.body.on(
 			'click',
 			'.logout',
 			function(event) {
 				event.preventDefault();
 
-				loadPullsTask.cancel();
-
-				loadLogin();
-
-				cachedResults = '';
-				delete sessionStorage.cachedResults;
-
-				settings.destroy();
+				logout();
 			}
 		);
 
