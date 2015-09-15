@@ -15,12 +15,19 @@
 	<script id="listTemplate" type="text/x-handlebars-template">
 		{{#*inline "pullInfo"}}
 			<span class="pull-info">
-				<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
+				<img class="avatar" src="{{this.user.avatar_url}}" />
+				{{> issueLink url=url title=number}} -
+				{{#if title_jira}}{{> issueLink url=jira_ticket title=title_jira}} -{{/if}}
+				{{> issueLink url=url title=title}}
 			</span>
 		{{/inline}}
 
 		{{#*inline "pullMeta"}}
 			<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span>
+		{{/inline}}
+
+		{{#*inline "issueLink" url title}}
+			<a class="external-link" href="{{url}}">{{title}}</a>
 		{{/inline}}
 
 		{{#*inline "pullLabels"}}

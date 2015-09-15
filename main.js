@@ -132,44 +132,6 @@ $(document).ready(
 			}
 		);
 
-		Handlebars.registerHelper(
-			'createLink',
-			function(context, options) {
-				var number = this.number;
-				var title = this.title;
-				var url = this.html_url;
-
-				var jiraLink = '';
-
-				title = title.replace(
-					/(?:[A-Z]{3,}-\d+)/,
-					function(match, key, str) {
-						if (match) {
-							jiraLink = `<a class="external-link" href="https://issues.liferay.com/browse/${match}">${match}</a>`;
-						}
-
-						return '';
-					}
-				);
-
-				title = title.replace(/^\s*-\s*/, '');
-
-				title = $.trim(title);
-
-				var buffer = [`<a class="external-link" href="${url}">${number}</a>`];
-
-				if (jiraLink) {
-					buffer.push(jiraLink);
-				}
-
-				if (title) {
-					buffer.push(`<a class="external-link" href="${url}">${title}</a>`);
-				}
-
-				return new Handlebars.SafeString(buffer.join(' - '));
-			}
-		);
-
 		window.errorTemplate = errorTemplate;
 
 		var cachedResults = '';
