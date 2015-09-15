@@ -13,6 +13,28 @@
 
 <body class="loading">
 	<script id="listTemplate" type="text/x-handlebars-template">
+		{{#*inline "pullInfo"}}
+			<span class="pull-info">
+				<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
+			</span>
+		{{/inline}}
+
+		{{#*inline "pullMeta"}}
+			<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span>
+		{{/inline}}
+
+		{{#*inline "pullLabels"}}
+			<span class="issue-labels">
+				{{#if labels.length}}
+					{{#each labels}}
+						<span class="label" style="background-color: #{{color}}">{{name}}</span>
+					{{/each}}
+				{{else}}
+					<span class="label label-info">Issue</span>
+				{{/if}}
+			</span>
+		{{/inline}}
+
 		<div class="account-bar" id="accountBar">
 			<span class="user-info">
 				<a class="external-link" href="http://github.com/{{username}}"><img src="{{avatar}}" /></a>
@@ -40,27 +62,14 @@
 										{{#each value}}
 											{{#if pullRequest}}
 												<li class="pull">
-													<span class="pull-info">
-														<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
-													</span>
-													<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span>
+													{{> pullInfo}}
+													{{> pullMeta}}
 												</li>
 											{{else}}
 												<li class="pull issue">
-													<span class="pull-info">
-														<img class="avatar" src="{{this.user.avatar_url}}" /> {{createLink}}
-
-													</span>
-														<span class="issue-labels">
-															{{#if labels.length}}
-																{{#each labels}}
-																	<span class="label" style="background-color: #{{color}}">{{name}}</span>
-																{{/each}}
-															{{else}}
-																<span class="label label-info">Issue</span>
-															{{/if}}
-														</span>
-													<span class="pull-meta"><span class="from-user">{{this.fromUser}}</span><span class="create-date" title="{{this.createDate}}">{{this.timeAgo}}</span></span>
+													{{> pullInfo}}
+													{{> pullLabels}}
+													{{> pullMeta}}
 												</li>
 											{{/if}}
 										{{/each}}
