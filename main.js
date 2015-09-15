@@ -378,6 +378,7 @@ $(document).ready(
 		var loadPullsTask = debounce(loadPulls, REFRESH_TIME);
 
 		window.loadPullsTask = loadPullsTask;
+		window.loadPulls = loadPulls;
 
 		var init = function() {
 			var token = settings.val('token');
