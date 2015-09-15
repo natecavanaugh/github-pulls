@@ -375,7 +375,7 @@ $(document).ready(
 			}
 		);
 
-		var loadPullsTask = debounce(loadPulls, REFRESH_TIME);
+		var loadPullsTask = _.debounce(loadPulls, REFRESH_TIME);
 
 		window.loadPullsTask = loadPullsTask;
 		window.loadPulls = loadPulls;
@@ -483,88 +483,3 @@ $(document).ready(
 			}
 		);
 });
-
-// Temporarily adding debounce until Lodash 3 is published, in order to support cancelling a debounced function
-
-var isArray = _.isArray;
-var isString = _.isString;
-var isUndefined = _.isUndefined;
-
-var DEFAULT_ARGS = [];
-
-var toArray = function(arr, fallback, index) {
-	return !isUndefined(arr) ? _.toArray(arr).slice(index || 0) : fallback;
-};
-
-function debounce(fn, delay, context, args) {
-	var id;
-	var tempArgs;
-
-	if (isString(fn) && context) {
-		fn = _.bindKey(context, fn);
-	}
-
-	delay = delay || 0;
-
-	args = toArray(arguments, DEFAULT_ARGS, 3);
-
-	var clearFn = function() {
-		clearInterval(id);
-
-		id = null;
-	};
-
-	var base = function() {
-		clearFn();
-
-		var result = fn.apply(context, tempArgs || args || DEFAULT_ARGS);
-
-		tempArgs = null;
-
-		return result;
-	};
-
-	var delayFn = function(delayTime, newArgs, newContext, newFn) {
-		wrapped.cancel();
-
-		delayTime = !isUndefined(delayTime) ? delayTime : delay;
-
-		fn = newFn || fn;
-		context = newContext || context;
-
-		if (newArgs != args) {
-			tempArgs = toArray(newArgs, DEFAULT_ARGS, 0, false).concat(args);
-		}
-
-		if (delayTime > 0) {
-			id = setInterval(base, delayTime);
-		}
-		else {
-			return base();
-		}
-	};
-
-	var cancelFn = function() {
-		if (id) {
-			clearFn();
-		}
-	};
-
-	var setDelay = function(delay) {
-		cancelFn();
-
-		delay = delay || 0;
-	};
-
-	var wrapped = function() {
-		var currentArgs = arguments.length ? arguments : args;
-
-		return wrapped.delay(delay, currentArgs, context || this);
-	};
-
-	wrapped.cancel = cancelFn;
-	wrapped.delay = delayFn;
-	wrapped.setDelay = setDelay;
-
-	return wrapped;
-}
