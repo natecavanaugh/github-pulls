@@ -218,6 +218,7 @@ gulp.task(
 
 gulp.task(
 	'build:watch',
+	['scss', 'build:update'],
 	function(done) {
 		getAppPath(
 			function(destination) {
