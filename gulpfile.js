@@ -239,6 +239,8 @@ gulp.task(
 	}
 );
 
+gulp.task('watch', ['build:watch']);
+
 gulp.task(
 	'scss',
 	function() {
