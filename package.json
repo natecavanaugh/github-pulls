@@ -1,7 +1,21 @@
 {
   "name": "github-pulls",
-  "main": "main.js",
+  "productName": "Github Pulls",
   "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register --recursive --require ./test/setup.js test/**/*.spec.js",
+    "test-watch": "npm test -- --watch",
+    "test-e2e": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register --require ./test/setup.js --require co-mocha ./test/e2e.js",
+    "lint": "eslint app test *.js",
+    "hot-server": "node server.js",
+    "build": "cross-env NODE_ENV=production webpack --config webpack.config.production.js --progress --profile --colors",
+    "start": "cross-env NODE_ENV=production electron ./",
+    "start-hot": "cross-env HOT=1 NODE_ENV=development electron ./",
+    "package": "cross-env NODE_ENV=production node package.js",
+    "package-all": "npm run package -- --all",
+    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json"
+  },
   "bin": {
     "electron": "./node_modules/.bin/electron"
   },
@@ -19,19 +33,6 @@
     "url": "https://github.com/natecavanaugh/github-pulls/issues"
   },
   "homepage": "https://github.com/natecavanaugh/github-pulls#readme",
-  "scripts": {
-    "test": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register --recursive --require ./test/setup.js test/**/*.spec.js",
-    "test-watch": "npm test -- --watch",
-    "test-e2e": "cross-env NODE_ENV=test mocha --compilers js:babel-core/register --require ./test/setup.js --require co-mocha ./test/e2e.js",
-    "lint": "eslint app test *.js",
-    "hot-server": "node server.js",
-    "build": "cross-env NODE_ENV=production webpack --config webpack.config.production.js --progress --profile --colors",
-    "start": "cross-env NODE_ENV=production electron ./",
-    "start-hot": "cross-env HOT=1 NODE_ENV=development electron ./",
-    "package": "cross-env NODE_ENV=production node package.js",
-    "package-all": "npm run package -- --all",
-    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json"
-  },
   "devDependencies": {
     "asar": "^0.9.0",
     "babel-core": "^6.3.26",
