@@ -8,12 +8,14 @@ To download, just go to the [Releases](https://github.com/natecavanaugh/github-p
 
 #Building locally
 
-You can now build locally using gulp. Make sure you have gulp installed globally (`npm -g install gulp`), and from the root of this project, run:
-`npm install`.
-Once the dependencies are all installed, you can run a few different tasks:
+This branch has changed to using Electron and Redux with React (using the [Electon React Boilerplate](https://github.com/chentsulin/electron-react-boilerplate) setup).
 
-To just build the file, run: `gulp build`.
-To build, and install the Application, run: `gulp build:install`
-If you'd like to modify the files, and have it update on the fly, you can do: `gulp build:watch`
+To build locally, follow the following steps:
+1. Run `npm install` from the root of the project
+2. Create two terminal tabs/windows/panes into the directory
+3. In the first, run `npm run hot-server`
+4. In the second, run `npm run start-hot`
 
-Note: *This currently only works on the mac, still need to add build/deploy functionality for Windows/Linux, though if you're running locally, you could modify the build task to add build support for Linux and Windows*
+I ideally want to eliminate the multiple window requirement (or at least reduce it).
+
+I'll flush this out more soon :)
