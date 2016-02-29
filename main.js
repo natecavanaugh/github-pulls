@@ -11,13 +11,11 @@ let menu;
 let template;
 let mainWindow = null;
 
-
 crashReporter.start();
 
 if (process.env.NODE_ENV === 'development') {
   require('electron-debug')();
 }
-
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
@@ -65,9 +63,9 @@ app.on('ready', function() {
 
   if (process.platform === 'darwin') {
     template = [{
-      label: 'Electron',
+      label: 'Github Pulls',
       submenu: [{
-        label: 'About Electron React',
+        label: 'About Github Pulls',
         selector: 'orderFrontStandardAboutPanel:'
       }, {
         type: 'separator'
@@ -77,7 +75,7 @@ app.on('ready', function() {
       }, {
         type: 'separator'
       }, {
-        label: 'Hide ElectronReact',
+        label: 'Hide Github Pulls',
         accelerator: 'Command+H',
         selector: 'hide:'
       }, {
@@ -127,7 +125,7 @@ app.on('ready', function() {
       }]
     }, {
       label: 'View',
-      submenu: (process.env.NODE_ENV === 'development') ? [{
+      submenu: [{
         label: 'Reload',
         accelerator: 'Command+R',
         click() {
@@ -144,12 +142,6 @@ app.on('ready', function() {
         accelerator: 'Alt+Command+I',
         click() {
           mainWindow.toggleDevTools();
-        }
-      }] : [{
-        label: 'Toggle Full Screen',
-        accelerator: 'Ctrl+Command+F',
-        click() {
-          mainWindow.setFullScreen(!mainWindow.isFullScreen());
         }
       }]
     }, {
