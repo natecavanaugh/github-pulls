@@ -4,15 +4,25 @@
 const path = require('path');
 
 module.exports = {
+  sassLoader: {
+    includePaths: require('node-bourbon').includePaths
+  },
   module: {
-    loaders: [{
-      test: /\.jsx?$/,
-      loaders: ['babel-loader'],
-      exclude: /node_modules/
-    }, {
-      test: /\.json$/,
-      loader: 'json-loader'
-    }]
+    loaders: [
+      {
+        test: /\.jsx?$/,
+        loaders: ['babel-loader'],
+        exclude: /node_modules/
+      },
+      {
+        test: /\.json$/,
+        loader: 'json-loader'
+      },
+      {
+        test: /\.scss$/,
+        loaders: ['style', 'css', 'sass?includePaths[]=' + require('node-bourbon').includePaths]
+      }
+    ]
   },
   output: {
     path: path.join(__dirname, 'dist'),

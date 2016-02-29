@@ -26,10 +26,6 @@ config.module.loaders.push({
     'css-loader?sourceMap'
   ]
 },
-  {
-    test: /\.scss$/,
-    loaders: ['style', 'css', 'sass?includePaths[]=' + require('node-bourbon').includePaths]
-  },
 {
   test: /\.module\.css$/,
   loaders: [
@@ -37,10 +33,6 @@ config.module.loaders.push({
     'css-loader?modules&sourceMap&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!'
   ]
 });
-
-config.sassLoader = {
-  includePaths: require('node-bourbon').includePaths
-};
 
 config.plugins.push(
   new webpack.HotModuleReplacementPlugin(),
