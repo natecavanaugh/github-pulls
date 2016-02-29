@@ -3,8 +3,8 @@ import { persistState } from 'redux-devtools';
 import thunk from 'redux-thunk';
 import rootReducer from '../reducers';
 import DevTools from '../containers/DevTools';
-import routes from '../routes'
-import { reduxReactRouter } from 'redux-router'
+import routes from '../routes';
+import { reduxReactRouter } from 'redux-router';
 import { createHashHistory as createHistory } from 'history';
 import api from '../middleware/api';
 import login from '../middleware/login';
