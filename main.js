@@ -11,7 +11,12 @@ let menu;
 let template;
 let mainWindow = null;
 
-crashReporter.start();
+crashReporter.start({
+  productName: 'Github Pulls',
+  companyName: 'Liferay',
+  submitURL: 'https://your-domain.com/url-to-submit',
+  autoSubmit: true
+});
 
 if (process.env.NODE_ENV === 'development') {
   require('electron-debug')();
