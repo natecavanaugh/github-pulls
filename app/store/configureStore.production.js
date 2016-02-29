@@ -11,7 +11,6 @@ import pulls from '../middleware/pulls';
 const enhancer = compose(
   applyMiddleware(thunk, login, pulls, api),
   reduxReactRouter({ routes, createHistory })
-  )
 );
 
 export default function configureStore(initialState) {
