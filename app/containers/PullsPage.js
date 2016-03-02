@@ -53,14 +53,14 @@ class PullsPage extends Component {
 		var configModal = null;
 
 		if (props.loading && !Object.keys(props.repos).length) {
-			loader = <div className="loader">Loading...</div>;
+			loader = <div className="loader"></div>;
 		}
 
 		if (props.router.location.pathname === '/config') {
 			configModal = <Config {...props} />;
 		}
 
-		var cssClass = 'app-container app-column display-compactz ' + (props.loading ? 'loading' : 'loaded');
+		var cssClass = 'app-container app-column container-fluid-1280 display-compactz ' + (props.loading ? 'loading' : 'loaded');
 
 		return <div className={cssClass}>
 			<AccountBar {...props} />
@@ -82,7 +82,9 @@ function mapStateToProps(state) {
 
 	var total = Object.keys(issues || {}).length;
 
-  return { repos, issues, total, avatar, ...state};
+	console.log(username);
+
+  return { repos, issues, total, username, avatar, ...state};
 }
 
 // function mapDispatchToProps(dispatch) {

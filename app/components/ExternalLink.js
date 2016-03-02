@@ -13,6 +13,6 @@ export default class ExternalLink extends React.Component {
 
 		var title = props.children || props.title;
 
-		return <a key={props.key} href={props.href} onClick={this.handleOnClick}>{title}</a>;
+		return <a {...props} onClick={this.handleOnClick}>{title}</a>;
 	}
 }

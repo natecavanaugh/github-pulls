@@ -2,28 +2,29 @@ import React from 'react';
 import { Link } from 'react-router';
 
 import ExternalLink from './ExternalLink';
+import Icon from './Icon';
 
 class AccountBar extends React.Component {
 	render() {
 		var props = this.props;
 
 		return <div className="account-bar" id="accountBar">
-			<div className="app-column">
+			<div className="app-column container-fluid-1280">
 				<span className="user-info">
-					<ExternalLink href={'http://github.com/' + props.username}>
-						<img src={props.avatar} />
+					<ExternalLink className="user-icon" href={'http://github.com/' + props.username}>
+						<img className="img-responsive" src={props.avatar} />
 					</ExternalLink> {' '}
 					<ExternalLink href={'http://github.com/' + props.username} title={props.username} />
-
+					{' '}
 					<a href="javascript:;" onClick={() => props.openConfig()}>
-						<i className='fa fa-cog' />
+						<Icon name="cog" />
 					</a>
 				</span>
 
 				<span className="app-title">Github Pulls <span className="pull-count">{props.total}</span></span>
 
 				<a className="logout" href="javascript:;" onClick={() => props.logoutAndRedirect()}>
-					<i className='fa fa-power-off' /> Logout
+					<Icon name="logout" /> Logout
 				</a>
 			</div>
 

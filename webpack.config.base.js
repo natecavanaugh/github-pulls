@@ -2,10 +2,15 @@
 'use strict';
 
 const path = require('path');
+const webpack = require('webpack');
+
+let includePaths = [].concat(require('node-bourbon').includePaths);
+
+includePaths.push(path.resolve(__dirname, './bower_components'));
 
 module.exports = {
   sassLoader: {
-    includePaths: require('node-bourbon').includePaths
+    includePaths: includePaths
   },
   module: {
     loaders: [
@@ -20,7 +25,11 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loaders: ['style', 'css', 'sass?includePaths[]=' + require('node-bourbon').includePaths]
+        loaders: ['style', 'css', 'sass']
+      },
+      {
+        test: /.(png|woff(2)?|eot|ttf|svg)(\?[a-z0-9=\.]+)?$/,
+        loader: 'url?limit=100000'
       }
     ]
   },
@@ -31,10 +40,13 @@ module.exports = {
   },
   resolve: {
     extensions: ['', '.js', '.jsx'],
-    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main']
+    packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
+    root: [path.join(__dirname, "bower_components")]
   },
   plugins: [
-
+    new webpack.ResolverPlugin(
+      new webpack.ResolverPlugin.DirectoryDescriptionFilePlugin('.bower.json', ['main'])
+    )
   ],
   externals: [
     'github-cache',

@@ -13,12 +13,12 @@ class IssueLabels extends React.Component {
 						backgroundColor: '#' + item.color
 					};
 
-					return <span key={item.name} className="label" style={style}>{item.name}</span>
+					return <span key={item.name} className="label label-sm" style={style}>{item.name}</span>
 				}
 			);
 		}
 		else {
-			labelItems = <span className="label label-info">Issue</span>;
+			labelItems = <span className="label label-sm label-info">Issue</span>;
 		}
 
 		return <span className="issue-labels">
