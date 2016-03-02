@@ -18,7 +18,9 @@ crashReporter.start({
   autoSubmit: true
 });
 
-if (process.env.NODE_ENV === 'development') {
+var NODE_ENV = process.env.NODE_ENV;
+
+if (NODE_ENV === 'development') {
   require('electron-debug')();
 }
 
@@ -26,7 +28,6 @@ app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
 });
 
-var NODE_ENV = process.env.NODE_ENV;
 app.on('ready', function() {
   var atomScreen = require('screen');
 
@@ -41,10 +42,10 @@ app.on('ready', function() {
 	var windowConfig = {
 		height: size.height,
 		resizable: true,
-		width: 700
+		width: 768
 	};
 
-	if (NODE_ENV) {
+	if (NODE_ENV === 'development') {
 		// console.log(size);
 		// Account for the devtools being open
 		windowConfig.width = Math.min(1400, size.width);
@@ -58,12 +59,14 @@ app.on('ready', function() {
     mainWindow.loadURL(`file://${__dirname}/app/app.html`);
   }
 
+  var webContents = mainWindow.webContents;
+
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
 
-  if (process.env.NODE_ENV === 'development') {
-    mainWindow.openDevTools();
+  if (NODE_ENV === 'development') {
+    webContents.openDevTools();
   }
 
   if (process.platform === 'darwin') {
@@ -146,7 +149,14 @@ app.on('ready', function() {
         label: 'Toggle Developer Tools',
         accelerator: 'Alt+Command+I',
         click() {
-          mainWindow.toggleDevTools();
+          if (webContents.isDevToolsOpened()) {
+            webContents.closeDevTools();
+          }
+          else {
+            webContents.openDevTools({
+              detach: true
+            });
+          }
         }
       }]
     }, {
@@ -207,7 +217,7 @@ app.on('ready', function() {
       }]
     }, {
       label: '&View',
-      submenu: (process.env.NODE_ENV === 'development') ? [{
+      submenu: [{
         label: '&Reload',
         accelerator: 'Ctrl+R',
         click() {
@@ -223,13 +233,7 @@ app.on('ready', function() {
         label: 'Toggle &Developer Tools',
         accelerator: 'Alt+Ctrl+I',
         click() {
-          mainWindow.toggleDevTools();
-        }
-      }] : [{
-        label: 'Toggle &Full Screen',
-        accelerator: 'F11',
-        click() {
-          mainWindow.setFullScreen(!mainWindow.isFullScreen());
+          webContents.toggleDevTools();
         }
       }]
     }, {
