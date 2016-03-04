@@ -16,7 +16,7 @@ var PullRequest = React.createClass(
 
 			return <li className="pull">
 					<span className="pull-info">
-						<img className="avatar" src={item.user.avatarUrl} title={item.user.login} />
+						<img className="avatar img-circle" src={item.user.avatarUrl} title={item.user.login} />
 						<PullRequestLink item={item} />
 					</span>
 					{issueLabels}

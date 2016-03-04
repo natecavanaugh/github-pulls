@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Branch from './Branch';
+import Icon from './Icon';
 
 export class Repo extends React.Component {
 	state = {
@@ -23,27 +24,27 @@ export class Repo extends React.Component {
 		var branchPulls = item.branchPulls;
 		var branches = Object.keys(branchPulls);
 
-		var cssClass = 'repo';
-		var iconCssClass = 'fa-toggle-down';
+		var cssClass = 'repo card';
+		var iconName = 'angle-down';
 
 		if (this.state.collapsed) {
 			cssClass += ' repo-collapsed';
-			iconCssClass = 'fa-toggle-right';
+			iconName = 'angle-right';
 		}
 
 		return <div className={cssClass}>
-				<h2><span className="repo-name">{item.name}</span> <span className="pull-count">{item.total}</span></h2>
+				<h2 className="card-header" onClick={this.handleCollapseClick}><span className="repo-name">{item.name}</span> <span className="pull-count">{item.total}</span></h2>
 
 				<ul className="list-unstyled repo-branches">
 					{branches.map(function(item, index) {
 						var branch = branchPulls[item];
-// console.log(branch);
+
 						return <Branch key={item + 'branch'} {...props} item={branch} title={item} />
 					})}
 				</ul>
-				<span className="collapse-icon" onClick={this.handleCollapseClick}>
-					<span className={`fa ${iconCssClass}`}></span>
-				</span>
+				{/*<span className="collapse-icon">
+									<Icon name={iconName} />
+								</span>*/}
 		</div>;
 	}
 }

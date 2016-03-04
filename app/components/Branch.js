@@ -15,10 +15,10 @@ var Branch = React.createClass(
 				}
 			);
 
-			return <li className="pulls-branch">
-					<b className="property-title">{props.title}</b>
+			return <li className="pulls-branch list-group">
+					<b className="list-group-heading property-title">{props.title}</b>
 
-					<ul className="list-unstyled pulls">
+					<ul className="list-unstyled pulls list-group-item">
 						<ReactCSSTransitionGroup transitionName="pull" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
 							{pullRequests}
 						</ReactCSSTransitionGroup>

@@ -82,8 +82,6 @@ function mapStateToProps(state) {
 
 	var total = Object.keys(issues || {}).length;
 
-	console.log(username);
-
   return { repos, issues, total, username, avatar, ...state};
 }
 
