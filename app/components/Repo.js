@@ -3,7 +3,7 @@ import React from 'react';
 import Branch from './Branch';
 import Icon from './Icon';
 
-export class Repo extends React.Component {
+export default class Repo extends React.Component {
 	constructor(props, context) {
 		super(props, context);
 
@@ -48,5 +48,3 @@ export class Repo extends React.Component {
 		</div>;
 	}
 }
-
-module.exports = Repo;
