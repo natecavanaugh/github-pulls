@@ -215,7 +215,7 @@ body {
 
 .property-title {
 	// font-size: 1.1em;
-	font-weight: 300;
+	// font-weight: 300;
 }
 
 .pull-count {
@@ -443,11 +443,13 @@ body.loaded.loading .account-bar .app-title {
 	}
 
 	> h2 {
+		background-color: #869CAD;
+		color: #FFF;
 		cursor: pointer;
-		font-size: 24px;
+		font-size: 22px;
 		line-height: 48px;
 		padding: 16px;
-		padding-top: 8px;
+		padding-top: 0px;
 		margin: 0;
 		padding-bottom: 0;
 

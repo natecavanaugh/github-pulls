@@ -1,6 +1,6 @@
 import React from 'react';
 
-class IssueLabels extends React.Component {
+export default class IssueLabels extends React.Component {
 	render() {
 		var labels = this.props.labels;
 
@@ -30,5 +30,3 @@ class IssueLabels extends React.Component {
 IssueLabels.defaultProps = {
 	labels: []
 };
-
-export default IssueLabels;

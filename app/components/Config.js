@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import Modal from './Modal';
+import Icon from './Icon';
 import AutoForm from 'react-auto-form';
 import _ from 'lodash';
 
@@ -131,8 +132,8 @@ class Config extends Component {
 		return <div key={'configRepos' + index} className={groupClass}>
 			<input className="form-control" id={"repos" + index} name="repos" onBlur={(event) => this.handleBlur(event, index)} onChange={(event) => this.handleChange(event, index)} onPaste={(event) => this.handlePaste(event, index)} placeholder="e.g. natecavanaugh/github-pulls" ref={"repos" + index} value={item}  />
 			<div className="input-group-btn">
-				<button aria-label="Remove" className={btnClass} onClick={(event) => this.removeField(event, index)} type="button"><span className="fa fa-minus"></span></button>
-				<button aria-label="Add" className={btnClass} disabled={disabled}  onClick={this.addField} type="button"><span className="fa fa-plus"></span></button>
+				<button aria-label="Remove" className={btnClass} onClick={(event) => this.removeField(event, index)} type="button"><Icon name="hr" /></button>
+				<button aria-label="Add" className={btnClass} disabled={disabled}  onClick={this.addField} type="button"><Icon name="plus" /></button>
 			</div>
 		</div>;
 	}

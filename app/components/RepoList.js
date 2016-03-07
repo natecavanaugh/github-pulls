@@ -12,11 +12,12 @@ export class RepoList extends React.Component {
 		var props = this.props;
 
 		var result = props.repos || {};
+		var collapsedMap = props.config.collapsed;
 
 		var repos = _.map(
 			result,
 			function(item, index) {
-				return <Repo key={item.name + 'repo' + index} {...props} item={item} />
+				return <Repo key={item.name + 'repo' + index} {...props} collapsed={!!collapsedMap[item.path]} item={item} />
 			}
 		);
 

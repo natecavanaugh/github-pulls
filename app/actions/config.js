@@ -72,6 +72,22 @@ export function saveConfig(fields) {
 	};
 }
 
+export function collapseRepo(path, collapsed) {
+	return (dispatch, state) => {
+		var userConfig = getUserConfig();
+
+		var config = {
+			collapsed: {
+				[path]: collapsed
+			}
+		};
+
+		userConfig.val(_.merge(userConfig.load(), config));
+
+		dispatch(configSave(config));
+	}
+};
+
 // export function addRepo(fields) {
 // 	return {
 // 		type: CONFIG_ADD_REPO

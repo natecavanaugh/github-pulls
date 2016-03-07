@@ -64,7 +64,7 @@ class PullsPage extends Component {
 
 		return <div className={cssClass}>
 			<AccountBar {...props} />
-			<RepoList repos={props.repos} issues={props.issues} />
+			<RepoList {...props} repos={props.repos} issues={props.issues} />
 			{configModal}
 			{loader}
 		</div>;

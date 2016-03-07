@@ -21,7 +21,7 @@ class AccountBar extends React.Component {
 					</a>
 				</span>
 
-				<span className="app-title">Github Pulls <span className="pull-count">{props.total}</span></span>
+				<span className="app-title">Github Pulls <span className="badge badge-primary badge-sm">{props.total}</span></span>
 
 				<a className="logout" href="javascript:;" onClick={() => props.logoutAndRedirect()}>
 					<Icon name="logout" /> Logout

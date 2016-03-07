@@ -1,29 +1,39 @@
-var React = require('react');
+import React from 'react';
 
-var PullRequestLink = require('./PullRequestLink');
-var IssueLabels = require('./IssueLabels');
+import PullRequestLink from './PullRequestLink';
+import IssueLabels from './IssueLabels';
 
-var PullRequest = React.createClass(
-	{
-		render: function() {
-			var item = this.props.item;
+export default class PullRequest extends React.Component {
+	constructor(props, context) {
+		super(props, context);
 
-			var issueLabels;
-
-			if (!item.pullRequest) {
-				issueLabels = <IssueLabels labels={item.labels} />;
-			}
-
-			return <li className="pull">
-					<span className="pull-info">
-						<img className="avatar img-circle" src={item.user.avatarUrl} title={item.user.login} />
-						<PullRequestLink item={item} />
-					</span>
-					{issueLabels}
-				<span className="pull-meta"><span className="from-user">{item.fromUser}</span><span className="create-date" title={item.createDate}>{item.timeAgo}</span></span>
-			</li>;
-		},
+		this.handleDrag = this.handleDrag.bind(this);
 	}
-);
 
-module.exports = PullRequest;
+	handleDrag(e) {
+		var {item} = this.props;
+
+		if (item.pullRequest) {
+			e.dataTransfer.setData('text/plain', `git pr ${item.number}`);
+		}
+	}
+
+	render() {
+		var item = this.props.item;
+
+		var issueLabels;
+
+		if (!item.pullRequest) {
+			issueLabels = <IssueLabels labels={item.labels} />;
+		}
+
+		return <li onDragStart={this.handleDrag} className="pull">
+				<span className="pull-info">
+					<img className="avatar img-circle" src={item.user.avatarUrl} title={item.user.login} />
+					<PullRequestLink item={item} />
+				</span>
+				{issueLabels}
+			<span className="pull-meta"><span className="from-user">{item.fromUser}</span><span className="create-date" title={item.createDate}>{item.timeAgo}</span></span>
+		</li>;
+	}
+}

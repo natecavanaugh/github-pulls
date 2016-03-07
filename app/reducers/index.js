@@ -7,7 +7,7 @@ import { PULLS_REQUEST, PULLS_SUCCESS, PULLS_FAILURE } from '../actions/pulls';
 
 import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_COMPLETE, LOGIN_FAILURE, LOGOUT } from '../actions/login';
 
-import { CONFIG_OPEN, CONFIG_SAVE, CONFIG_CLOSE, CONFIG_LOAD } from '../actions/config';
+import { CONFIG_OPEN, CONFIG_SAVE, CONFIG_CLOSE, CONFIG_LOAD, CONFIG_REPO_COLLAPSE } from '../actions/config';
 
 const rootReducer = combineReducers({
 	entities: function(state = {repos: {}, issues: {}, result: []}, action) {
@@ -26,16 +26,16 @@ const rootReducer = combineReducers({
 
 		return state;
 	},
-	config: function(state = {repos: []}, action) {
+	config: function(state = {repos: [], collapsed: {}}, action) {
 		switch (action.type) {
 			case CONFIG_OPEN:
 			case CONFIG_SAVE:
 			// case CONFIG_CLOSE:
 			case CONFIG_LOAD:
-				var newState = _.assign({}, state, action.config);
+				var newState = _.merge({}, state, action.config);
 
 				// _.defaults(newState, {repos: []});
-				console.log(action.type, newState, action, action.config);
+				// console.log(action.type, newState, action, action.config);
 
 				return newState;
 			default:

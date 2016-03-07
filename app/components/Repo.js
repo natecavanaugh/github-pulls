@@ -4,10 +4,6 @@ import Branch from './Branch';
 import Icon from './Icon';
 
 export class Repo extends React.Component {
-	state = {
-		collapsed: false
-	};
-
 	constructor(props, context) {
 		super(props, context);
 
@@ -15,7 +11,12 @@ export class Repo extends React.Component {
 	}
 
 	handleCollapseClick(event) {
-		this.setState({collapsed: !this.state.collapsed});
+		let {item: {path}, config: {collapsed}} = this.props;
+
+		this.props.collapseRepo(
+			path,
+			!collapsed[path]
+		);
 	}
 
 	render() {
@@ -27,13 +28,15 @@ export class Repo extends React.Component {
 		var cssClass = 'repo card';
 		var iconName = 'angle-down';
 
-		if (this.state.collapsed) {
+		if (props.collapsed) {
 			cssClass += ' repo-collapsed';
 			iconName = 'angle-right';
 		}
 
+		// console.log(item.path, props.saveConfig);
+
 		return <div className={cssClass}>
-				<h2 className="card-header" onClick={this.handleCollapseClick}><span className="repo-name">{item.name}</span> <span className="pull-count">{item.total}</span></h2>
+				<h2 className="card-header" onClick={this.handleCollapseClick}><span className="repo-name">{item.name}</span> <span className="badge badge-primary">{item.total}</span></h2>
 
 				<ul className="list-unstyled repo-branches">
 					{branches.map(function(item, index) {
@@ -42,9 +45,6 @@ export class Repo extends React.Component {
 						return <Branch key={item + 'branch'} {...props} item={branch} title={item} />
 					})}
 				</ul>
-				{/*<span className="collapse-icon">
-									<Icon name={iconName} />
-								</span>*/}
 		</div>;
 	}
 }
