@@ -1,4 +1,5 @@
 import React, {Component, PropTypes} from 'react';
+import Icon from './Icon';
 
 export default class Login extends Component {
 	constructor(props, context) {
@@ -32,7 +33,7 @@ export default class Login extends Component {
 	render() {
 		var props = this.props;
 
-		let {loginErrors, loading} = props;
+		let {loginErrors, loading, online} = props;
 
 		var {errors} = loginErrors;
 
@@ -42,9 +43,14 @@ export default class Login extends Component {
 			loginErrorsEl = <div className="alert alert-danger" id="loginErrors">{errors}</div>;
 		}
 
-		return <div className={'container login ' + (loading ? 'loading' : '')}>
+		var cssClass = 'app-container login';
+
+		cssClass += props.loading ? ' loading' : ' loaded';
+		cssClass += !props.online ? ' status-offline' : '';
+
+		return <div className={cssClass}>
 			<form action="" id="fm" onSubmit={this.handleSubmit.bind(this)}>
-				<h1 id="pullsTitle">Github Pulls <span className="status-icon glyphicon glyphicon-exclamation-sign"></span></h1>
+				<h1 id="pullsTitle">Github Pulls <Icon className="status-icon" name="exclamation-circle" /></h1>
 
 				{loginErrorsEl}
 

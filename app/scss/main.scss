@@ -128,15 +128,13 @@ body {
 		font-size: 14px;
 	}
 
-	&.loaded.status-offline > h1 .status-icon {
+	&.loaded.status-offline #pullsTitle .status-icon {
 		display: inline-block;
-		margin: 16px 0;
+		margin: 0;
 		float: right;
+		height: 1em;
+		width: 1em;
 	}
-
-	// &.loaded {
-	// 	padding-top: 70px;
-	// }
 }
 
 .error-status .lexicon-icon {
@@ -437,6 +435,8 @@ body.loaded.loading .account-bar .app-title {
 		// background-image: linear-gradient(to top, #EFEFEF 10%, #FFF);
 		// background-color: #EFEFEF;
 
+		margin-bottom: 0;
+
 		> h2 {
 			line-height: 42px;
 			opacity: 0.8;
@@ -470,10 +470,12 @@ body.loaded.loading .account-bar .app-title {
 		}
 
 		& {
+			// transform: scale(0.98);
 			transform: perspective(50em) scale(0.98) rotateX(-15deg);
 			// z-index: 100;
 
 			&:hover {
+				// transform: scale(0.98) translateY(-15px);
 				transform: perspective(50em) scale(0.98) rotateX(0) translateY(-15px);
 
 				.repo-branches {
@@ -496,8 +498,9 @@ body.loaded.loading .account-bar .app-title {
 		}
 
 		&, & + .repo:not(.repo-collapsed) {
+			margin-top: 0;
 			// border: 1px solid blue;
-			margin-top: -10px;
+			// margin-top: -10px;
 			// box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
 			// 			0 2px 10px 0 rgba(0, 0, 0, 0.12),
 			// 			0 -7px 10px 0 rgba(0, 0, 0, 0.1);

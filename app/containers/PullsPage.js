@@ -15,7 +15,7 @@ class PullsPage extends Component {
 	componentWillReceiveProps(nextProps) {
 		clearTimeout(this.timeout);
 
-		if (!nextProps.loading) {
+		if (!nextProps.loading && nextProps.online) {
 			this._loadPullsTask();
 		}
 	}
@@ -48,7 +48,10 @@ class PullsPage extends Component {
 			configModal = <Config {...props} />;
 		}
 
-		var cssClass = 'app-container app-column container-fluid-1280 display-compactz ' + (props.loading ? 'loading' : 'loaded');
+		var cssClass = 'app-container app-column container-fluid-1280 display-compactz';
+
+		cssClass += (props.loading ? ' loading' : ' loaded');
+		cssClass += (!props.online ? ' status-offline' : '');
 
 		var listContent = null;
 
@@ -56,7 +59,7 @@ class PullsPage extends Component {
 			listContent = <RepoList {...props} repos={props.repos} issues={props.issues} />;
 		}
 		else {
-			listContent = <ErrorMsg {...props.pageError} />;
+			listContent = <ErrorMsg {...props.pageError} loadPulls={props.loadPulls} />;
 		}
 
 		return <div className={cssClass}>
