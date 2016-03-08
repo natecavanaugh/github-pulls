@@ -1,12 +1,13 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component} from 'react';
 import Modal from './Modal';
 import Icon from './Icon';
 import AutoForm from 'react-auto-form';
 import _ from 'lodash';
 
 const REGEX_VALID_REPO_BASE = /([^\W_](?:[\w\-]+|[^\W_])?\/[\w\-.]+?)/;
-// const REGEX_VALID_REPO_BASE = /([^\W_][\w\-]+[A-Za-z0-9][^\W_]\/[\w\-.]+?)/;
+
 const REGEX_VALID_REPO = new RegExp(`^${REGEX_VALID_REPO_BASE.source}$`);
+
 const REGEX_GITHUB_REPO = new RegExp(`(?:^((?:git@|https:\/\/)?(?:github.com[\/:]))?|^)${REGEX_VALID_REPO_BASE.source}(?:$|(\.git)?$)`);
 
 class Config extends Component {
@@ -14,27 +15,27 @@ class Config extends Component {
 		super(props, context);
 
 		this.state = {
-			repos: [...props.config.repos, ''],
-			errorFields: {}
+			errorFields: {},
+			repos: [...props.config.repos, '']
 		};
 
 		this.addField = this.addField.bind(this);
-		this.removeField = this.removeField.bind(this);
 		this.createRepos = this.createRepos.bind(this);
 		this.handleBlur = this.handleBlur.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
+		this.removeField = this.removeField.bind(this);
 	}
 
 	componentDidUpdate(prevProps, prevState) {
 		if (this.state.focusLastField) {
 			this.focusLastField();
+
 			this.setState({focusLastField: false});
 		}
-		// console.log(prevState.repos === this.state.repos);
 	}
 
 	clearError(index) {
-		var { errorFields, errorMsg } = this.state;
+		var {errorFields, errorMsg} = this.state;
 
 		delete errorFields[index];
 
@@ -42,11 +43,11 @@ class Config extends Component {
 			errorMsg = null;
 		}
 
-		this.setState({ errorFields, errorMsg });
+		this.setState({errorFields, errorMsg});
 	}
 
 	setError(index) {
-		var { errorFields, errorMsg } = this.state;
+		var {errorFields, errorMsg} = this.state;
 
 		if (_.isObject(index)) {
 			_.merge(errorFields, index);
@@ -59,7 +60,7 @@ class Config extends Component {
 			errorMsg = 'One or more of your fields has an error.';
 		}
 
-		this.setState({ errorFields, errorMsg });
+		this.setState({errorFields, errorMsg});
 	}
 
 	getInput(index) {
@@ -67,7 +68,7 @@ class Config extends Component {
 	}
 
 	focusLastField() {
-		var { repos } = this.state;
+		var {repos} = this.state;
 
 		var lastIndex = repos.length - 1;
 
@@ -79,7 +80,7 @@ class Config extends Component {
 	}
 
 	addField(event) {
-		var { repos } = this.state;
+		var {repos} = this.state;
 
 		var length = repos.length;
 		var lastIndex = length - 1;
@@ -92,13 +93,11 @@ class Config extends Component {
 			this.clearError(lastIndex);
 		}
 
-		this.setState({ repos, focusLastField: true  });
-
-		// this.focusLastField();
+		this.setState({focusLastField: true, repos});
 	}
 
 	removeField(event, index) {
-		var { repos } = this.state;
+		var {repos} = this.state;
 
 		repos.splice(index, 1);
 
@@ -108,20 +107,18 @@ class Config extends Component {
 			repos.push('');
 		}
 
-		// this.focusLastField();
-
-		this.setState({ repos, focusLastField: true });
+		this.setState({focusLastField: true, repos});
 	}
 
 	createRepos(item, index, coll) {
 		var hasError = this.state.errorFields[index] === true;
 
-		var groupClass = 'input-group ';
 		var btnClass = 'btn btn-';
+		var groupClass = 'input-group ';
 
 		if (hasError) {
-			groupClass += 'has-error';
 			btnClass += 'danger';
+			groupClass += 'has-error';
 		}
 		else {
 			btnClass += 'default';
@@ -130,16 +127,16 @@ class Config extends Component {
 		var disabled = !item;
 
 		return <div key={'configRepos' + index} className={groupClass}>
-			<input className="form-control" id={"repos" + index} name="repos" onBlur={(event) => this.handleBlur(event, index)} onChange={(event) => this.handleChange(event, index)} onPaste={(event) => this.handlePaste(event, index)} placeholder="e.g. natecavanaugh/github-pulls" ref={"repos" + index} value={item}  />
+			<input className="form-control" id={'repos' + index} name="repos" onBlur={(event) => this.handleBlur(event, index)} onChange={(event) => this.handleChange(event, index)} onPaste={(event) => this.handlePaste(event, index)} placeholder="e.g. natecavanaugh/github-pulls" ref={'repos' + index} value={item} />
 			<div className="input-group-btn">
 				<button aria-label="Remove" className={btnClass} onClick={(event) => this.removeField(event, index)} type="button"><Icon name="hr" /></button>
-				<button aria-label="Add" className={btnClass} disabled={disabled}  onClick={this.addField} type="button"><Icon name="plus" /></button>
+				<button aria-label="Add" className={btnClass} disabled={disabled} onClick={this.addField} type="button"><Icon name="plus" /></button>
 			</div>
 		</div>;
 	}
 
 	handleBlur(event, index) {
-		var { repos, errorFields } = this.state;
+		var {repos} = this.state;
 
 		var value = event.target.value.trim();
 
@@ -152,13 +149,11 @@ class Config extends Component {
 
 			clearError = true;
 		}
+		else if (value) {
+			this.setError(index);
+		}
 		else {
-			if (value) {
-				this.setError(index);
-			}
-			else {
-				clearError = true;
-			}
+			clearError = true;
 		}
 
 		if (clearError) {
@@ -169,13 +164,11 @@ class Config extends Component {
 	}
 
 	handleChange(event, index) {
-		var { repos } = this.state;
+		var {repos} = this.state;
 
 		repos[index] = event.target.value;
 
 		this.setState({repos});
-
-		// console.log('handleChange');
 	}
 
 	handlePaste(event, index) {
@@ -186,18 +179,19 @@ class Config extends Component {
 
 			var lines = data.split('\n');
 
-			// event.target.value = val;
-
-			lines = lines.reduce((prev, item) => {
-				item = item.trim();
-				if (item) {
-					prev.push(item);
-				}
-				return prev;
-			}, []);
+			lines = lines.reduce(
+				(prev, item) => {
+					item = item.trim();
+					if (item) {
+						prev.push(item);
+					}
+					return prev;
+				},
+				[]
+			);
 
 			if (lines.length) {
-				var { repos } = this.state;
+				var {repos} = this.state;
 
 				event.target.value = lines[0];
 
@@ -207,12 +201,7 @@ class Config extends Component {
 
 				repos.splice(ind, 0, ...lines);
 
-				// repos = [...lines, ...repos]
-				// repos.push(...lines);
-				// repos.push(..._.rest(lines));
-			console.log('handlePaste', repos, lines);
-
-				this.setState({repos, focusLastField: true});
+				this.setState({focusLastField: true, repos});
 			}
 
 		}
@@ -228,14 +217,16 @@ class Config extends Component {
 		var errorFields = {};
 
 		var validRepos = dataRepos.reduce(
-			function(prev, item, index) {
+			(prev, item, index) => {
 				if (item.trim()) {
 					var repo = item.replace(REGEX_GITHUB_REPO, (str, domain, baseRepo, gitExt) => baseRepo);
+
 					if (REGEX_VALID_REPO.test(repo)) {
 						prev.push(repo);
 					}
 					else {
 						prev.push(item);
+
 						errorFields[index] = true;
 					}
 				}
@@ -261,28 +252,6 @@ class Config extends Component {
 		}
 
 		this.setState({repos: validRepos});
-
-		// console.log(validRepos, errorFields, data.repos);
-
-		/*
-		// extract github username/repo
-
-		const REGEX_GITHUB_REPO = /^((?:git@|https:\/\/)?(?:github.com[\/:]))?([^\W_][\w\-]+[A-Za-z0-9][^\W_]\/[\w\-.]+?)(\.git)?$/;
-		var urls = [
-			'https://github.com/liferay/liferay-portal',
-			'https://github.com/liferay/liferay-portal.git',
-			'git@github.com:liferay/liferay-portal.git',
-			'https://github.com/liferay/liferay-portal.git',
-			'https://github.com/liferay/liferay-portal'
-		];
-		urls.every((url) => {
-			var newURL = url.replace(REGEX_GITHUB_REPO, function(str, domain, repo, gitExt){
-				return repo;
-			});
-			console.log(newURL);
-
-			return newURL === 'liferay/liferay-portal';
-		})*/
 	}
 
 	validateRepo(value) {
@@ -302,7 +271,7 @@ class Config extends Component {
 	render() {
 		var allRepos = this.state.repos.map(this.createRepos);
 
-		var { errorMsg } = this.state;
+		var {errorMsg} = this.state;
 
 		var error = null;
 

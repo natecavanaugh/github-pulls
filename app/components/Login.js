@@ -1,37 +1,32 @@
-import React, { Component, PropTypes } from 'react'
-import { Link } from 'react-router'
+import React, {Component, PropTypes} from 'react';
 
 export default class Login extends Component {
-
-	static defaultProps = {
-		message: '',
-		statusText: ''
-	};
-
-	state = {
-		username: '',
-		password: ''
-	};
-
 	constructor(props, context) {
 		super(props, context);
+
+		this.state = {
+			password: '',
+			username: ''
+		};
 	}
 
 	handleSubmit(event) {
 		event.preventDefault();
 
-		var username = this.refs.username.value;
 		var password = this.refs.password.value;
+		var username = this.refs.username.value;
 
 		if (!username || !password) {
-			this.props.loginFailure({
-				errors: 'Please enter both your username and password'
-			});
-
-			return;
+			this.props.loginFailure(
+				{
+					errors: 'Please enter both your username and password'
+				}
+			);
+		}
+		else {
+			this.props.login(username, password);
 		}
 
-		this.props.login(username, password);
 	}
 
 	render() {
@@ -63,6 +58,11 @@ export default class Login extends Component {
 		</div>;
 	}
 }
+
+Login.defaultProps = {
+	message: '',
+	statusText: ''
+};
 
 Login.propTypes = {
 	login: PropTypes.func.isRequired

@@ -36,13 +36,11 @@ class Settings {
 		if (get) {
 			setting = db[key];
 		}
+		else if (objectKey) {
+			_.extend(db, key);
+		}
 		else {
-			if (objectKey) {
-				_.extend(db, key);
-			}
-			else {
-				db[key] = value;
-			}
+			db[key] = value;
 		}
 
 		return setting;
@@ -51,7 +49,7 @@ class Settings {
 	_clearDB(item, index, obj) {
 		delete obj[index];
 	}
-};
+}
 
 var settings = new Settings(path.join(USER_PREFS_PATH || '', 'settings.json'));
 

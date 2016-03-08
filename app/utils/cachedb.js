@@ -18,7 +18,7 @@ export default class {
 		let value = null;
 
 		if (!db.hasOwnProperty(key)) {
-			err = { status: 404 };
+			err = {status: 404};
 		}
 		else {
 			value = db[key];
@@ -32,4 +32,4 @@ export default class {
 
 		cb(null, value);
 	}
-};
+}

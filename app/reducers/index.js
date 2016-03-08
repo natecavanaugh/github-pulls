@@ -1,72 +1,84 @@
-import { combineReducers } from 'redux';
+import {combineReducers} from 'redux';
 import _ from 'lodash';
 
-import { routerStateReducer as router } from 'redux-router'
+import {routerStateReducer as router} from 'redux-router';
 
-import { PULLS_REQUEST, PULLS_SUCCESS, PULLS_FAILURE } from '../actions/pulls';
+import {PULLS_REQUEST, PULLS_SUCCESS, PULLS_FAILURE} from '../actions/pulls';
 
-import { LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_COMPLETE, LOGIN_FAILURE, LOGOUT } from '../actions/login';
+import {LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_COMPLETE, LOGIN_FAILURE, LOGOUT} from '../actions/login';
 
-import { CONFIG_OPEN, CONFIG_SAVE, CONFIG_CLOSE, CONFIG_LOAD, CONFIG_REPO_COLLAPSE } from '../actions/config';
+import {PAGE_ONLINE, PAGE_OFFLINE} from '../actions/page';
 
-const rootReducer = combineReducers({
-	entities: function(state = {repos: {}, issues: {}, result: []}, action) {
-		switch (action.type) {
-			case PULLS_SUCCESS:
-				var response = action.response;
-				var { entities, result } = response;
+import {CONFIG_OPEN, CONFIG_SAVE, CONFIG_LOAD} from '../actions/config';
 
-				var newState = _.merge({}, entities, { result });
+const checkType = function(type, ...types) {
+	return types.includes(type);
+};
 
-				return newState;
-			break;
-			default:
-			break;
-		}
+const rootReducer = combineReducers(
+	{
+		config: function(state = {collapsed: {}, repos: []}, action) {
+			var newState = state;
 
-		return state;
-	},
-	config: function(state = {repos: [], collapsed: {}}, action) {
-		switch (action.type) {
-			case CONFIG_OPEN:
-			case CONFIG_SAVE:
-			// case CONFIG_CLOSE:
-			case CONFIG_LOAD:
-				var newState = _.merge({}, state, action.config);
+			var {type} = action;
 
-				// _.defaults(newState, {repos: []});
-				// console.log(action.type, newState, action, action.config);
+			if (checkType(type, CONFIG_OPEN, CONFIG_SAVE, CONFIG_LOAD)) {
+				newState = _.merge({}, state, action.config);
+			}
 
-				return newState;
-			default:
-				break;
-		}
+			return newState;
+		},
 
-		return state;
-	},
-	loading: function(state = false, action) {
-		switch (action.type) {
-			case LOGIN_REQUEST:
-			case PULLS_REQUEST:
-				return true;
-			case LOGIN_SUCCESS:
-			// case LOGIN_COMPLETE:
-			case LOGIN_FAILURE:
-			case PULLS_SUCCESS:
-			case PULLS_FAILURE:
-				return false;
-			default:
-				break;
-		}
+		entities: function(state = {issues: {}, repos: {}, result: []}, action) {
+			var newState = state;
 
-		return state;
-	},
-	loginErrors: function(state = {err: null, errors: null, response: null}, action) {
-		switch (action.type) {
-			case LOGIN_FAILURE:
-				let {err, response} = action;
-				let errors = action.errors || '';
+			var {response, type} = action;
 
+			if (type === PULLS_SUCCESS) {
+				var {entities, result} = response;
+
+				newState = _.merge({}, entities, {result});
+			}
+
+			return newState;
+		},
+
+		loading: function(state = false, action) {
+			var newState = state;
+
+			var {type} = action;
+
+			if (checkType(type, LOGIN_REQUEST, PULLS_REQUEST)) {
+				newState = true;
+			}
+			else if (checkType(type, LOGIN_SUCCESS, LOGIN_FAILURE, PULLS_SUCCESS, PULLS_FAILURE)) {
+				newState = false;
+			}
+
+			return newState;
+		},
+
+		loggedIn: function(state = false, action) {
+			var newState = state;
+
+			var {token, type, username} = action;
+
+			if (type === LOGIN_SUCCESS) {
+				newState = !!(username && token);
+			}
+			else if (type === LOGOUT) {
+				newState = false;
+			}
+
+			return newState;
+		},
+
+		loginErrors: function(state = {err: null, errors: null, response: null}, action) {
+			var newState = state;
+
+			var {err, errors = '', response, type} = action;
+
+			if (type === LOGIN_FAILURE) {
 				if (!errors) {
 					try {
 						errors = JSON.parse(err.message).message;
@@ -76,47 +88,68 @@ const rootReducer = combineReducers({
 					}
 				}
 
-				return {
-					err,
-					errors,
-					response
+				newState = {err, errors, response};
+			}
+			else if (type === LOGIN_SUCCESS) {
+				newState = {
+					err: null,
+					errors: null,
+					response: null
 				};
-			case LOGIN_SUCCESS:
-				return {err: null, errors: null, response: null};
-			default:
-				break;
-		}
+			}
 
-		return state;
-	},
-	settings: function(state = {}, action) {
-		switch (action.type) {
-			case LOGIN_SUCCESS:
-				let {username, token} = action;
-				return {username, token, ...state};
-			case LOGIN_COMPLETE:
-				let {avatar_url} = action;
-				return {avatar_url, ...state};
-			default:
-				break;
-		}
+			return newState;
+		},
 
-		return state;
-	},
-	loggedIn: function(state = false, action) {
-		switch (action.type) {
-			case LOGIN_SUCCESS:
-				let {username, token} = action;
-				return !!(username && token);
-			case LOGOUT:
-				return false;
-			default:
-				break;
-		}
+		online: function(state = true, action) {
+			var newState = state;
 
-		return state;
-	},
-  router
-});
+			var {status, type} = action;
+
+			if (checkType(type, PAGE_OFFLINE, PAGE_ONLINE)) {
+				newState = status;
+			}
+
+			return newState;
+		},
+
+		pageError: function(state = null, action) {
+			var newState = state;
+
+			var {err, type} = action;
+
+			if (type === PULLS_FAILURE) {
+				var {defaultMessage: statusText, message} = err;
+
+				newState = {
+					message,
+					statusText
+				};
+			}
+			else if (type === PULLS_SUCCESS) {
+				newState = null;
+			}
+
+			return newState;
+		},
+
+		router,
+
+		settings: function(state = {}, action) {
+			var newState = state;
+
+			var {avatar_url, token, type, username} = action;
+
+			if (type === LOGIN_SUCCESS) {
+				newState = {token, username, ...state};
+			}
+			else if (type === LOGIN_COMPLETE) {
+				newState = {avatar_url, ...state};
+			}
+
+			return newState;
+		}
+	}
+);
 
 export default rootReducer;

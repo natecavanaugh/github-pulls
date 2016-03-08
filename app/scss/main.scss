@@ -36,6 +36,11 @@ $icon-font-path: '../../bower_components/lexicon/release/fonts/';
 	color: transparent !important;
 }
 
+body {
+	background: #F5F7F8;
+	font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
 .network-status, body.loaded.status-offline .network-status, h1 .status-icon {
 	display: none;
 }
@@ -66,11 +71,6 @@ $icon-font-path: '../../bower_components/lexicon/release/fonts/';
 	font-size: 0.5em;
 	margin-top: 1em;
 	text-align: center;
-}
-
-body {
-	background: #F5F7F8;
-	font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
 }
 
 .app-column {
@@ -139,6 +139,11 @@ body {
 	// }
 }
 
+.error-status .lexicon-icon {
+	height: 1em;
+	width: 1em;
+}
+
 .modal-open {
 	.repo-list {
 		@include filter(blur(5px));
@@ -177,11 +182,6 @@ body {
 			}
 		}
 	}
-}
-
-.error-status .glyphicon-exclamation-sign {
-	vertical-align: top;
-	margin: 5px;
 }
 
 .pulls-branch {
@@ -393,53 +393,6 @@ body.loaded.loading .account-bar .app-title {
 		> h2 {
 			padding-top: 0;
 		}
-
-		.collapse-icon {
-			top: 0.75em;
-		}
-	}
-
-	.collapse-icon {
-		background: #FFF;
-		position: absolute;
-		// right: 100%;
-		left: 10px;
-		top: 1.25em;
-		// font-size: 1.25em;
-		// width: 30px;
-		// border-radius: 1em;
-		// border-top-right-radius: 0;
-		// border-bottom-right-radius: 0;
-		// padding-left: 10px;
-		cursor: pointer;
-		display: none;
-
-		&, &:before {
-			border-radius: 1em;
-			border-top-right-radius: 0;
-			border-bottom-right-radius: 0;
-		}
-
-		&:before {
-			width: 100%;
-			height: 100%;
-			position: absolute;
-			display: block;
-			// box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-			// border: 2px solid red;
-			content: '';
-			left: 0;
-			top: 0;
-			z-index: -1;
-		}
-
-		.fa {
-			vertical-align: middle;
-		}
-	}
-
-	&:hover .collapse-icon {
-		display: block;
 	}
 
 	> h2 {
@@ -548,12 +501,6 @@ body.loaded.loading .account-bar .app-title {
 			// box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16),
 			// 			0 2px 10px 0 rgba(0, 0, 0, 0.12),
 			// 			0 -7px 10px 0 rgba(0, 0, 0, 0.1);
-		}
-
-		.collapse-icon:before {
-			// box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-			// box-shadow: none;
-			// transform: rotateX(45deg) scale(1);
 		}
 	}
 
@@ -681,19 +628,6 @@ body.loaded.loading .account-bar .app-title {
 			// padding-top: 0;
 			font-size: 16px;
 			line-height: 24px;
-		}
-
-		.collapse-icon {
-			top: 0.35em;
-		}
-
-		&.repo-collapsed .collapse-icon {
-			top: -1px;
-			bottom: -1px;
-
-			border: 1px solid #EEE;
-			border-right-width: 0;
-			// height: 100%;
 		}
 
 		.repo-branches {

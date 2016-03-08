@@ -1,7 +1,6 @@
 import React from 'react';
 
 import Branch from './Branch';
-import Icon from './Icon';
 
 export default class Repo extends React.Component {
 	constructor(props, context) {
@@ -26,24 +25,25 @@ export default class Repo extends React.Component {
 		var branches = Object.keys(branchPulls);
 
 		var cssClass = 'repo card';
-		var iconName = 'angle-down';
 
 		if (props.collapsed) {
 			cssClass += ' repo-collapsed';
-			iconName = 'angle-right';
 		}
 
-		// console.log(item.path, props.saveConfig);
-
 		return <div className={cssClass}>
-				<h2 className="card-header" onClick={this.handleCollapseClick}><span className="repo-name">{item.name}</span> <span className="badge badge-primary">{item.total}</span></h2>
+				<h2 className="card-header" onClick={this.handleCollapseClick}>
+					<span className="repo-name">{item.name}</span>
+					<span className="badge badge-primary">{item.total}</span>
+				</h2>
 
 				<ul className="list-unstyled repo-branches">
-					{branches.map(function(item, index) {
-						var branch = branchPulls[item];
+					{branches.map(
+						(item, index) => {
+							var branch = branchPulls[item];
 
-						return <Branch key={item + 'branch'} {...props} item={branch} title={item} />
-					})}
+							return <Branch key={item + 'branch'} {...props} item={branch} title={item} />;
+						}
+					)}
 				</ul>
 		</div>;
 	}

@@ -9,7 +9,7 @@ export default class Branch extends React.Component {
 
 		var pullRequests = props.item.map(
 			function(item, index) {
-				return <PullRequest key={item.id + 'pullrequest'} {...props} item={item} />
+				return <PullRequest key={item.id + 'pullrequest'} {...props} item={item} />;
 			}
 		);
 

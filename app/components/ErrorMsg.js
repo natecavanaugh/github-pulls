@@ -1,31 +1,28 @@
 import React from 'react';
+import Icon from './Icon';
 
 export default class ErrorMsg extends React.Component {
-
-	static defaultProps = {
-		message: '',
-		statusText: ''
-	}
-
 	render() {
 		var props = this.props;
 
 		return <div className="error-warning">
 				<h1>Github Pulls Error</h1>
-				<div className="error-status"><p><span className="glyphicon glyphicon-exclamation-sign"></span><span>{props.statusText}<br />
-				{props.message}</span> <a className="reload-pulls" href="javascript:;">Reload Pulls</a></p></div>
+				<div className="error-status">
+					<p>
+						<Icon name="exclamation-circle" /> <span>{props.statusText}<br />
+				{props.message}</span> <a className="reload-pulls" href="javascript:;">Reload Pulls</a>
+					</p>
+				</div>
 			</div>;
 	}
 }
 
+ErrorMsg.defaultProps = {
+	message: '',
+	statusText: ''
+};
+
 export class LoginError extends React.Component {
-
-	static defaultProps = {
-		errorText: '',
-		message: '',
-		statusText: ''
-	}
-
 	render() {
 		var props = this.props;
 
@@ -49,3 +46,9 @@ export class LoginError extends React.Component {
 		</div>;
 	}
 }
+
+LoginError.defaultProps = {
+	errorText: '',
+	message: '',
+	statusText: ''
+};

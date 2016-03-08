@@ -1,26 +1,17 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React, {Component} from 'react';
+import {bindActionCreators} from 'redux';
+import {connect} from 'react-redux';
 import AccountBar from '../components/AccountBar';
 import Config from '../components/Config';
 import RepoList from '../components/RepoList';
+import ErrorMsg from '../components/ErrorMsg';
 import * as pulls from '../actions/pulls';
 import * as config from '../actions/config';
 import {logoutAndRedirect} from '../actions/login';
-import Promise from 'bluebird';
 
-const MAX_ATTEMPTS = 5;
 const REFRESH_TIME = 30 * 1000;
 
 class PullsPage extends Component {
-	static defaultProps = {
-		repos: {},
-		loading: true,
-		issues: {},
-		avatar: '',
-		total: 0
-	};
-
 	componentWillReceiveProps(nextProps) {
 		clearTimeout(this.timeout);
 
@@ -38,19 +29,16 @@ class PullsPage extends Component {
 	}
 
 	componentWillMount() {
-		var { loadPulls, loadPullsTask } = this.props;
-
-		var attempts = MAX_ATTEMPTS;
+		var {loadPulls} = this.props;
 
 		loadPulls();
 	}
 
 	render() {
 		var props = this.props;
-		var state = this.state;
 
-		var loader = null;
 		var configModal = null;
+		var loader = null;
 
 		if (props.loading && !Object.keys(props.repos).length) {
 			loader = <div className="loader"></div>;
@@ -62,32 +50,41 @@ class PullsPage extends Component {
 
 		var cssClass = 'app-container app-column container-fluid-1280 display-compactz ' + (props.loading ? 'loading' : 'loaded');
 
+		var listContent = null;
+
+		if (!props.pageError) {
+			listContent = <RepoList {...props} repos={props.repos} issues={props.issues} />;
+		}
+		else {
+			listContent = <ErrorMsg {...props.pageError} />;
+		}
+
 		return <div className={cssClass}>
 			<AccountBar {...props} />
-			<RepoList {...props} repos={props.repos} issues={props.issues} />
+			{listContent}
 			{configModal}
 			{loader}
 		</div>;
 	}
 }
 
+PullsPage.defaultProps = {
+	avatar: '',
+	issues: {},
+	loading: true,
+	repos: {},
+	total: 0
+};
+
 function mapStateToProps(state) {
 	var {entities, settings} = state;
-	var {repos, issues, result} = entities;
+	var {repos, issues} = entities;
 	var {username, avatar_url: avatar} = settings;
-
-	// console.log('PullsPage', settings.avatar_url);
-
-	// console.log('PullsPage',Object.keys(issues || {}));
 
 	var total = Object.keys(issues || {}).length;
 
-  return { repos, issues, total, username, avatar, ...state};
+	return {avatar, issues, repos, total, username, ...state};
 }
-
-// function mapDispatchToProps(dispatch) {
-//   return bindActionCreators(CounterActions, dispatch);
-// }
 
 let mapDispatchToProps = bindActionCreators.bind(null, {logoutAndRedirect, ...pulls, ...config});
 

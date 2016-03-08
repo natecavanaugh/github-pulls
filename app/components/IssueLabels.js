@@ -10,10 +10,10 @@ export default class IssueLabels extends React.Component {
 			labelItems = labels.map(
 				function(item, index) {
 					var style = {
-						backgroundColor: '#' + item.color
+						backgroundColor: `#${item.color}`
 					};
 
-					return <span key={item.name} className="label label-sm" style={style}>{item.name}</span>
+					return <span key={item.name} className="label label-sm" style={style}>{item.name}</span>;
 				}
 			);
 		}

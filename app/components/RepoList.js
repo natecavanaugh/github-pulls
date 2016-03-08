@@ -17,7 +17,7 @@ export class RepoList extends React.Component {
 		var repos = _.map(
 			result,
 			function(item, index) {
-				return <Repo key={item.name + 'repo' + index} {...props} collapsed={!!collapsedMap[item.path]} item={item} />
+				return <Repo key={item.name + 'repo' + index} {...props} collapsed={!!collapsedMap[item.path]} item={item} />;
 			}
 		);
 

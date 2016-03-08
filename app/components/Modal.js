@@ -1,7 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component} from 'react';
 
 export class Modal extends Component {
+
 	// This feels a bit hacky, but I can't imagine where else to best keep it
+
 	componentDidMount() {
 		document.body.classList.add('modal-open');
 	}
