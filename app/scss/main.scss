@@ -45,7 +45,7 @@ body {
 		> h2 {
 			// padding-top: 0;
 			font-size: 16px;
-			line-height: 24px;
+			line-height: 32px;
 		}
 
 		.repo-branches {
@@ -53,7 +53,9 @@ body {
 		}
 
 		.property-title {
-			font-size: 1em;
+			font-size: 14px;
+			padding-top: 5px;
+			padding-bottom: 5px;
 		}
 
 		.pull-count {
