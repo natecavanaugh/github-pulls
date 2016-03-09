@@ -2,6 +2,7 @@ import React from 'react';
 
 import ExternalLink from './ExternalLink';
 import Icon from './Icon';
+import ManagementBar from './ManagementBar';
 
 class AccountBar extends React.Component {
 	render() {
@@ -28,6 +29,8 @@ class AccountBar extends React.Component {
 			</div>
 
 			<div className="loading-bar"></div>
+
+			<ManagementBar {...props} />
 		</div>;
 	}
 }
