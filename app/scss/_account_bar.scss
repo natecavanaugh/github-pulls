@@ -1,0 +1,130 @@
+@import "bourbon";
+@import "lexicon/release/scss/atlas-variables";
+
+.loading .account-bar {
+	border-bottom-color: #DDD;
+}
+
+.account-bar {
+	background-color: $header-toolbar-default-bg;
+	border: $header-toolbar-default-border-width solid $header-toolbar-default-border;
+	font-size: 14px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	padding: 1em 0;
+	@include transition(background-color 0.5s);
+	z-index: 10;
+
+	&, a {
+		color: #FFF;
+	}
+
+	> .app-column {
+		@include align-content(center);
+		@include display(flex);
+		@include justify-content(space-between);
+	}
+
+	.logout {
+		// -webkit-flex: 1 auto;
+		flex-grow: 0;
+		text-align: right;
+		display: inline-block;
+		line-height: 32px;
+	}
+
+	.user-info {
+		// -webkit-flex: 1 auto;
+		flex-grow: 0;
+	}
+
+	.user-info img {
+		border-radius: 50%;
+		width: 32px;
+	}
+
+	.user-icon {
+		display: inline-block;
+		overflow: visible;
+		vertical-align: middle;
+	}
+
+	.app-title {
+		// -webkit-flex: 1 auto;
+		flex-grow: 1;
+		font-weight: bold;
+		line-height: 32px;
+		text-align: center;
+		font-size: 18px;
+	}
+
+	.app-title .pull-count {
+		line-height: 0;
+		padding: 10px 8px;
+	}
+
+	.loading-bar {
+		position: absolute;
+		top: auto;
+		bottom: -2px;
+	}
+}
+
+.loading-bar {
+	background: #09C;
+	display: none;
+	height: 2px;
+	left: 0;
+	position: fixed;
+	right: 0;
+	top: 0;
+	z-index: 800;
+	transform: translateX(100%);
+}
+
+@keyframes shift-rightwards {
+	0% {
+		transform: translateX(-100%);
+	}
+
+	40% {
+		transform: translateX(0%);
+	}
+
+	60% {
+		transform: translateX(0%);
+	}
+
+	100% {
+		transform: translateX(100%);
+	}
+}
+
+.loading .loading-bar {
+	display: block;
+	animation: shift-rightwards 1s ease-in-out infinite;
+	animation-delay: .4s;
+}
+
+/*	body.loaded.loading .account-bar {
+	background: lightyellow;
+}
+
+body.loaded.loading .account-bar .app-title {
+	background: url(aui/build/aui-skin-classic/images/loading_indicator.gif) no-repeat 100% 50%;
+}
+*/
+
+/*
+.loading .account-bar .pull-count {
+	-webkit-animation: rotateplane 1.2s infinite ease-in-out;
+}
+
+@-webkit-keyframes rotateplane {
+	0% { -webkit-transform: perspective(120px) }
+	50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+	100% { -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg) }
+}
+*/

@@ -33,7 +33,7 @@ export default class Repo extends React.Component {
 		return <div className={cssClass}>
 				<h2 className="card-header" onClick={this.handleCollapseClick}>
 					<span className="repo-name">{item.name}</span>
-					<span className="badge badge-primary">{item.total}</span>
+					<span className="badge badge-primary pull-count">{item.total}</span>
 				</h2>
 
 				<ul className="list-unstyled repo-branches">

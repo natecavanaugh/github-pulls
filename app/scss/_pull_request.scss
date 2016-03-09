@@ -1,0 +1,91 @@
+.pull {
+	margin-bottom: 0.25em;
+	padding-bottom: 0.25em;
+	// border-bottom: 1px solid #fafafa;
+}
+
+.pull:last-child {
+	margin-bottom: 0;
+	padding-bottom: 0;
+	border-width: 0;
+}
+
+.pull {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+
+	.pull-info {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		flex-grow: 1;
+
+		padding-left: 1px;
+		padding-bottom: 1px;
+
+		.avatar {
+			width: 20px;
+			min-height: 20px;
+			// border-radius: 2px;
+			// border: 1px solid transparent;
+			margin-right: 0.5rem;
+			box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.6);
+		}
+	}
+}
+
+
+.issue-labels {
+	flex-shrink: 0;
+}
+
+.pull-meta {
+	border-radius: 1.5em;
+	border: 1px solid #EEE;
+	display: inline-block;
+	flex-shrink: 0;
+	font-size: 10px;
+	white-space: nowrap;
+}
+
+.pull-meta .create-date, .pull-meta .from-user {
+	display: inline-block;
+	padding: 2px 4px;
+	vertical-align: middle;
+}
+
+.pull-meta .create-date {
+	background-color: #EEE;
+	border-radius: 0 1.5em 1.5em 0;
+	display: inline-block;
+	padding-right: 9px;
+}
+
+.pull-meta .from-user {
+	padding-left: 9px;
+}
+
+.pull-leave {
+	opacity: 1;
+	transform: translateY(0);
+
+	&.pull-leave-active {
+		opacity: 0.01;
+		transform: translateY(-1000%);
+		transition: opacity 0.5s ease-in, transform 0.5s ease-in;
+	}
+}
+
+.pull-enter {
+	opacity: 0.01;
+	background-color: transparent;
+	transform: translateX(-100%);
+
+	.pull-enter-active {
+		opacity: 1;
+		background-color: #FFFAD6;
+		transition: opacity 0.5s ease-in, background-color 1s ease-in, transform 0.5s ease-in;
+		transform: translateX(0);
+	}
+}

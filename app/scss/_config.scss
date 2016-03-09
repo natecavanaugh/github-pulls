@@ -1,0 +1,39 @@
+.modal-open {
+	.repo-list {
+		@include filter(blur(5px));
+	}
+
+	.config-repos {
+		.input-group:not(:last-child) {
+			margin-bottom: 10px;
+		}
+	}
+}
+
+.modal-sheet {
+	display: block;
+	background-color: rgba(0,0,0,0.3);
+	top: 62px;
+
+	.modal-dialog {
+		margin-top: 0;
+
+		.modal-content {
+			border-top-left-radius: 0;
+			border-top-right-radius: 0;
+			border-top-width: 0;
+			box-shadow: none;
+
+			&:after {
+				@include background-image(linear-gradient(rgba(0, 0, 0, 0.1), transparent 50%));
+				content: '';
+				display: block;
+				height: 10px;
+				left: 0;
+				position: absolute;
+				right: 0;
+				top: 0;
+			}
+		}
+	}
+}
