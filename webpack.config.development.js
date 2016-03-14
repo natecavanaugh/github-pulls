@@ -22,6 +22,10 @@ config.module.loaders.push(
   {
     test: /\.scss$/,
     loaders: ['style', 'css', 'sass']
+  },
+ {
+    test: /\.svg$/,
+    loader: 'svg-inline'
   }
 );
 

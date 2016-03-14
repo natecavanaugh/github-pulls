@@ -1,7 +1,12 @@
 import React, {PropTypes} from 'react';
+import InlineSVG from 'svg-inline-react';
 
 const Icon = ({className, name}) => {
-	return <svg className={`lexicon-icon lexicon-icon-${name} ${className}`}><use xlinkHref={`../bower_components/lexicon/release/images/icons/icons.svg#${name}`}></use></svg>;
+	var src = require(`!svg-inline!../../bower_components/lexicon/release/images/icons/${name}.svg`);
+
+	src = src.replace(/ (?:style|xml:space)=(["'])(?:(?!\1).)*\1/g, '');
+
+	return <InlineSVG className={`lexicon-icon lexicon-icon-${name} ${className}`} raw={true} src={src} />;
 };
 
 Icon.propTypes = {

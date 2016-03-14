@@ -18,6 +18,10 @@ config.module.loaders.push(
   {
     test: /\.scss$/,
     loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')
+  },
+ {
+    test: /\.svg$/,
+    loader: 'svg-inline'
   }
 );
 
