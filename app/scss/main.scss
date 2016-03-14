@@ -16,7 +16,6 @@ body {
 
 @import "app";
 @import "account_bar";
-@import "repo_list";
 @import "repo";
 @import "branch";
 @import "pull_request";
@@ -41,30 +40,5 @@ body {
 }
 
 .display-compact {
-	.repo {
-		> h2 {
-			// padding-top: 0;
-			font-size: 16px;
-			line-height: 32px;
-		}
-
-		.repo-branches {
-			padding-bottom: 0;
-		}
-
-		.property-title {
-			font-size: 14px;
-			padding-top: 5px;
-			padding-bottom: 5px;
-		}
-
-		.pull-count {
-			padding-top: 3px;
-			padding-bottom: 3px;
-		}
-
-		.pull {
-			font-size: 13px;
-		}
-	}
+	padding-top: 56px;
 }

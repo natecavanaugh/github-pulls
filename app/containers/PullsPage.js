@@ -48,10 +48,11 @@ class PullsPage extends Component {
 			configModal = <Config {...props} />;
 		}
 
-		var cssClass = 'app-container app-column container-fluid-1280 display-compactz';
+		var cssClass = 'app-container app-column container-fluid-1280';
 
 		cssClass += (props.loading ? ' loading' : ' loaded');
 		cssClass += (!props.online ? ' status-offline' : '');
+		cssClass += ` display-${props.config.view || ''}`;
 
 		var listContent = null;
 
