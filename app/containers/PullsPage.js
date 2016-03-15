@@ -40,9 +40,7 @@ class PullsPage extends Component {
 		var configModal = null;
 		var loader = null;
 
-		if (props.loading && !Object.keys(props.repos).length) {
-			loader = <div className="loader"></div>;
-		}
+		var hasRepos = !!Object.keys(props.repos).length;
 
 		if (props.router.location.pathname === '/config') {
 			configModal = <Config {...props} />;
@@ -50,9 +48,20 @@ class PullsPage extends Component {
 
 		var cssClass = 'app-container app-column container-fluid-1280';
 
-		cssClass += (props.loading ? ' loading' : ' loaded');
 		cssClass += (!props.online ? ' status-offline' : '');
 		cssClass += ` display-${props.config.view || ''}`;
+
+		if (props.loading) {
+			cssClass += ' loading';
+
+			if (!hasRepos) {
+				loader = <div className="loader"></div>;
+			}
+		}
+
+		if (!props.loading || hasRepos) {
+			cssClass += ' loaded';
+		}
 
 		var listContent = null;
 
