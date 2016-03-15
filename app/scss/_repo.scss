@@ -16,6 +16,11 @@
 		transform-origin: 50% 0;
 		// transition-delay: 0.3s;
 
+		// margin-bottom: 0;
+		// margin-top: 0;
+		// .repo-branches {
+		// 	margin-bottom: 0;
+		// }
 		&:not(.repo-collapsed) + .repo-collapsed, &.repo-collapsed:first-child {
 			margin-top: 10px;
 		}
