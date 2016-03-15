@@ -1,32 +1,18 @@
 .repo-list {
-	// perspective: 200em;
-
 	.repo {
-		// border: 1px solid #EEE;
-		// border-radius: 4px;
-		// box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
-		// border-radius: 2px;
 		background-clip: padding-box;
 		margin-top: 10px;
 		background-color: #FFF;
 		position: relative;
 		transition: all 0.4s ease;
-		// padding-left: 16px;
 
 		transform-origin: 50% 0;
-		// transition-delay: 0.3s;
 
-		// margin-bottom: 0;
-		// margin-top: 0;
-		// .repo-branches {
-		// 	margin-bottom: 0;
-		// }
 		&:not(.repo-collapsed) + .repo-collapsed, &.repo-collapsed:first-child {
 			margin-top: 10px;
 		}
 
 		> h2 {
-			// background-color: $brand-default;
 			background-color: $inverse-active-bg;
 			color: #FFF;
 			cursor: pointer;
@@ -45,19 +31,14 @@
 				display: none;
 			}
 		}
-
 	}
 
 	.repo-collapsed {
 		margin-bottom: 0;
 		transform: scale(0.98);
-		// transform: perspective(50em) scale(0.98) rotateX(-15deg);
-		// z-index: 100;
 
 		&:hover {
-			// transform: scale(0.98) translateY(-15px);
 			transform: scale(0.98) translateY(-15px);
-			// transform: perspective(50em) scale(0.98) rotateX(0) translateY(-15px);
 
 			.repo-branches {
 				animation: peek-branches 0.5s both ease;
@@ -78,20 +59,11 @@
 			max-height: 0;
 		}
 
-		.repo-branches {
-			// display: none;
-		}
-
-
 		.pull-count {
 			z-index: 0;
 		}
 
 		@keyframes peek-branches {
-			0% {
-				// height: 0;
-			}
-
 			100% {
 				max-height: 10000px;
 				overflow: visible;
@@ -102,24 +74,11 @@
 			margin-top: 0;
 		}
 	}
-
-	// &:hover {
-	// 	.repo {
-	// 		transition-delay: 0s;
-	// 	}
-	// 	.repo-collapsed {
-	// 		&, & + &, & + .repo:not(.repo-collapsed) {
-	// 			margin-top: 10px;
-	// 			transform: scale(1);
-	// 		}
-	// 	}
-	// }
 }
 
 .display-compact {
 	.repo {
 		> h2 {
-			// padding-top: 0;
 			font-size: 16px;
 			line-height: 32px;
 		}
