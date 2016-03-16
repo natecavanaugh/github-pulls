@@ -15,7 +15,7 @@ class PullsPage extends Component {
 	componentWillReceiveProps(nextProps) {
 		clearTimeout(this.timeout);
 
-		if (!nextProps.loading && nextProps.online) {
+		if (!nextProps.loading && nextProps.online && !this._isConfigPath(nextProps)) {
 			this._loadPullsTask();
 		}
 	}
@@ -24,14 +24,20 @@ class PullsPage extends Component {
 		clearTimeout(this.timeout);
 	}
 
-	_loadPullsTask() {
-		this.timeout = setTimeout(() => this.props.loadPulls(), REFRESH_TIME);
-	}
-
 	componentWillMount() {
 		var {loadPulls} = this.props;
 
 		loadPulls();
+	}
+
+	_isConfigPath(props) {
+		props = props || this.props;
+
+		return props.router.location.pathname === '/config';
+	}
+
+	_loadPullsTask() {
+		this.timeout = setTimeout(() => this.props.loadPulls(), REFRESH_TIME);
 	}
 
 	render() {
@@ -42,7 +48,7 @@ class PullsPage extends Component {
 
 		var hasRepos = !!Object.keys(props.repos).length;
 
-		if (props.router.location.pathname === '/config') {
+		if (this._isConfigPath()) {
 			configModal = <Config {...props} />;
 		}
 
