@@ -29,9 +29,12 @@ class AccountBar extends React.Component {
 			</div>
 
 			<div className="loading-bar">
-				<div className="loading-dot"></div>
-				<div className="loading-dot"></div>
-				<div className="loading-dot"></div>
+				<div className="loading-effect"></div>
+				<div className="loading-dots">
+					<div className="loading-dot"></div>
+					<div className="loading-dot"></div>
+					<div className="loading-dot"></div>
+				</div>
 			</div>
 
 			<ManagementBar {...props} />

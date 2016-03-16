@@ -120,7 +120,6 @@
 }
 
 .loading-bar {
-	background: $header-toolbar-default-bg;
 	display: none;
 	height: 15px;
 	left: 50%;
@@ -133,13 +132,52 @@
 	z-index: -1;
 }
 
+@keyframes shift-rightwards {
+	0% {
+		transform: translateX(-100%);
+	}
+
+	40% {
+		transform: translateX(0);
+	}
+
+	60% {
+		transform: translateX(0);
+	}
+
+	100% {
+		transform: translateX(100%);
+	}
+}
+
 .loaded.loading {
+	.account-bar {
+		// &:after {
+		// 	animation: shift-rightwards 1s ease-in-out infinite;
+		// 	content: '';
+		// 	position: absolute;
+		// 	width: 100%;
+		// 	background: #07C;
+		// 	height: 2px;
+		// 	top: 0;
+		// }
+	}
+
 	.loading-bar {
 		-webkit-filter: url('#goo-drops');
 		display: block;
 
+		.loading-effect {
+			-webkit-filter: url('#goo');
+			background: $header-toolbar-default-bg;
+			position: absolute;
+			height: 40px;
+			width: 100%;
+			bottom: 0;
+		}
+
 		.loading-dot {
-			$width: 15px;
+			$width: 18px;
 			$offset: 10px;
 
 			animation: yoyo 1s ease-in-out infinite;
@@ -172,15 +210,21 @@
 @keyframes yoyo {
 	0% {
 		transform: translate3d(0, 0, 0);
+		background-color: $header-toolbar-default-bg;
+	}
+
+	25%, 80% {
+		background-color: $header-toolbar-default-bg;
 	}
 
 	50% {
-		transform: translate3d(0, 25px, 0);
+		transform: translate3d(0, 30px, 0);
+		background-color: $brand-primary;
 	}
 
 	100% {
 		transform: translate3d(0, 0, 0);
-
+		background-color: $header-toolbar-default-bg;
 	}
 }
 
