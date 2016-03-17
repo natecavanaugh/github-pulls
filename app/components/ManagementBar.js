@@ -23,10 +23,16 @@ class AccountBar extends React.Component {
 			}
 		);
 
-		// console.log(this.props);
-
 		return <div className="management-bar management-bar-default">
 			<div className="container-fluid-1280 app-column">
+				<ul className="management-bar-nav nav">
+					<li>
+						<a href="javascript:;" onClick={(e) => {props.loadPulls();}}>
+							<Icon className="icon-monospaced" name="reload" />
+							Reload Pulls
+						</a>
+					</li>
+				</ul>
 				<div className="management-bar-header-right">
 					{buttons}
 				</div>
