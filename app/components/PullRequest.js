@@ -1,8 +1,9 @@
 import React from 'react';
 
-import PullRequestLink from './PullRequestLink';
-import IssueLabels from './IssueLabels';
 import ExternalLink from './ExternalLink';
+import Icon from './Icon';
+import IssueLabels from './IssueLabels';
+import PullRequestLink from './PullRequestLink';
 
 export default class PullRequest extends React.Component {
 	constructor(props, context) {
@@ -30,6 +31,14 @@ export default class PullRequest extends React.Component {
 
 		var content;
 
+		var comments = (
+			<span className="comments">
+				<Icon name="comments" />
+
+				<span className="comment-count">{item.comments.length}</span>
+			</span>
+		);
+
 		if (view === 'comfortable') {
 			var {user: {htmlUrl, login: userName}} = item;
 			var sent = `sent ${item.timeAgo}`;
@@ -52,6 +61,9 @@ export default class PullRequest extends React.Component {
 							<PullRequestLink item={item} />
 						</h4>
 					</div>
+					<div className="list-group-item-field">
+						{comments}
+					</div>
 				</div>
 			</div>;
 		}
@@ -66,6 +78,7 @@ export default class PullRequest extends React.Component {
 					<span className="from-user">{item.fromUser}</span>
 					<span className="create-date" title={item.createDate}>{item.timeAgo}</span>
 				</span>
+				{comments}
 			</span>;
 		}
 

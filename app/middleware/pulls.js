@@ -40,6 +40,66 @@ export default function(store) {
 					);
 				};
 
+				var getComments = function(type, item, repo) {
+					return github[type].getCommentsAsync(
+						{
+							per_page: 100,
+							number: item.number,
+							repo: repo.name,
+							user: repo.owner
+						}
+					);
+				};
+
+				var getIssueComments = getComments.bind(null, 'issues');
+				var getPullComments = getComments.bind(null, 'pullRequests');
+
+				var getRepoPullsIssues = function(item) {
+					return Promise.join(
+						getRepoIssues(item),
+						getRepoPulls(item),
+						(issues, pulls) => {
+							issues = camelizeKeys(issues);
+							pulls = camelizeKeys(pulls);
+
+							item.pulls = pulls;
+							item.issues = _.reject(issues, 'pullRequest');
+
+							var allIssuesPulls = [].concat(issues, pulls);
+
+							return Promise.join(
+								Promise.map(
+									allIssuesPulls,
+									function(issue) {
+										return getIssueComments(issue, item);
+									}
+								),
+								Promise.map(
+									pulls,
+									function(pull) {
+										return getPullComments(pull, item);
+									}
+								),
+								function(allComments, pullComments) {
+									allComments.forEach(
+										(item, index) => {
+											allIssuesPulls[index].comments = item;
+										}
+									);
+
+									pullComments.forEach(
+										(item, index) => {
+											var pull = pulls[index];
+
+											pull.comments = pull.comments.concat(item);
+										}
+									);
+								}
+							).return(item);
+						}
+					);
+				};
+
 				var iteratePullsIssues = function(pull, index, collection) {
 					var pullRequest = !!pull.base;
 
@@ -174,21 +234,7 @@ export default function(store) {
 							repos => {
 								return Promise.map(
 									repos,
-									(item) => {
-										return Promise.join(
-											getRepoIssues(item),
-											getRepoPulls(item),
-											(issues, pulls) => {
-												issues = camelizeKeys(issues);
-												pulls = camelizeKeys(pulls);
-
-												item.pulls = pulls;
-												item.issues = _.reject(issues, 'pullRequest');
-
-												return item;
-											}
-										);
-									}
+									getRepoPullsIssues
 								);
 							}
 						)

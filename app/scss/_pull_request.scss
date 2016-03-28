@@ -19,6 +19,21 @@
 	.avatar {
 		box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.6);
 	}
+
+	.comments {
+		color: #869CAD;
+		white-space: nowrap;
+
+		.lexicon-icon {
+			// .lexicon-icon-outline {
+			// 	opacity: 0;
+
+			// 	&:nth-of-type(2) {
+			// 		opacity: 1;
+			// 	}
+			// }
+		}
+	}
 }
 
 
@@ -104,6 +119,31 @@
 			min-height: 20px;
 			margin-right: 0.5rem;
 		}
+
+		.comments {
+			$size: 12px;
+			$right-margin: 3px;
+
+			font-size: $size;
+			margin-left: 5px;
+			min-width: calc(#{$size + $right-margin} + 1ch);
+			// text-align: center;
+
+			// border: 1px solid;
+
+			.comment-count {
+				display: inline-block;
+
+				// ch is the width of the 0 character
+				// min-width: 2ch;
+			}
+
+			.lexicon-icon {
+				height: $size;
+				margin-right: $right-margin;
+				width: $size;
+			}
+		}
 	}
 }
 
@@ -112,5 +152,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+	}
+
+	.pull {
+		.comments {
+			.lexicon-icon {
+				margin-right: 4px;
+			}
+		}
 	}
 }
