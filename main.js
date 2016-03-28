@@ -53,11 +53,7 @@ app.on('ready', function() {
 
   mainWindow = new BrowserWindow(windowConfig);
 
-  if (process.env.HOT) {
-    mainWindow.loadURL(`file://${__dirname}/app/hot-dev-app.html`);
-  } else {
-    mainWindow.loadURL(`file://${__dirname}/app/app.html`);
-  }
+  mainWindow.loadURL(`file://${__dirname}/app/app.html`);
 
   var webContents = mainWindow.webContents;
 
