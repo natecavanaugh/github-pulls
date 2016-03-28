@@ -14,7 +14,8 @@
     "start-hot": "cross-env HOT=1 NODE_ENV=development electron ./",
     "package": "cross-env NODE_ENV=production node package.js",
     "package-all": "npm run package -- --all",
-    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json"
+    "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json",
+    "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\""
   },
   "bin": {
     "electron": "./node_modules/.bin/electron"
@@ -48,6 +49,7 @@
     "chai": "^3.3.0",
     "chromedriver": "^2.19.0",
     "co-mocha": "^1.1.2",
+    "concurrently": "^2.0.0",
     "cross-env": "^1.0.7",
     "css-loader": "^0.23.1",
     "del": "^2.0.1",
