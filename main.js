@@ -18,6 +18,8 @@ crashReporter.start({
   autoSubmit: true
 });
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
 var NODE_ENV = process.env.NODE_ENV;
 
 if (NODE_ENV === 'development') {
