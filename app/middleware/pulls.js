@@ -54,6 +54,16 @@ export default function(store) {
 				var getIssueComments = getComments.bind(null, 'issues');
 				var getPullComments = getComments.bind(null, 'pullRequests');
 
+				var getPullStatus = function(item, repo) {
+					return github.statuses.getCombinedAsync(
+						{
+							sha: item.head.sha,
+							repo: repo.name,
+							user: repo.owner
+						}
+					);
+				};
+
 				var getRepoPullsIssues = function(item) {
 					return Promise.join(
 						getRepoIssues(item),
@@ -80,7 +90,13 @@ export default function(store) {
 										return getPullComments(pull, item);
 									}
 								),
-								function(allComments, pullComments) {
+								Promise.map(
+									pulls,
+									function(pull) {
+										return getPullStatus(pull, item);
+									}
+								),
+								function(allComments, pullComments, pullStatuses) {
 									allComments.forEach(
 										(item, index) => {
 											allIssuesPulls[index].comments = item;
@@ -92,6 +108,12 @@ export default function(store) {
 											var pull = pulls[index];
 
 											pull.comments = pull.comments.concat(item);
+										}
+									);
+
+									pullStatuses.forEach(
+										(item, index) => {
+											pulls[index].status = item;
 										}
 									);
 								}

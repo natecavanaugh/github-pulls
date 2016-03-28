@@ -20,7 +20,7 @@
 		box-shadow: 0 0 0 0.5px rgba(0, 0, 0, 0.6);
 	}
 
-	.comments {
+	.comments, .pull-status {
 		color: #869CAD;
 		white-space: nowrap;
 
@@ -33,6 +33,14 @@
 			// 	}
 			// }
 		}
+	}
+
+	.pull-status-failure {
+		color: $brand-danger;
+	}
+
+	.pull-status-success {
+		color: $brand-success;
 	}
 }
 
@@ -120,10 +128,10 @@
 			margin-right: 0.5rem;
 		}
 
-		.comments {
-			$size: 12px;
-			$right-margin: 3px;
+		$size: 12px;
+		$right-margin: 3px;
 
+		.comments {
 			font-size: $size;
 			margin-left: 5px;
 			min-width: calc(#{$size + $right-margin} + 1ch);
@@ -144,6 +152,15 @@
 				width: $size;
 			}
 		}
+
+		.pull-status {
+			margin-right: 5px;
+
+			.lexicon-icon {
+				height: $size;
+				width: $size;
+			}
+		}
 	}
 }
 
@@ -158,6 +175,12 @@
 		.comments {
 			.lexicon-icon {
 				margin-right: 4px;
+			}
+		}
+
+		.pull-status {
+			.lexicon-icon {
+				margin-left: 5px;
 			}
 		}
 	}

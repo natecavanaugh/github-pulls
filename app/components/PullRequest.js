@@ -5,6 +5,12 @@ import Icon from './Icon';
 import IssueLabels from './IssueLabels';
 import PullRequestLink from './PullRequestLink';
 
+var MAP_STATUS_STATE = {
+	failure: 'exclamation-full',
+	pending: 'time',
+	success: 'check-circle'
+};
+
 export default class PullRequest extends React.Component {
 	constructor(props, context) {
 		super(props, context);
@@ -23,10 +29,24 @@ export default class PullRequest extends React.Component {
 	render() {
 		var {item, config: {view}} = this.props;
 
+		var status = item.status;
+
 		var issueLabels;
+		var pullStatus;
 
 		if (!item.pullRequest) {
 			issueLabels = <IssueLabels labels={item.labels} />;
+		}
+		else if (status.statuses.length) {
+			var statusState = status.state;
+
+			var name = MAP_STATUS_STATE[statusState];
+
+			var description = status.statuses.map(item => item.description).join('\n\n');
+
+			pullStatus = <span className={'pull-status pull-status-' + statusState} title={description}>
+				<Icon name={name} />
+			</span>;
 		}
 
 		var content;
@@ -57,12 +77,13 @@ export default class PullRequest extends React.Component {
 							<span><ExternalLink href={htmlUrl} title={userName} /> {sent}</span> {issueLabels}
 						</h5>
 
-						<h4 title="7 UX Trends of 2015: Get Ready for Big Changes">
+						<h4 title={item.title}>
 							<PullRequestLink item={item} />
 						</h4>
 					</div>
 					<div className="list-group-item-field">
 						{comments}
+						{pullStatus}
 					</div>
 				</div>
 			</div>;
@@ -73,6 +94,7 @@ export default class PullRequest extends React.Component {
 					<img className="avatar img-circle" src={item.user.avatarUrl} title={item.user.login} />
 					<PullRequestLink item={item} />
 				</span>
+				{pullStatus}
 				{issueLabels}
 				<span className="pull-meta">
 					<span className="from-user">{item.fromUser}</span>
