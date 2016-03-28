@@ -50,7 +50,6 @@ if (version) {
   });
 }
 
-
 function startPack() {
   console.log('start pack...');
   webpack(cfg, (err, stats) => {
@@ -98,12 +97,12 @@ function pack(plat, arch, cb) {
     platform: plat,
     arch,
     prune: true,
+    'app-version': pkg.version || DEFAULT_OPTS.version,
     out: `release/${plat}-${arch}`
   });
 
   packager(opts, cb);
 }
-
 
 function log(plat, arch) {
   return (err, filepath) => {
