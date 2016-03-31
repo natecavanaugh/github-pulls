@@ -15,6 +15,7 @@ class Config extends Component {
 		super(props, context);
 
 		this.state = {
+			...props.config,
 			errorFields: {},
 			repos: [...props.config.repos, '']
 		};
@@ -22,6 +23,7 @@ class Config extends Component {
 		this.addField = this.addField.bind(this);
 		this.createRepos = this.createRepos.bind(this);
 		this.handleBlur = this.handleBlur.bind(this);
+		this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.removeField = this.removeField.bind(this);
 	}
@@ -171,6 +173,16 @@ class Config extends Component {
 		this.setState({repos});
 	}
 
+	handleCheckboxChange(event) {
+		var {name, checked} = event.target;
+
+		this.setState(
+			{
+				[name]: checked
+			}
+		);
+	}
+
 	handlePaste(event, index) {
 		var data = event.clipboardData.getData('text/plain');
 
@@ -210,6 +222,8 @@ class Config extends Component {
 	handleSubmit(event, data) {
 		event.preventDefault();
 
+		var state = this.state;
+
 		var dataRepos = data.repos;
 
 		dataRepos = _.isArray(dataRepos) ? dataRepos : [dataRepos];
@@ -240,6 +254,9 @@ class Config extends Component {
 
 		data.repos = [...validRepos];
 
+		data.displayComments = state.displayComments;
+		data.displayStatus = state.displayStatus;
+
 		if (!validRepos.length) {
 			validRepos.push('');
 		}
@@ -269,25 +286,46 @@ class Config extends Component {
 	}
 
 	render() {
-		var allRepos = this.state.repos.map(this.createRepos);
+		var props = this.props;
+		var state = this.state;
 
-		var {errorMsg} = this.state;
+		var config = props.config;
+
+		var allRepos = state.repos.map(this.createRepos);
+
+		var {errorMsg} = state;
 
 		var error = null;
 
-		var hasErrors = _.size(this.state.errorFields);
+		var hasErrors = _.size(state.errorFields);
 
 		if (errorMsg && hasErrors) {
 			error = <div className="alert alert-danger">{errorMsg}</div>;
 		}
 
+		var displayComments = _.get(state, 'displayComments', true);
+		var displayStatus = _.get(state, 'displayStatus', true);
+
 		return (
 			<AutoForm onSubmit={this.handleSubmit}>
-				<Modal close={this.props.closeConfig} title="Settings" disableSave={hasErrors}>
+				<Modal close={props.closeConfig} title="Settings" disableSave={hasErrors}>
 					{error}
-					<label htmlFor="repos">Repos</label>
-					<div className="config-repos">
+					<div className="config-section config-repos">
+						<h3>Repos</h3>
 						{allRepos}
+					</div>
+					<div className="config-section config-display">
+						<h3>Display</h3>
+						<div className="checkbox">
+							<label>
+								<input checked={displayComments} name="displayComments" onChange={this.handleCheckboxChange} type="checkbox" /> Comment Count
+							</label>
+						</div>
+						<div className="checkbox">
+							<label>
+								<input checked={displayStatus} name="displayStatus" onChange={this.handleCheckboxChange} type="checkbox" /> Pull Status
+							</label>
+						</div>
 					</div>
 				</Modal>
 			</AutoForm>

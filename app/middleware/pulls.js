@@ -77,45 +77,67 @@ export default function(store) {
 
 							var allIssuesPulls = [].concat(issues, pulls);
 
-							return Promise.join(
-								Promise.map(
+							var allCommentsPromise;
+							var pullCommentsPromise;
+							var statusPromise;
+
+							var displayComments = _.get(config, 'displayComments', true);
+
+							if (displayComments) {
+								allCommentsPromise = Promise.map(
 									allIssuesPulls,
 									function(issue) {
 										return getIssueComments(issue, item);
 									}
-								),
-								Promise.map(
+								);
+
+								pullCommentsPromise = Promise.map(
 									pulls,
 									function(pull) {
 										return getPullComments(pull, item);
 									}
-								),
-								Promise.map(
+								);
+							}
+
+							var displayStatus = _.get(config, 'displayStatus', true);
+
+							if (displayStatus) {
+								statusPromise = Promise.map(
 									pulls,
 									function(pull) {
 										return getPullStatus(pull, item);
 									}
-								),
+								);
+							}
+
+							return Promise.join(
+								...[allCommentsPromise, pullCommentsPromise, statusPromise],
 								function(allComments, pullComments, pullStatuses) {
-									allComments.forEach(
-										(item, index) => {
-											allIssuesPulls[index].comments = item;
-										}
-									);
+									if (allComments) {
+										allComments.forEach(
+											(item, index) => {
+												allIssuesPulls[index].comments = item;
+											}
+										);
+									}
 
-									pullComments.forEach(
-										(item, index) => {
-											var pull = pulls[index];
+									if (pullComments) {
+										pullComments.forEach(
+											(item, index) => {
+												var pull = pulls[index];
 
-											pull.comments = pull.comments.concat(item);
-										}
-									);
+												pull.comments = pull.comments.concat(item);
+											}
+										);
+									}
 
-									pullStatuses.forEach(
-										(item, index) => {
-											pulls[index].status = item;
-										}
-									);
+									if (pullStatuses) {
+										pullStatuses.forEach(
+											(item, index) => {
+												pulls[index].status = item;
+											}
+										);
+									}
 								}
 							).return(item);
 						}

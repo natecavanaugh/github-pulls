@@ -27,7 +27,12 @@ export default class PullRequest extends React.Component {
 	}
 
 	render() {
-		var {item, config: {view}} = this.props;
+		var {item, config} = this.props;
+
+		var view = config.view;
+
+		var displayComments = _.get(config, 'displayComments', true);
+		var displayStatus = _.get(config, 'displayStatus', true);
 
 		var status = item.status;
 
@@ -37,7 +42,7 @@ export default class PullRequest extends React.Component {
 		if (!item.pullRequest) {
 			issueLabels = <IssueLabels labels={item.labels} />;
 		}
-		else if (status.statuses.length) {
+		else if (displayStatus && status && status.statuses.length) {
 			var statusState = status.state;
 
 			var name = MAP_STATUS_STATE[statusState];
@@ -51,13 +56,17 @@ export default class PullRequest extends React.Component {
 
 		var content;
 
-		var comments = (
-			<span className="comments">
-				<Icon name="comments" />
+		var comments = null;
 
-				<span className="comment-count">{item.comments.length}</span>
-			</span>
-		);
+		if (displayComments) {
+			comments = (
+				<span className="comments">
+					<Icon name="comments" />
+
+					<span className="comment-count">{item.comments ? item.comments.length : 0}</span>
+				</span>
+			);
+		}
 
 		if (view === 'comfortable') {
 			var {user: {htmlUrl, login: userName}} = item;
