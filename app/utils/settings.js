@@ -38,6 +38,18 @@ class Settings {
 		}
 		else if (objectKey) {
 			_.extend(db, key);
+
+			_.each(
+				db,
+				function(item, index) {
+					if (item === null) {
+						delete db[index];
+					}
+				}
+			);
+		}
+		else if (_.isNull(value)) {
+			delete db[key];
 		}
 		else {
 			db[key] = value;
