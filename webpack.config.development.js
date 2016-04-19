@@ -1,4 +1,5 @@
 import webpack from 'webpack';
+import webpackTargetElectronRenderer from 'webpack-target-electron-renderer';
 import baseConfig from './webpack.config.base';
 
 const config = {
@@ -42,9 +43,9 @@ const config = {
 				'NODE_ENV': JSON.stringify('development')
 			}
 		})
-	],
-
-	target: 'electron-renderer'
+	]
 };
+
+config.target = webpackTargetElectronRenderer(config);
 
 export default config;
