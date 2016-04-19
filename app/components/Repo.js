@@ -35,7 +35,7 @@ export default class Repo extends React.Component {
 		return <div className={cssClass}>
 				<h2 className="card-header" onClick={this.handleCollapseClick}>
 					<span className="repo-title">
-						<span class="repo-name">{item.name}</span>
+						<span className="repo-name">{item.name}</span>
 						<ExternalLink className="repo-link" href={`http://github.com/${item.path}`} stopPropagation={true}>
 							<Icon className="icon-monospaced" name="link" />
 						</ExternalLink>
