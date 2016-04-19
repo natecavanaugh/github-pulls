@@ -44,6 +44,7 @@ app.on('ready', function() {
 	var windowConfig = {
 		height: size.height,
 		resizable: true,
+    // show: false,
 		width: 768
 	};
 
@@ -58,6 +59,11 @@ app.on('ready', function() {
   mainWindow.loadURL(`file://${__dirname}/app/app.html`);
 
   var webContents = mainWindow.webContents;
+
+  // webContents.on('did-finish-load', () => {
+  //   mainWindow.show();
+  //   mainWindow.focus();
+  // });
 
   mainWindow.on('closed', () => {
     mainWindow = null;
