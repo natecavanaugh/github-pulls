@@ -26,7 +26,7 @@ const DEFAULT_OPTS = {
     '/test($|/)',
     '/tools($|/)',
     '/release($|/)',
-    '/main.js'
+    '/main.development.js'
   ].concat(devDeps.map(name => `/node_modules/${name}($|/)`))
   .concat(
     deps.filter(name => !electronCfg.externals.includes(name))
