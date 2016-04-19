@@ -1,53 +1,46 @@
-import webpack from 'webpack';
-import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import webpackTargetElectronRenderer from 'webpack-target-electron-renderer';
-import baseConfig from './webpack.config.base';
+/* eslint strict: 0 */
+'use strict';
 
-const config = {
-	...baseConfig,
+const webpack = require('webpack');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const webpackTargetElectronRenderer = require('webpack-target-electron-renderer');
+const baseConfig = require('./webpack.config.base');
 
-	devtool: 'source-map',
+const config = Object.create(baseConfig);
 
-	entry: './app/index',
+config.devtool = 'source-map';
 
-	output: {
-		...baseConfig.output,
-		publicPath: '../dist/'
-	},
+config.entry = './app/index';
 
-	module: {
-		...baseConfig.module,
-		loaders: [
-			...baseConfig.module.loaders,
-			{
-				test: /\.scss$/,
-				loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')
-			},
-			{
-				test: /\.svg$/,
-				loader: 'svg-inline'
-			}
-		]
-	},
+config.output.publicPath = '../dist/';
 
-	plugins: [
-		...baseConfig.plugins,
-		new webpack.optimize.OccurenceOrderPlugin(),
-		new webpack.DefinePlugin({
-			'__DEV__': false,
-			'process.env': {
-				'NODE_ENV': JSON.stringify('production')
-			}
-		}),
-		new webpack.optimize.UglifyJsPlugin({
-			compressor: {
-				screw_ie8: true,
-				warnings: false
-			}
-		}),
-		new ExtractTextPlugin('[name].css', { allChunks: true })
-	]
-};
+config.module.loaders.push(
+  {
+    test: /\.scss$/,
+    loader: ExtractTextPlugin.extract('style-loader', 'css-loader!sass-loader')
+  },
+ {
+    test: /\.svg$/,
+    loader: 'svg-inline'
+  }
+);
+
+config.plugins.push(
+  new webpack.optimize.OccurenceOrderPlugin(),
+  new webpack.DefinePlugin({
+    '__DEV__': false,
+    'process.env': {
+      'NODE_ENV': JSON.stringify('production')
+    }
+  }),
+  new webpack.optimize.UglifyJsPlugin({
+    compressor: {
+      screw_ie8: true,
+      warnings: false
+    }
+  }),
+  new ExtractTextPlugin('[name].css', { allChunks: true })
+);
 
 config.target = webpackTargetElectronRenderer(config);
 

@@ -1,51 +1,45 @@
-import webpack from 'webpack';
-import webpackTargetElectronRenderer from 'webpack-target-electron-renderer';
-import baseConfig from './webpack.config.base';
+/* eslint strict: 0 */
+'use strict';
 
-const config = {
-	...baseConfig,
-	debug: true,
+const webpack = require('webpack');
+const webpackTargetElectronRenderer = require('webpack-target-electron-renderer');
+const baseConfig = require('./webpack.config.base');
 
-	devtool: 'cheap-module-eval-source-map',
+const config = Object.create(baseConfig);
 
-	entry: [
-		'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
-		'./app/index'
-	],
+config.debug = true;
 
-	output: {
-		...baseConfig.output,
-		publicPath: 'http://localhost:3000/dist/'
-	},
+config.devtool = 'cheap-module-eval-source-map';
 
-	module: {
-		...baseConfig.module,
-		loaders: [
-			...baseConfig.module.loaders,
-			{
-				test: /\.scss$/,
-				loaders: ['style', 'css', 'sass']
-			},
-			{
-				test: /\.svg$/,
-				loader: 'svg-inline'
-			}
-		]
-	},
+config.entry = [
+  'webpack-hot-middleware/client?path=http://localhost:3000/__webpack_hmr',
+  './app/index'
+];
 
-	plugins: [
-		...baseConfig.plugins,
-		new webpack.HotModuleReplacementPlugin(),
-		new webpack.NoErrorsPlugin(),
-		new webpack.DefinePlugin({
-			'__DEV__': true,
-			'process.env': {
-				'NODE_ENV': JSON.stringify('development')
-			}
-		})
-	]
-};
+config.output.publicPath = 'http://localhost:3000/dist/';
+
+config.module.loaders.push(
+  {
+    test: /\.scss$/,
+    loaders: ['style', 'css', 'sass']
+  },
+ {
+    test: /\.svg$/,
+    loader: 'svg-inline'
+  }
+);
+
+config.plugins.push(
+  new webpack.HotModuleReplacementPlugin(),
+  new webpack.NoErrorsPlugin(),
+  new webpack.DefinePlugin({
+    '__DEV__': true,
+    'process.env': {
+      'NODE_ENV': JSON.stringify('development')
+    }
+  })
+);
 
 config.target = webpackTargetElectronRenderer(config);
 
-export default config;
+module.exports = config;

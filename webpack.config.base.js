@@ -1,5 +1,8 @@
-import path from 'path';
-import webpack from 'webpack';
+/* eslint strict: 0 */
+'use strict';
+
+const path = require('path');
+const webpack = require('webpack');
 
 let includePaths = [].concat(require('node-bourbon').includePaths);
 
