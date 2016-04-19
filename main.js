@@ -1,12 +1,5 @@
-/* eslint strict: 0 */
-'use strict';
+import electron, { app, BrowserWindow, Menu, crashReporter, shell } from 'electron';
 
-const electron = require('electron');
-const app = electron.app;
-const BrowserWindow = electron.BrowserWindow;
-const Menu = electron.Menu;
-const crashReporter = electron.crashReporter;
-const shell = electron.shell;
 let menu;
 let template;
 let mainWindow = null;

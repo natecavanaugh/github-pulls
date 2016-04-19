@@ -1,6 +1,5 @@
 import webpack from 'webpack';
 import ExtractTextPlugin from 'extract-text-webpack-plugin';
-import webpackTargetElectronRenderer from 'webpack-target-electron-renderer';
 import baseConfig from './webpack.config.base';
 
 const config = {
@@ -46,9 +45,9 @@ const config = {
 			}
 		}),
 		new ExtractTextPlugin('[name].css', { allChunks: true })
-	]
-};
+	],
 
-config.target = webpackTargetElectronRenderer(config);
+	target: 'electron-renderer'
+};
 
 module.exports = config;
