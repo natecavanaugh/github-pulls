@@ -22,6 +22,10 @@ config.module.loaders.push(
  {
     test: /\.svg$/,
     loader: 'svg-inline'
+  },
+ {
+    test: /\.gif$/,
+    loader: 'url-loader'
   }
 );
 

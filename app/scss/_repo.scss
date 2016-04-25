@@ -1,3 +1,11 @@
+.no-repos {
+	color: #92A6B5;
+	background: url(../images/no_content.gif) no-repeat center center;
+	background-size: 200px 200px;
+	padding-top: 250px;
+	text-align: center;
+}
+
 .repo-list {
 	.repo {
 		background-clip: padding-box;

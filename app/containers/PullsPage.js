@@ -72,7 +72,14 @@ class PullsPage extends Component {
 		var listContent = null;
 
 		if (!props.pageError) {
-			listContent = <RepoList {...props} repos={props.repos} issues={props.issues} />;
+			if (hasRepos) {
+				listContent = <RepoList {...props} repos={props.repos} issues={props.issues} />;
+			}
+			else {
+				listContent = <div className="no-repos">
+					<h1>You don't have any pull requests yet.</h1>
+				</div>;
+			}
 		}
 		else {
 			listContent = <ErrorMsg {...props.pageError} loadPulls={props.loadPulls} />;
