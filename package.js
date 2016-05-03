@@ -20,9 +20,9 @@ const DEFAULT_OPTS = {
   name: appName,
   asar: shouldUseAsar,
   ignore: [
-    '/test($|/)',
-    '/tools($|/)',
-    '/release($|/)'
+    '^/test($|/)',
+    '^/tools($|/)',
+    '^/release($|/)'
   ].concat(devDeps.map(name => `/node_modules/${name}($|/)`))
 };
 
