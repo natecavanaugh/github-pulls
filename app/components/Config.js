@@ -10,7 +10,7 @@ const REGEX_GITHUB_REPO = new RegExp(`(?:^((?:git@|https:\/\/)?(?:github.com[\/:
 
 const REGEX_VALID_REPO = new RegExp(`^${REGEX_VALID_REPO_BASE.source}$`);
 
-const REGEX_VALID_URL = /^(([^:/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))$/;
+import isURL from 'validator/lib/isURL';
 
 class Config extends Component {
 	constructor(props, context) {
@@ -224,34 +224,19 @@ class Config extends Component {
 	}
 
 	handleServerBlur = (event) => {
-		var {repos} = this.state;
+		var {id, value} = event.target;
 
-		var value = event.target.value.trim();
+		var validURL = isURL(value.trim());
 
-		var validURL = REGEX_VALID_URL.test(value);
-
-		var clearError = false;
-
-		if (validURL !== false) {
-			repos[index] = validURL;
-
-			clearError = true;
-		}
-		else if (value) {
-			this.setError(index);
+		if (!validURL) {
+			this.setError(id);
 		}
 		else {
-			clearError = true;
+			this.clearError(id);
 		}
-
-		if (clearError) {
-			this.clearError(index);
-		}
-
-		this.setState({repos});
 	}
 
-	handleServerChange(event) {
+	handleServerChange = (event) => {
 		var {name, value} = event.target;
 
 		this.setState(
@@ -357,12 +342,12 @@ class Config extends Component {
 		var jiraServer;
 
 		if (displayJira) {
-			var jiraErrors = !REGEX_VALID_URL.test(jiraServerValue);
+			var jiraErrors = !isURL(jiraServerValue);
 
 			jiraServer = (
 				<div className={`form-group ${(jiraErrors) ? 'has-error' : ''}`}>
 					<label className="sr-only" htmlFor="jiraServer">JIRA Server URL</label>
-					<input className="form-control" id="jiraServer" name="jiraServer" pattern={REGEX_VALID_URL.source.slice(1, -1)} placeholder={defaultJiraServerValue} required type="url" defaultValue={jiraServerValue} />
+					<input className="form-control" onBlur={this.handleServerBlur} onChange={this.handleServerChange} id="jiraServer" name="jiraServer"  placeholder={defaultJiraServerValue} required type="url" defaultValue={jiraServerValue} />
 				</div>
 			);
 		}

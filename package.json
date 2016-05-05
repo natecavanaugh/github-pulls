@@ -85,7 +85,8 @@
     "redux-devtools-log-monitor": "^1.0.5",
     "redux-router": "^1.0.0-beta8",
     "redux-thunk": "^2.0.1",
-    "svg-inline-react": "^1.0.1"
+    "svg-inline-react": "^1.0.1",
+    "validator": "^5.2.0"
   },
   "devEngines": {
     "node": "4.x || 5.x",
