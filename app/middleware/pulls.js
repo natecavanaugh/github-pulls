@@ -210,7 +210,9 @@ export default function(store) {
 					);
 
 					if (jiraTicket) {
-						jiraLink = `https://issues.liferay.com/browse/${jiraTicket}`;
+						var jiraServer = _.get(config, 'jiraServer', 'https://issues.liferay.com');
+
+						jiraLink = `${jiraServer}/browse/${jiraTicket}`;
 					}
 
 					title = title.replace(/^\s*-\s*/, '');

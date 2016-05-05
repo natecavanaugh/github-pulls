@@ -32,6 +32,7 @@ export default class PullRequest extends React.Component {
 		var view = config.view;
 
 		var displayComments = _.get(config, 'displayComments', true);
+		var displayJira = _.get(config, 'displayJira', true);
 		var displayStatus = _.get(config, 'displayStatus', true);
 
 		var status = item.status;
@@ -87,7 +88,7 @@ export default class PullRequest extends React.Component {
 						</h5>
 
 						<h4 title={item.title}>
-							<PullRequestLink item={item} />
+							<PullRequestLink item={item} displayJira={displayJira} />
 						</h4>
 					</div>
 					<div className="list-group-item-field">
@@ -101,7 +102,7 @@ export default class PullRequest extends React.Component {
 			content = <span className="pull-content">
 				<span className="pull-info">
 					<img className="avatar img-circle" src={item.user.avatarUrl} title={item.user.login} />
-					<PullRequestLink item={item} />
+					<PullRequestLink item={item} displayJira={displayJira} />
 				</span>
 				{pullStatus}
 				{issueLabels}

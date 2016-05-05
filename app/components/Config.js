@@ -6,9 +6,11 @@ import _ from 'lodash';
 
 const REGEX_VALID_REPO_BASE = /([^\W_](?:[\w\-]+|[^\W_])?\/[\w\-.]+?)/;
 
+const REGEX_GITHUB_REPO = new RegExp(`(?:^((?:git@|https:\/\/)?(?:github.com[\/:]))?|^)${REGEX_VALID_REPO_BASE.source}(?:$|(\.git)?$)`);
+
 const REGEX_VALID_REPO = new RegExp(`^${REGEX_VALID_REPO_BASE.source}$`);
 
-const REGEX_GITHUB_REPO = new RegExp(`(?:^((?:git@|https:\/\/)?(?:github.com[\/:]))?|^)${REGEX_VALID_REPO_BASE.source}(?:$|(\.git)?$)`);
+const REGEX_VALID_URL = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/;
 
 class Config extends Component {
 	constructor(props, context) {
@@ -23,7 +25,9 @@ class Config extends Component {
 		this.addField = this.addField.bind(this);
 		this.createRepos = this.createRepos.bind(this);
 		this.handleBlur = this.handleBlur.bind(this);
+		this.validateRepo = this.validateRepo.bind(this);
 		this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
+		this.handleServerChange = this.handleServerChange.bind(this);
 		this.handleSubmit = this.handleSubmit.bind(this);
 		this.removeField = this.removeField.bind(this);
 	}
@@ -219,6 +223,16 @@ class Config extends Component {
 		}
 	}
 
+	handleServerChange(event) {
+		var {name, value} = event.target;
+
+		this.setState(
+			{
+				[name]: value
+			}
+		);
+	}
+
 	handleSubmit(event, data) {
 		event.preventDefault();
 
@@ -226,7 +240,7 @@ class Config extends Component {
 
 		var dataRepos = data.repos;
 
-		dataRepos = _.isArray(dataRepos) ? dataRepos : [dataRepos];
+		dataRepos = _.castArray(dataRepos);
 
 		var errorFields = {};
 
@@ -255,7 +269,9 @@ class Config extends Component {
 		data.repos = [...validRepos];
 
 		data.displayComments = state.displayComments;
+		data.displayJira = state.displayJira;
 		data.displayStatus = state.displayStatus;
+		data.jiraServer = state.jiraServer;
 
 		if (!validRepos.length) {
 			validRepos.push('');
@@ -303,8 +319,25 @@ class Config extends Component {
 			error = <div className="alert alert-danger">{errorMsg}</div>;
 		}
 
+		var defaultJiraServerValue = 'https://issues.liferay.com';
+
 		var displayComments = _.get(state, 'displayComments', true);
+		var displayJira = _.get(state, 'displayJira', true);
 		var displayStatus = _.get(state, 'displayStatus', true);
+		var jiraServerValue = _.get(state, 'jiraServer', defaultJiraServerValue);
+
+		var jiraServer;
+
+		if (displayJira) {
+			var jiraErrors = !REGEX_VALID_URL.test(jiraServerValue);
+
+			jiraServer = (
+				<div className={`form-group ${(jiraErrors) ? 'has-error' : ''}`}>
+					<label className="sr-only" htmlFor="jiraServer">JIRA Server URL</label>
+					<input className="form-control" id="jiraServer" name="jiraServer" pattern={REGEX_VALID_URL.source.slice(1, -1)} placeholder={defaultJiraServerValue} required type="url" defaultValue={jiraServerValue} />
+				</div>
+			);
+		}
 
 		return (
 			<AutoForm onSubmit={this.handleSubmit}>
@@ -325,6 +358,15 @@ class Config extends Component {
 							<label>
 								<input checked={displayStatus} name="displayStatus" onChange={this.handleCheckboxChange} type="checkbox" /> Pull Status
 							</label>
+						</div>
+						<div className="form-inline">
+							<div className="checkbox">
+								<label>
+									<input checked={displayJira} name="displayJira" onChange={this.handleCheckboxChange} type="checkbox" /> <span title="JIRA-like ids are any uppercase alphanumeric letters (at least 3 characters) followed by a dash and a number, eg. FOO-1234">Link JIRA-like ID's to JIRA.</span>
+								</label>
+							</div>
+
+							{jiraServer}
 						</div>
 					</div>
 				</Modal>
