@@ -10,7 +10,7 @@ const REGEX_GITHUB_REPO = new RegExp(`(?:^((?:git@|https:\/\/)?(?:github.com[\/:
 
 const REGEX_VALID_REPO = new RegExp(`^${REGEX_VALID_REPO_BASE.source}$`);
 
-const REGEX_VALID_URL = /^(([^:/?#]+):)?(\/\/([^/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))?$/;
+const REGEX_VALID_URL = /^(([^:/?#]+):)?(\/\/([^\/?#]*))?([^?#]*)(\?([^#]*))?(#(.*))$/;
 
 class Config extends Component {
 	constructor(props, context) {
@@ -221,6 +221,34 @@ class Config extends Component {
 			}
 
 		}
+	}
+
+	handleServerBlur = (event) => {
+		var {repos} = this.state;
+
+		var value = event.target.value.trim();
+
+		var validURL = REGEX_VALID_URL.test(value);
+
+		var clearError = false;
+
+		if (validURL !== false) {
+			repos[index] = validURL;
+
+			clearError = true;
+		}
+		else if (value) {
+			this.setError(index);
+		}
+		else {
+			clearError = true;
+		}
+
+		if (clearError) {
+			this.clearError(index);
+		}
+
+		this.setState({repos});
 	}
 
 	handleServerChange(event) {
