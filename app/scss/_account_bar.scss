@@ -233,7 +233,7 @@
 		padding: 0.5em 0;
 
 		.loading-bar {
-			bottom: -0.5em;
+			// bottom: -0.5em;
 		}
 
 		.management-bar {
@@ -242,6 +242,10 @@
 			.management-bar-header-right .btn {
 				margin-bottom: 6px;
 				margin-top: 6px;
+			}
+
+			.reload-pulls {
+				padding: 8px 15px;
 			}
 		}
 	}

@@ -27,7 +27,7 @@ class AccountBar extends React.Component {
 			<div className="container-fluid-1280 app-column">
 				<ul className="management-bar-nav nav">
 					<li>
-						<a href="javascript:;" onClick={(e) => {props.loadPulls();}}>
+						<a className="reload-pulls" href="javascript:;" onClick={props.loadPulls}>
 							<Icon className="icon-monospaced" name="reload" />
 							Reload Pulls
 						</a>
