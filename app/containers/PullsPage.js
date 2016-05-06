@@ -60,7 +60,7 @@ class PullsPage extends Component {
 		if (props.loading) {
 			cssClass += ' loading';
 
-			if (!hasRepos) {
+			if (!props.requestMade) {
 				loader = <div className="loader"></div>;
 			}
 		}
@@ -75,9 +75,9 @@ class PullsPage extends Component {
 			if (hasRepos) {
 				listContent = <RepoList {...props} repos={props.repos} issues={props.issues} />;
 			}
-			else {
+			else if (props.requestMade) {
 				listContent = <div className="no-repos">
-					<h1>You don't have any pull requests yet.</h1>
+					<h1>{'You don\'t have any pull requests yet.'}</h1>
 				</div>;
 			}
 		}

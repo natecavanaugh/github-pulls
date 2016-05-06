@@ -133,6 +133,21 @@ const rootReducer = combineReducers(
 			return newState;
 		},
 
+		requestMade: function(state = null, action) {
+			var newState = state;
+
+			var {err, type} = action;
+
+			if (type === LOGIN_COMPLETE) {
+				newState = false;
+			}
+			else if (checkType(type, PULLS_FAILURE, PULLS_SUCCESS)) {
+				newState = true;
+			}
+
+			return newState;
+		},
+
 		router,
 
 		settings: function(state = {}, action) {
