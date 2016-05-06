@@ -8,12 +8,16 @@
 			margin-bottom: 10px;
 		}
 	}
+
+	.config-popover {
+		max-width: 300px;
+	}
 }
 
 .modal-sheet {
 	display: block;
 	background-color: rgba(0,0,0,0.3);
-	top: 62px;
+	top: 60px;
 
 	.modal-dialog {
 		margin-top: 0;
@@ -39,5 +43,11 @@
 				margin-top: 0;
 			}
 		}
+	}
+}
+
+.display-compact {
+	.modal-sheet {
+		top: 46px;
 	}
 }

@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import Icon from './Icon';
+import { Modal as BSModal, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 export class Modal extends Component {
 
@@ -15,25 +17,41 @@ export class Modal extends Component {
 	render() {
 		var props = this.props;
 
+		var reason;
+
+		if (props.disableSave && props.errors) {
+			var icon = <Icon className="text-danger" name="exclamation-circle" />;
+			var popoverTitle = <span>{icon} {'Can\'t save your configuration'}</span>;
+
+			var popover = (
+				<Popover className="config-popover" id="configSaveErrorMsg" title={popoverTitle}>
+					<div className="text-danger">{props.errors}</div>
+				</Popover>
+			);
+
+			reason = (
+				<OverlayTrigger overlay={popover} placement="top" rootClose trigger={[/*'hover', 'focus', */'click']}>
+					<Button bsStyle="link">{icon}</Button>
+				</OverlayTrigger>
+			);
+		}
+
+		var modal;
+
 		return (
-			<div className="modal fade in modal-sheet" tabIndex="-1" role="dialog">
-				<div className="modal-dialog">
-					<div className="modal-content">
-						<div className="modal-header">
-							<button type="button" className="close" data-dismiss="modal" aria-label="Close" onClick={() => props.close()}>
-							<span aria-hidden="true">&times;</span></button>
-							<h4 className="modal-title">{props.title}</h4>
-						</div>
-						<div className="modal-body">
-							{this.props.children}
-						</div>
-						<div className="modal-footer">
-							<button type="button" className="btn btn-default" data-dismiss="modal" onClick={() => props.close()}>Close</button>
-							<button disabled={props.disableSave} type="submit" className="btn btn-primary">Save</button>
-						</div>
-					</div>
-				</div>
-			</div>
+			<BSModal.Dialog className="modal-sheet fade in">
+				<BSModal.Header closeButton onHide={props.close}>
+					<BSModal.Title>{props.title}</BSModal.Title>
+				</BSModal.Header>
+				<BSModal.Body>
+					{props.children}
+				</BSModal.Body>
+				<BSModal.Footer>
+					<Button onClick={props.close}>Close</Button>
+					<Button bsStyle="primary" disabled={!!props.disableSave} type="submit">Save</Button>
+					{' '}{reason}
+				</BSModal.Footer>
+			</BSModal.Dialog>
 		);
 	}
 }

@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
+import ReactDOM from 'react-dom';
 import Modal from './Modal';
 import Icon from './Icon';
 import AutoForm from 'react-auto-form';
 import _ from 'lodash';
+import { Button, Checkbox, FormGroup, ControlLabel, FormControl, InputGroup } from 'react-bootstrap';
 
 const REGEX_VALID_REPO_BASE = /([^\W_](?:[\w\-]+|[^\W_])?\/[\w\-.]+?)/;
 
@@ -43,7 +45,13 @@ class Config extends Component {
 	clearError(index) {
 		var {errorFields, errorMsg} = this.state;
 
-		delete errorFields[index];
+		if (_.isObject(index)) {
+			if (!_.isArray(index)) {
+				index = _.keys(index);
+			}
+		}
+
+		errorFields = _.omit(errorFields, _.castArray(index));
 
 		if (!_.size(errorFields)) {
 			errorMsg = null;
@@ -56,7 +64,13 @@ class Config extends Component {
 		var {errorFields, errorMsg} = this.state;
 
 		if (_.isObject(index)) {
+			var types = _.transform(index, (acc, n,i) => acc[!!n][i] = n, {true: {}, false: {}});
+
+			errorFields = types.true;
+
 			_.merge(errorFields, index);
+
+			this.clearError(types.false);
 		}
 		else {
 			errorFields[index] = true;
@@ -69,8 +83,10 @@ class Config extends Component {
 		this.setState({errorFields, errorMsg});
 	}
 
-	getInput(index) {
-		return this.refs[`repos${index}`];
+	getInput(ref) {
+		var node = ReactDOM.findDOMNode(this.refs[ref]);
+
+		return node;
 	}
 
 	focusLastField() {
@@ -78,7 +94,7 @@ class Config extends Component {
 
 		var lastIndex = repos.length - 1;
 
-		var input = this.getInput(lastIndex);
+		var input = this.getInput(`repos${lastIndex}`);
 
 		if (input) {
 			input.focus();
@@ -96,18 +112,20 @@ class Config extends Component {
 			length = repos.push('');
 			lastIndex = length - 1;
 
-			this.clearError(lastIndex);
+			this.clearError(`repos${lastIndex}`);
 		}
 
 		this.setState({focusLastField: true, repos});
 	}
 
-	removeField(event, index) {
+	removeField(event) {
 		var {repos} = this.state;
+
+		var {dataset: {index}} = event.currentTarget;
 
 		repos.splice(index, 1);
 
-		this.clearError(index);
+		this.clearError(`repos${index}`);
 
 		if (!repos.length) {
 			repos.push('');
@@ -117,7 +135,9 @@ class Config extends Component {
 	}
 
 	createRepos(item, index, coll) {
-		var hasError = this.state.errorFields[index] === true;
+		var repoKey = `repos${index}`;
+
+		var hasError = this.state.errorFields[repoKey] === true;
 
 		var btnClass = 'btn btn-';
 		var groupClass = 'input-group ';
@@ -132,19 +152,23 @@ class Config extends Component {
 
 		var disabled = !item;
 
-		return <div key={'configRepos' + index} className={groupClass}>
-			<input className="form-control" id={'repos' + index} name="repos" onBlur={(event) => this.handleBlur(event, index)} onChange={(event) => this.handleChange(event, index)} onPaste={(event) => this.handlePaste(event, index)} placeholder="e.g. natecavanaugh/github-pulls" ref={'repos' + index} value={item} />
-			<div className="input-group-btn">
-				<button aria-label="Remove" className={btnClass} onClick={(event) => this.removeField(event, index)} type="button"><Icon name="hr" /></button>
-				<button aria-label="Add" className={btnClass} disabled={disabled} onClick={this.addField} type="button"><Icon name="plus" /></button>
-			</div>
-		</div>;
+		return <FormGroup key={`configRepos${index}`}>
+			<InputGroup className={groupClass}>
+				<FormControl type="text" data-index={index} id={repoKey} name="repos" onBlur={this.handleBlur} onChange={this.handleChange} onPaste={this.handlePaste} placeholder="e.g. natecavanaugh/github-pulls" ref={repoKey} value={item} />
+				<InputGroup.Button>
+					<Button aria-label="Remove" data-index={index} className={btnClass} onClick={this.removeField}><Icon name="hr" /></Button>
+					<Button aria-label="Add" data-index={index} className={btnClass} disabled={disabled} onClick={this.addField}><Icon name="plus" /></Button>
+				</InputGroup.Button>
+			</InputGroup>
+		</FormGroup>
 	}
 
-	handleBlur(event, index) {
+	handleBlur = (event) => {
 		var {repos} = this.state;
 
-		var value = event.target.value.trim();
+		var {id, value, dataset: {index}} = event.target;
+
+		value = value.trim();
 
 		var validRepo = this.validateRepo(value);
 
@@ -156,23 +180,25 @@ class Config extends Component {
 			clearError = true;
 		}
 		else if (value) {
-			this.setError(index);
+			this.setError(id);
 		}
 		else {
 			clearError = true;
 		}
 
 		if (clearError) {
-			this.clearError(index);
+			this.clearError(id);
 		}
 
 		this.setState({repos});
 	}
 
-	handleChange(event, index) {
+	handleChange = (event) => {
 		var {repos} = this.state;
 
-		repos[index] = event.target.value;
+		var {value, dataset: {index}} = event.target;
+
+		repos[index] = value;
 
 		this.setState({repos});
 	}
@@ -187,7 +213,7 @@ class Config extends Component {
 		);
 	}
 
-	handlePaste(event, index) {
+	handlePaste = (event) => {
 		var data = event.clipboardData.getData('text/plain');
 
 		if (data.indexOf('\n') > -1) {
@@ -324,13 +350,7 @@ class Config extends Component {
 
 		var {errorMsg} = state;
 
-		var error = null;
-
 		var hasErrors = _.size(state.errorFields);
-
-		if (errorMsg && hasErrors) {
-			error = <div className="alert alert-danger">{errorMsg}</div>;
-		}
 
 		var defaultJiraServerValue = 'https://issues.liferay.com';
 
@@ -345,42 +365,36 @@ class Config extends Component {
 			var jiraErrors = !isURL(jiraServerValue);
 
 			jiraServer = (
-				<div className={`form-group ${(jiraErrors) ? 'has-error' : ''}`}>
-					<label className="sr-only" htmlFor="jiraServer">JIRA Server URL</label>
-					<input className="form-control" onBlur={this.handleServerBlur} onChange={this.handleServerChange} id="jiraServer" name="jiraServer"  placeholder={defaultJiraServerValue} required type="url" defaultValue={jiraServerValue} />
-				</div>
+				<FormGroup className={`form-group ${(jiraErrors) ? 'has-error' : ''}`} controlId="jiraServer">
+					<ControlLabel className="sr-only">JIRA Server URL</ControlLabel>
+					<FormControl onBlur={this.handleServerBlur} onChange={this.handleServerChange} name="jiraServer"  placeholder={defaultJiraServerValue} required type="url" defaultValue={jiraServerValue} />
+				</FormGroup>
 			);
 		}
 
 		return (
 			<AutoForm onSubmit={this.handleSubmit}>
-				<Modal close={props.closeConfig} title="Settings" disableSave={hasErrors}>
-					{error}
+				<Modal close={props.closeConfig} title="Settings" disableSave={hasErrors} errors={errorMsg}>
 					<div className="config-section config-repos">
 						<h3>Repos</h3>
 						{allRepos}
 					</div>
 					<div className="config-section config-display">
 						<h3>Display</h3>
-						<div className="checkbox">
-							<label>
-								<input checked={displayComments} name="displayComments" onChange={this.handleCheckboxChange} type="checkbox" /> Comment Count
-							</label>
-						</div>
-						<div className="checkbox">
-							<label>
-								<input checked={displayStatus} name="displayStatus" onChange={this.handleCheckboxChange} type="checkbox" /> Pull Status
-							</label>
-						</div>
-						<div className="form-inline">
-							<div className="checkbox">
-								<label>
-									<input checked={displayJira} name="displayJira" onChange={this.handleCheckboxChange} type="checkbox" /> <span title="JIRA-like ids are any uppercase alphanumeric letters (at least 3 characters) followed by a dash and a number, eg. FOO-1234">Link JIRA-like ID's to JIRA.</span>
-								</label>
-							</div>
+						<Checkbox checked={displayComments} name="displayComments" onChange={this.handleCheckboxChange}>
+							Comment Count
+						</Checkbox>
+						<Checkbox checked={displayStatus} name="displayStatus" onChange={this.handleCheckboxChange}>
+							Pull Status
+						</Checkbox>
 
-							{jiraServer}
-						</div>
+						<Checkbox  checked={displayJira} name="displayJira" onChange={this.handleCheckboxChange}>
+							<span title="JIRA-like ids are any uppercase alphanumeric letters (at least 3 characters) followed by a dash and a number, eg. FOO-1234">
+								Link JIRA-like ID's to JIRA.
+							</span>
+						</Checkbox>
+
+						{jiraServer}
 					</div>
 				</Modal>
 			</AutoForm>
