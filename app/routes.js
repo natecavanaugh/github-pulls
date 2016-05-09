@@ -26,7 +26,7 @@ function checkAuth(nextState, replace) {
 
 export default (
   <Route path="/" component={App}>
-    <IndexRoute component={PullsPage} />
+    <IndexRoute component={PullsPage} onEnter={checkAuth} />
     <Route path="config" component={PullsPage} onEnter={checkAuth} />
     <Route path="login" component={LoginPage} />
     <Route path="*" component={PullsPage} onEnter={checkAuth} />
