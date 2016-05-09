@@ -4,12 +4,6 @@ import {connect} from 'react-redux';
 import * as pageActions from '../actions/page';
 
 class App extends Component {
-	constructor(...args) {
-		super(...args);
-
-		this.handleOffline = this.handleOffline.bind(this);
-	}
-
 	componentWillUnmount() {
 		window.removeEventListener('online', this.handleOffline);
 		window.removeEventListener('offline', this.handleOffline);
@@ -22,7 +16,7 @@ class App extends Component {
 		this.handleOffline();
 	}
 
-	handleOffline(e) {
+	handleOffline = (e) => {
 		this.props.pageOnline(navigator.onLine);
 	}
 
