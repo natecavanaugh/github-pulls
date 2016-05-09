@@ -16,7 +16,7 @@ export default class ErrorMsg extends React.Component {
 		var props = this.props;
 
 		return <div className="error-warning">
-				<h1>Github Pulls Error</h1>
+				<h1 className="sr-only">Github Pulls Error</h1>
 				<div className="error-status">
 					<p>
 						<Icon name="exclamation-circle" /> <span>{props.statusText}<br />
