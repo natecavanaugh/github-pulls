@@ -33,7 +33,7 @@ class PullsPage extends Component {
 	_isConfigPath(props) {
 		props = props || this.props;
 
-		return props.router.location.pathname === '/config';
+		return props.routing.locationBeforeTransitions.pathname === '/config';
 	}
 
 	_loadPullsTask() {

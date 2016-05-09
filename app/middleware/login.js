@@ -2,7 +2,8 @@ import _ from 'lodash';
 
 import github from '../utils/github';
 import settings from '../utils/settings';
-import {pushState} from 'redux-router';
+
+import {browserHistory} from 'react-router';
 
 import {LOGIN_REQUEST, loginFailure, loginSuccess, loginComplete} from '../actions/login';
 import {loadConfig} from '../actions/config';
@@ -79,7 +80,8 @@ export default function(store) {
 						next(loginSuccess(username, token));
 
 						store.dispatch(loadConfig(username));
-						store.dispatch(pushState(null, '/'));
+
+						browserHistory.push('/')
 
 						return github.user.getAsync({});
 					}

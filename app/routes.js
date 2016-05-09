@@ -7,7 +7,7 @@ import LoginPage from './containers/LoginPage';
 import settings from './utils/settings';
 import github from './utils/github';
 
-function checkAuth(nextState, replaceState) {
+function checkAuth(nextState, replace) {
 	var token = settings.val('token');
 
 	if (token) {
@@ -20,14 +20,15 @@ function checkAuth(nextState, replaceState) {
 		);
 	}
 	else {
-		replaceState(null, '/login');
+		replace('/login');
 	}
 }
 
 export default (
   <Route path="/" component={App}>
-    <IndexRoute component={PullsPage} onEnter={checkAuth} />
+    <IndexRoute component={PullsPage} />
     <Route path="config" component={PullsPage} onEnter={checkAuth} />
     <Route path="login" component={LoginPage} />
+    <Route path="*" component={PullsPage} onEnter={checkAuth} />
   </Route>
 );

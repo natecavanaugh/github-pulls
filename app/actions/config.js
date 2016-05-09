@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {pushState} from 'redux-router';
+import {browserHistory} from 'react-router';
 import {getUserConfig} from '../utils/user_config';
 import {pullsRequest} from './pulls';
 
@@ -17,7 +17,8 @@ export function configClose() {
 export function closeConfig() {
 	return (dispatch, state) => {
 		dispatch(configClose());
-		dispatch(pushState(null, '/'));
+
+		browserHistory.push('/');
 	};
 }
 
@@ -41,7 +42,8 @@ export function loadConfig(username) {
 export function openConfig() {
 	return (dispatch, state) => {
 		dispatch(configOpen());
-		dispatch(pushState(null, '/config'));
+
+		browserHistory.push('/config');
 	};
 }
 
@@ -59,7 +61,7 @@ export function saveConfig(fields) {
 		userConfig.val(fields);
 
 		dispatch(configSave(fields));
-		dispatch(pushState(null, '/'));
+		browserHistory.push('/');
 		dispatch(pullsRequest());
 	};
 }

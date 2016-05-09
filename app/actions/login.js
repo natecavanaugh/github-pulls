@@ -1,5 +1,5 @@
 import settings from '../utils/settings';
-import {pushState} from 'redux-router';
+import {browserHistory} from 'react-router';
 
 export const LOGIN_COMPLETE = 'LOGIN_COMPLETE';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
@@ -61,6 +61,7 @@ export function logout() {
 export function logoutAndRedirect() {
 	return (dispatch, state) => {
 		dispatch(logout());
-		dispatch(pushState(null, '/login'));
+
+		browserHistory.push('/login');
 	};
 }

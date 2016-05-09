@@ -1,7 +1,7 @@
 import {combineReducers} from 'redux';
 import _ from 'lodash';
 
-import {routerStateReducer as router} from 'redux-router';
+import { routerReducer as routing } from 'react-router-redux';
 
 import {PULLS_REQUEST, PULLS_SUCCESS, PULLS_FAILURE} from '../actions/pulls';
 
@@ -121,6 +121,20 @@ const rootReducer = combineReducers(
 			if (type === PULLS_FAILURE) {
 				var {defaultMessage: statusText, message} = err;
 
+				if (_.isString(message) && _.isUndefined(statusText)) {
+					try {
+						var errObj = JSON.parse(message);
+
+						statusText = errObj.statusText || errObj.defaultMessage || 'Error';
+						message = errObj.message;
+					}
+					catch (e) {
+						// console.log(e);
+					}
+				}
+
+				console.log(message, statusText);
+
 				newState = {
 					message,
 					statusText
@@ -148,7 +162,7 @@ const rootReducer = combineReducers(
 			return newState;
 		},
 
-		router,
+		routing,
 
 		settings: function(state = {}, action) {
 			var newState = state;
