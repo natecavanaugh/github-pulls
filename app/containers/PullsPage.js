@@ -87,6 +87,7 @@ class PullsPage extends Component {
 
 		return <div className={cssClass}>
 			<AccountBar {...props} />
+			{errMsg}
 			{listContent}
 			{configModal}
 			{loader}
