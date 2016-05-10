@@ -84,7 +84,7 @@ const rootReducer = combineReducers(
 						errors = JSON.parse(err.message).message;
 					}
 					catch (e) {
-						console.log(e);
+						console.log('loginError: couldn\'t parse JSON message', e, err);
 					}
 				}
 
@@ -129,11 +129,9 @@ const rootReducer = combineReducers(
 						message = errObj.message;
 					}
 					catch (e) {
-						// console.log(e);
+						console.log('pageError: couldn\'t parse JSON message', e, err);
 					}
 				}
-
-				console.log(message, statusText);
 
 				newState = {
 					message,
