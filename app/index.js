@@ -7,14 +7,14 @@ import {loginSuccess, loginComplete} from './actions/login';
 import {loadConfig} from './actions/config';
 import settings from './utils/settings';
 
-import { Router, browserHistory } from 'react-router';
+import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
 import './scss/main.scss';
 
 const store = configureStore();
 
-const history = syncHistoryWithStore(browserHistory, store);
+const history = syncHistoryWithStore(hashHistory, store);
 
 let {username, token, avatar} = settings.load();
 

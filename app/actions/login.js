@@ -1,5 +1,5 @@
 import settings from '../utils/settings';
-import {browserHistory} from 'react-router';
+import {hashHistory} from 'react-router';
 
 export const LOGIN_COMPLETE = 'LOGIN_COMPLETE';
 export const LOGIN_FAILURE = 'LOGIN_FAILURE';
@@ -62,6 +62,6 @@ export function logoutAndRedirect() {
 	return (dispatch, state) => {
 		dispatch(logout());
 
-		browserHistory.push('/login');
+		hashHistory.push('/login');
 	};
 }

@@ -3,7 +3,7 @@ import _ from 'lodash';
 import github from '../utils/github';
 import settings from '../utils/settings';
 
-import {browserHistory} from 'react-router';
+import {hashHistory} from 'react-router';
 
 import {LOGIN_REQUEST, loginFailure, loginSuccess, loginComplete} from '../actions/login';
 import {loadConfig} from '../actions/config';
@@ -81,7 +81,7 @@ export default function(store) {
 
 						store.dispatch(loadConfig(username));
 
-						browserHistory.push('/')
+						hashHistory.push('/')
 
 						return github.user.getAsync({});
 					}

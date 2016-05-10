@@ -7,11 +7,11 @@ import routes from '../routes';
 
 import login from '../middleware/login';
 import pulls from '../middleware/pulls';
-import {browserHistory} from 'react-router';
+import {hashHistory} from 'react-router';
 import {routerMiddleware} from 'react-router-redux';
 
 const enhancer = compose(
-	applyMiddleware(thunk, routerMiddleware(browserHistory), login, pulls),
+	applyMiddleware(thunk, routerMiddleware(hashHistory), login, pulls),
 	DevTools.instrument(),
 	persistState(
 		window.location.href.match(

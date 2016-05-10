@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import {browserHistory} from 'react-router';
+import {hashHistory} from 'react-router';
 import {getUserConfig} from '../utils/user_config';
 import {pullsRequest} from './pulls';
 
@@ -18,7 +18,7 @@ export function closeConfig() {
 	return (dispatch, state) => {
 		dispatch(configClose());
 
-		browserHistory.push('/');
+		hashHistory.push('/');
 	};
 }
 
@@ -43,7 +43,7 @@ export function openConfig() {
 	return (dispatch, state) => {
 		dispatch(configOpen());
 
-		browserHistory.push('/config');
+		hashHistory.push('/config');
 	};
 }
 
@@ -61,7 +61,7 @@ export function saveConfig(fields) {
 		userConfig.val(fields);
 
 		dispatch(configSave(fields));
-		browserHistory.push('/');
+		hashHistory.push('/');
 		dispatch(pullsRequest());
 	};
 }
