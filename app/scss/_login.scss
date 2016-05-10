@@ -1,4 +1,24 @@
 .login form {
 	margin: 0 auto;
 	width: 300px;
+
+	.form-group {
+		.control-label {
+			opacity: 0;
+			transform: translateY(160%);
+
+			transition: {
+				duration: 0.25s;
+				property: opacity, transform;
+				timing-function: ease-in-out;
+			}
+		}
+
+		&.has-value {
+			.control-label {
+				opacity: 1;
+				transform: translateY(0);
+			}
+		}
+	}
 }

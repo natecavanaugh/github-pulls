@@ -1,10 +1,19 @@
-.error-status p .reload-pulls {
-	display: block;
-	margin-top: 1em;
-	text-align: center;
-}
+.error-status {
+	padding-left: 40px;
+	position: relative;
 
-.error-status .lexicon-icon {
-	height: 1em;
-	width: 1em;
+	p .reload-pulls {
+		display: block;
+		margin-top: 1em;
+		text-align: center;
+	}
+
+	.lexicon-icon {
+		height: 1em;
+		left: 10px;
+		position: absolute;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 1em;
+	}
 }
