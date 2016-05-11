@@ -22,9 +22,14 @@ process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
 var NODE_ENV = process.env.NODE_ENV;
 
-if (NODE_ENV === 'development') {
-  require('electron-debug')();
-}
+var DEV_ENV = NODE_ENV === 'development';
+
+require('electron-debug')(
+  {
+    enabled: true,
+    showDevTools: DEV_ENV
+  }
+);
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') app.quit();
@@ -48,7 +53,7 @@ app.on('ready', function() {
 		width: 768
 	};
 
-	if (NODE_ENV === 'development') {
+	if (DEV_ENV) {
 		// console.log(size);
 		// Account for the devtools being open
 		windowConfig.width = Math.min(1400, size.width);
@@ -69,7 +74,8 @@ app.on('ready', function() {
     mainWindow = null;
   });
 
-  if (NODE_ENV === 'development') {
+  if (DEV_ENV) {
+    // require('devtron').install();
     webContents.openDevTools();
   }
 
