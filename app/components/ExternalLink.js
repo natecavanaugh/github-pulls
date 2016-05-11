@@ -1,5 +1,5 @@
 import React from 'react';
-import shell from 'shell';
+import {shell} from 'electron';
 
 export default class ExternalLink extends React.Component {
 	handleOnClick(event) {

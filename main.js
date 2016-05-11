@@ -31,9 +31,9 @@ app.on('window-all-closed', () => {
 });
 
 app.on('ready', function() {
-  var atomScreen = require('screen');
+  var electronScreen = electron.screen;
 
-  var size = atomScreen.getPrimaryDisplay().workAreaSize;
+  var size = electronScreen.getPrimaryDisplay().workAreaSize;
 
   global.USER_PREFS_PATH = app.getPath('userData');
 
