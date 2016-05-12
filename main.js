@@ -74,11 +74,6 @@ app.on('ready', function() {
     mainWindow = null;
   });
 
-  if (DEV_ENV) {
-    // require('devtron').install();
-    webContents.openDevTools();
-  }
-
   if (process.platform === 'darwin') {
     template = [{
       label: 'Github Pulls',
