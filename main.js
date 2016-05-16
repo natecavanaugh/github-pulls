@@ -3,7 +3,7 @@
 
 const electron = require('electron');
 
-const {app, BrowserWindow, crashReporter, Menu, shell} = electron;
+const {app, BrowserWindow, Menu, shell} = electron;
 
 let menu;
 let template;
@@ -11,16 +11,7 @@ let mainWindow = null;
 
 var pkg = require('./package.json');
 
-const {companyName, productName} = pkg;
-
-crashReporter.start(
-	{
-		productName,
-		companyName,
-		submitURL: 'https://your-domain.com/url-to-submit',
-		autoSubmit: true
-	}
-);
+const {productName} = pkg;
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'production';
 
@@ -112,7 +103,22 @@ app.on('ready', function() {
 				click() {
 					app.quit();
 				}
-			}]
+			}
+			].concat(
+				DEV_ENV ?
+				[
+					{type: 'separator'},
+					{
+						label: 'Crash Main Process',
+						click() {
+							process.crash();
+						}
+					}
+				]
+				:
+				[]
+
+			)
 		},
 		{
 			label: 'Edit',
