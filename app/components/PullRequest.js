@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import _ from 'lodash';
 
 import ExternalLink from './ExternalLink';
 import Icon from './Icon';
@@ -12,13 +13,17 @@ var MAP_STATUS_STATE = {
 };
 
 export default class PullRequest extends Component {
-	constructor(props, context) {
-		super(props, context);
-
-		this.handleDrag = this.handleDrag.bind(this);
+	getInitials(string) {
+		return _.chain(string)
+				.startCase()
+				.words()
+				.transform((res, n, i, c) => i === 0 || i === c.length - 1 ? res.push(n) : true)
+				.map(n => n[0])
+				.join('')
+				.value();
 	}
 
-	handleDrag(e) {
+	handleDrag = (e) => {
 		var {item} = this.props;
 
 		if (item.pullRequest) {
@@ -69,9 +74,15 @@ export default class PullRequest extends Component {
 			);
 		}
 
+		var {login} = item.user, name = login;
+
+		if (item.userFull && item.userFull.name) {
+			({name} = item.userFull);
+		}
+
 		if (view === 'comfortable') {
 			var {user: {htmlUrl, login: userName}} = item;
-			var sent = `sent ${item.timeAgo}`;
+			var sent = `sent this ${item.timeAgo}`;
 
 			content = <div className="card card-horizontal">
 				<div className="card-row card-row-padded">
@@ -84,7 +95,7 @@ export default class PullRequest extends Component {
 					</div>
 					<div className="card-col-content card-col-gutters">
 						<h5 className="text-default pull-title" title={`${userName} ${sent} (${item.createDate})`}>
-							<span><ExternalLink href={htmlUrl} title={userName} /> {sent}</span> {issueLabels}
+							<span><ExternalLink href={htmlUrl} title={name} /> {sent}</span> {issueLabels}
 						</h5>
 
 						<h4 title={item.title}>
@@ -101,13 +112,13 @@ export default class PullRequest extends Component {
 		else {
 			content = <span className="pull-content">
 				<span className="pull-info">
-					<img className="avatar img-circle" src={item.user.avatarUrl} title={item.user.login} />
+						<img className="avatar img-circle" src={item.user.avatarUrl} title={item.user.login} />
 					<PullRequestLink item={item} displayJira={displayJira} />
 				</span>
 				{pullStatus}
 				{issueLabels}
 				<span className="pull-meta">
-					<span className="from-user">{item.fromUser}</span>
+					<span className="from-user" title={item.fromUser}>{name}</span>
 					<span className="create-date" title={item.createDate}>{item.timeAgo}</span>
 				</span>
 				{comments}

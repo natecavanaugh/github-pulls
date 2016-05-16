@@ -64,6 +64,8 @@ export default function(store) {
 					);
 				};
 
+				var USER_CACHE = {};
+
 				var getRepoPullsIssues = function(item) {
 					return Promise.join(
 						getRepoIssues(item),
@@ -110,9 +112,15 @@ export default function(store) {
 								);
 							}
 
+							var userPromises = _(allIssuesPulls)
+										.map('user.login')
+										.filter(user => !_.has(USER_CACHE, user))
+										.map(user => github.user.getFromAsync({user}))
+										.value();
+
 							return Promise.join(
-								...[allCommentsPromise, pullCommentsPromise, statusPromise],
-								function(allComments, pullComments, pullStatuses) {
+								allCommentsPromise, pullCommentsPromise, statusPromise, ...userPromises,
+								function(allComments, pullComments, pullStatuses, ...users) {
 									if (allComments) {
 										allComments.forEach(
 											(item, index) => {
@@ -138,6 +146,22 @@ export default function(store) {
 											}
 										);
 									}
+
+									if (users.length) {
+										users.forEach(
+											(item, index) => {
+												USER_CACHE[item.login] = item;
+											}
+										);
+									}
+
+									allIssuesPulls.forEach(
+										(item, index) => {
+											if (!item.userFull) {
+												item.userFull = USER_CACHE[item.user.login];
+											}
+										}
+									);
 								}
 							).return(item);
 						}
