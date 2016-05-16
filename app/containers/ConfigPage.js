@@ -3,9 +3,9 @@ import {connect} from 'react-redux';
 import Config from '../components/Config';
 import * as ConfigActions from '../actions/config';
 
-import React from 'react';
+import React, {Component} from 'react';
 
-export class ConfigPage extends React.Component {
+export class ConfigPage extends Component {
 	render() {
 
 		return (

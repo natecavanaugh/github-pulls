@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 import Icon from './Icon';
 import { Alert, Button } from 'react-bootstrap';
 
-export default class ErrorMsg extends React.Component {
+export default class ErrorMsg extends Component {
 	handleClick = (e) => {
 		this.props.loadPulls();
 	}

@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import Branch from './Branch';
 import ExternalLink from './ExternalLink';
 import Icon from './Icon';
 
-export default class Repo extends React.Component {
+export default class Repo extends Component {
 	constructor(props, context) {
 		super(props, context);
 

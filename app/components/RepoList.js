@@ -1,9 +1,9 @@
 import _ from 'lodash';
-import React from 'react';
+import React, {Component} from 'react';
 
 import Repo from './Repo';
 
-export class RepoList extends React.Component {
+export class RepoList extends Component {
 	shouldComponentUpdate(nextProps, nextState) {
 		return _.isObject(nextProps.repos) && _.isObject(nextProps.issues);
 	}

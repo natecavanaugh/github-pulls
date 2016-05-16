@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import ExternalLink from './ExternalLink';
 
-export default class PullRequestLink extends React.Component {
+export default class PullRequestLink extends Component {
 	render() {
 		var item = this.props.item;
 

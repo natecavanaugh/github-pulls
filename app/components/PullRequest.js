@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import ExternalLink from './ExternalLink';
 import Icon from './Icon';
@@ -11,7 +11,7 @@ var MAP_STATUS_STATE = {
 	success: 'check-circle'
 };
 
-export default class PullRequest extends React.Component {
+export default class PullRequest extends Component {
 	constructor(props, context) {
 		super(props, context);
 

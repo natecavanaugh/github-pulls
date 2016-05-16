@@ -1,7 +1,7 @@
-import React from 'react';
+import React, {Component} from 'react';
 import {shell} from 'electron';
 
-export default class ExternalLink extends React.Component {
+export default class ExternalLink extends Component {
 	handleOnClick(event) {
 		event.preventDefault();
 

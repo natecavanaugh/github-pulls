@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 import _ from 'lodash';
 import Icon from './Icon';
 
-class AccountBar extends React.Component {
+class AccountBar extends Component {
 	handleClick = (e) => {
 		var currentTarget = e.currentTarget;
 

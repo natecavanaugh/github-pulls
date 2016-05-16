@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {Component} from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import PullRequest from './PullRequest';
 
-export default class Branch extends React.Component {
+export default class Branch extends Component {
 	render() {
 		var props = this.props;
 

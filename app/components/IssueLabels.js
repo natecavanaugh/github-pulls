@@ -1,6 +1,6 @@
-import React from 'react';
+import React, {Component} from 'react';
 
-export default class IssueLabels extends React.Component {
+export default class IssueLabels extends Component {
 	render() {
 		var labels = this.props.labels;
 

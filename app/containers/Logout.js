@@ -1,8 +1,8 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import settings from '../utils/settings';
 
-class LogoutPageContainer extends React.Component {
+class LogoutPageContainer extends Component {
 	componentDidMount() {
 		settings.destroy();
 	}

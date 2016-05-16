@@ -1,10 +1,10 @@
-import React from 'react';
+import React, {Component} from 'react';
 
 import ExternalLink from './ExternalLink';
 import Icon from './Icon';
 import ManagementBar from './ManagementBar';
 
-class AccountBar extends React.Component {
+class AccountBar extends Component {
 	render() {
 		var props = this.props;
 
