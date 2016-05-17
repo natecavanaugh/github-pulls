@@ -47,6 +47,8 @@ app.on('ready', function() {
 	var windowConfig = {
 		height: size.height,
 		resizable: true,
+		titleBarStyle: 'hidden-inset',
+		title: productName,
 		width: 768
 	};
 
