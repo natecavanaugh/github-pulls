@@ -5,13 +5,7 @@ import ExternalLink from './ExternalLink';
 import Icon from './Icon';
 
 export default class Repo extends Component {
-	constructor(props, context) {
-		super(props, context);
-
-		this.handleCollapseClick = this.handleCollapseClick.bind(this);
-	}
-
-	handleCollapseClick(event) {
+	handleCollapseClick = (event) => {
 		let {item: {path}, config: {collapsed}} = this.props;
 
 		this.props.collapseRepo(
