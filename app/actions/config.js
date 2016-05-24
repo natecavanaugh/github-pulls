@@ -82,6 +82,20 @@ export function collapseRepo(path, collapsed) {
 	};
 }
 
+export function setLastUpdateCheck(lastUpdateCheck) {
+	return (dispatch, state) => {
+		var userConfig = getUserConfig();
+
+		var config = {
+			lastUpdateCheck
+		};
+
+		userConfig.val(_.merge(userConfig.load(), config));
+
+		dispatch(configSave(config));
+	};
+}
+
 export function setDisplayView(view) {
 	return (dispatch, state) => {
 		var userConfig = getUserConfig();

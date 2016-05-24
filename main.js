@@ -2,6 +2,7 @@
 'use strict';
 
 const electron = require('electron');
+const update = require('./lib/update');
 
 const {app, BrowserWindow, Menu, shell} = electron;
 
@@ -31,6 +32,8 @@ app.on('window-all-closed', () => {
 });
 
 app.on('ready', function() {
+	update();
+
 	var electronScreen = electron.screen;
 
 	var size = electronScreen.getPrimaryDisplay().workAreaSize;
@@ -41,6 +44,13 @@ app.on('ready', function() {
 		'userPrefsPath',
 		(event, arg) => {
 			event.returnValue = global.USER_PREFS_PATH;
+		}
+	);
+
+	electron.ipcMain.on(
+		'currentVersion',
+		(event, arg) => {
+			event.returnValue = app.getVersion();
 		}
 	);
 

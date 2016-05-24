@@ -5,23 +5,33 @@ import routes from './routes';
 import configureStore from './store/configureStore';
 import {loginSuccess, loginComplete} from './actions/login';
 import {loadConfig} from './actions/config';
+import {updateCheck} from './actions/update';
 import settings from './utils/settings';
 
 import { Router, hashHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
+const electron = require('electron');
+
+const currentVersion = electron.ipcRenderer.sendSync('currentVersion');
+
 import './scss/main.scss';
 
-const store = configureStore();
+const store = configureStore(
+	{
+		currentVersion
+	}
+);
+
+let {username, token, avatar, lastUpdateCheck} = settings.load();
 
 const history = syncHistoryWithStore(hashHistory, store);
-
-let {username, token, avatar} = settings.load();
 
 if (username && token) {
 	store.dispatch(loginSuccess(username, token));
 	store.dispatch(loginComplete(avatar));
 	store.dispatch(loadConfig(username));
+	store.dispatch(updateCheck(lastUpdateCheck));
 }
 
 var windowConfig = {

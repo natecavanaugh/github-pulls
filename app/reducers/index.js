@@ -8,6 +8,7 @@ import {PULLS_REQUEST, PULLS_SUCCESS, PULLS_FAILURE} from '../actions/pulls';
 import {LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_COMPLETE, LOGIN_FAILURE, LOGOUT} from '../actions/login';
 
 import {PAGE_ONLINE, PAGE_OFFLINE} from '../actions/page';
+import {UPDATE_AVAILABLE, UPDATE_CHECK, UPDATE_LATER} from '../actions/update';
 
 import {CONFIG_OPEN, CONFIG_SAVE, CONFIG_LOAD} from '../actions/config';
 
@@ -29,6 +30,8 @@ const rootReducer = combineReducers(
 			return newState;
 		},
 
+		currentVersion: (state = 0, action) => state,
+
 		entities: function(state = {issues: {}, repos: {}, result: []}, action) {
 			var newState = state;
 
@@ -38,6 +41,18 @@ const rootReducer = combineReducers(
 				var {entities, result} = response;
 
 				newState = _.merge({}, entities, {result});
+			}
+
+			return newState;
+		},
+
+		lastUpdateCheck: function(state = 0, action) {
+			var newState = state;
+
+			var {time, type} = action;
+
+			if (type === UPDATE_CHECK) {
+				newState = _.toInteger(time);
 			}
 
 			return newState;
@@ -140,6 +155,28 @@ const rootReducer = combineReducers(
 			}
 			else if (type === PULLS_SUCCESS) {
 				newState = null;
+			}
+
+			return newState;
+		},
+
+		updateAvailable: function(state = null, action) {
+			var newState = state;
+
+			if (action.type === UPDATE_AVAILABLE) {
+				var available = action.available;
+
+				newState = _.merge({}, action.available);
+			}
+
+			return newState;
+		},
+
+		updateLater: function(state = false, action) {
+			var newState = state;
+
+			if (action.type === UPDATE_LATER) {
+				newState = true;
 			}
 
 			return newState;
