@@ -163,8 +163,9 @@ const rootReducer = combineReducers(
 		updateAvailable: function(state = null, action) {
 			var newState = state;
 
-			if (action.type === UPDATE_AVAILABLE) {
-				var available = action.available;
+			var {available, type} = action;
+
+			if (type === UPDATE_AVAILABLE && available) {
 
 				newState = _.merge({}, action.available);
 			}
