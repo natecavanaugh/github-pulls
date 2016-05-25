@@ -18,7 +18,10 @@ const shouldBuildAll = argv.all || false;
 const DEFAULT_OPTS = {
   dir: './',
   name: appName,
-  'osx-sign': true,
+  'app-bundle-id': 'com.natecavanaugh.github_pulls',
+  'osx-sign': {
+    identity: 'Developer ID Application: Liferay, Inc. (7H3SPU5TB9)'
+  },
   asar: shouldUseAsar,
   ignore: [
     '^/test($|/)',
