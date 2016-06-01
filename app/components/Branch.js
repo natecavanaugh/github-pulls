@@ -22,14 +22,26 @@ export default class Branch extends Component {
 			className += ' pulls-branch';
 		}
 
+		var branchPulls;
+
+		if (pullRequests.length > 1) {
+			branchPulls = (
+				<ReactCSSTransitionGroup className="list-unstyled pulls" component="ul" transitionName="pull" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
+					{pullRequests}
+				</ReactCSSTransitionGroup>
+			);
+		}
+		else {
+			branchPulls = (
+				<ul className="list-unstyled pulls">
+					{pullRequests}
+				</ul>
+			);
+		}
+
 		return <li className={className}>
 				<b className="list-group-heading property-title">{props.title}</b>
-
-				<ul className="list-unstyled pulls">
-					<ReactCSSTransitionGroup transitionName="pull" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
-						{pullRequests}
-					</ReactCSSTransitionGroup>
-				</ul>
+				{branchPulls}
 			</li>;
 	}
 }

@@ -26,22 +26,3 @@
 	background-clip: padding-box;
 	padding-top: 0;
 }
-
-
-.repo-leave {
-	opacity: 1;
-
-	&.repo-leave-active {
-		opacity: 0.01;
-		transition: opacity 0.5s ease-in;
-	}
-}
-
-.repo-enter {
-	opacity: 0.01;
-
-	.repo-enter-active {
-		opacity: 1;
-		transition: opacity 0.5s ease-in 1s;
-	}
-}

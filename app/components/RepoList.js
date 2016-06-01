@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React, {Component} from 'react';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import Repo from './Repo';
 
@@ -17,13 +18,13 @@ export class RepoList extends Component {
 		var repos = _.map(
 			result,
 			function(item, index) {
-				return <Repo key={item.name + 'repo' + index} {...props} collapsed={!!collapsedMap[item.path]} item={item} />;
+				return <Repo key={`${item.name}repo${index}`} {...props} collapsed={!!collapsedMap[item.path]} item={item} />;
 			}
 		);
 
-		return <div className='repo-list'>
+		return <ReactCSSTransitionGroup className="repo-list" component="div" transitionName="repo" transitionEnterTimeout={500} transitionLeaveTimeout={2000}>
 			{repos}
-		</div>;
+		</ReactCSSTransitionGroup>;
 	}
 }
 
