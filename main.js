@@ -1,6 +1,10 @@
 /* eslint strict: 0 */
 'use strict';
 
+if (require('electron-squirrel-startup')) {
+	return;
+}
+
 const electron = require('electron');
 const update = require('./lib/update');
 
