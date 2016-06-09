@@ -60,6 +60,7 @@ app.on('ready', function() {
 
 	var windowConfig = {
 		height: size.height,
+		icon: 'app/app.png',
 		resizable: true,
 		titleBarStyle: 'hidden-inset',
 		title: productName,
