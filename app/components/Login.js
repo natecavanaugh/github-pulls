@@ -84,7 +84,7 @@ export default class Login extends Component {
 				</FormGroup>
 
 				<FormGroup className={password ? 'has-value' : null} controlId="password">
-					<ControlLabel>Github username</ControlLabel>
+					<ControlLabel>Github password</ControlLabel>
 					<FormControl onChange={this.handleChange} placeholder="Github password" ref="password" type="password" value={password} />
 				</FormGroup>
 
