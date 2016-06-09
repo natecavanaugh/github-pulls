@@ -30,6 +30,7 @@ config.module.loaders.push(
 );
 
 config.plugins.push(
+  new webpack.ProgressPlugin(defaultHandler),
   new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.DefinePlugin({
     '__DEV__': false,
@@ -47,5 +48,47 @@ config.plugins.push(
 );
 
 config.target = webpackTargetElectronRenderer(config);
+
+var chars = 0, lastState, lastStateTime;
+
+function defaultHandler(percentage, msg) {
+  var state = msg;
+
+  function goToLineStart(nextMessage) {
+    var str = '';
+
+    for(; chars > nextMessage.length; chars--) {
+      str += '\b \b';
+    }
+
+    chars = nextMessage.length;
+
+    for(var i = 0; i < chars; i++) {
+      str += '\b';
+    }
+
+    if(str) {
+      process.stderr.write(str);
+    }
+  }
+
+  if(percentage < 1) {
+    percentage = Math.floor(percentage * 100);
+
+    msg = percentage + '% ' + msg;
+
+    if(percentage < 100) {
+      msg = ' ' + msg;
+    }
+
+    if(percentage < 10) {
+      msg = ' ' + msg;
+    }
+  }
+
+  goToLineStart(msg);
+
+  process.stderr.write(msg);
+}
 
 module.exports = config;
