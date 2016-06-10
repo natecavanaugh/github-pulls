@@ -179,7 +179,7 @@ app.on('ready', function() {
 				label: 'Reload',
 				accelerator: 'Command+R',
 				click() {
-					mainWindow.restart();
+					webContents.reload();
 				}
 			},
 			{
@@ -277,7 +277,7 @@ app.on('ready', function() {
 				label: '&Reload',
 				accelerator: 'Ctrl+R',
 				click() {
-					mainWindow.restart();
+					webContents.reload();
 				}
 			},
 			{
