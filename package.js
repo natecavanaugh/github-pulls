@@ -1,116 +1,307 @@
-/* eslint strict: 0, no-shadow: 0, no-unused-vars: 0, no-console: 0 */
 'use strict';
 
-const os = require('os');
-const webpack = require('webpack');
-const cfg = require('./webpack.config.production.js');
-const packager = require('electron-packager');
+const _ = require('lodash');
+
+const Spinner = require('cli-spinner').Spinner;
+const chalk = require('chalk');
 const del = require('del');
 const exec = require('child_process').exec;
-const argv = require('minimist')(process.argv.slice(2));
+const os = require('os');
+const release = require('electron-release');
+const Promise = require('bluebird');
+const util = require('util');
+const electronInstaller = require('electron-winstaller');
+
+const packager = Promise.promisify(require('electron-packager'));
+
+const webpack = require('webpack');
+
+const cfg = require('./webpack.config.production.js');
+
 const pkg = require('./package.json');
-const devDeps = Object.keys(pkg.devDependencies);
 
-const appName = argv.name || argv.n || pkg.productName;
-const shouldUseAsar = argv.asar || argv.a || false;
-const shouldBuildAll = argv.all || false;
+const archs = ['ia32', 'x64'];
 
-const DEFAULT_OPTS = {
-  dir: './',
-  name: appName,
-  'app-bundle-id': 'com.natecavanaugh.github_pulls',
-  'osx-sign': {
-    identity: 'Developer ID Application: Liferay, Inc. (7H3SPU5TB9)'
-  },
-  asar: shouldUseAsar,
-  ignore: [
-    '^/test($|/)',
-    '^/tools($|/)',
-    '^/release($|/)'
-  ].concat(devDeps.map(name => `/node_modules/${name}($|/)`))
+const platforms = {
+	darwin: archs.slice(1),
+	linux: archs,
+	win32: archs
 };
 
-const icon = argv.icon || argv.i || 'app/app';
+const MAP_EXTENSIONS = {
+	darwin: '.app',
+	win32: '.exe',
+	DEFAULT: ''
+};
 
-if (icon) {
-  DEFAULT_OPTS.icon = icon;
+const MAP_ICONS = {
+	darwin: '.icns',
+	win32: '.ico',
+	DEFAULT: '.png'
+};
+
+const error = _.flow(util.format, chalk.red, console.error);
+const log = _.flow(util.format, chalk.green, console.log);
+
+const packList = [];
+
+Spinner.setDefaultSpinnerString(19);
+
+const spinner = new Spinner('Packaging platforms...');
+
+const argv = require('yargs')
+			.env('GHPULLS')
+			.options(
+				{
+					a: {
+						alias: 'asar',
+						boolean: true,
+						default: true
+					},
+					all: {
+						boolean: true,
+						default: false
+					},
+					app: {
+						array: true,
+						default: [`release/${os.platform()}-${os.arch()}/${pkg.productName}.app`]
+					},
+					i: {
+						alias: 'icon',
+						default: 'app/app',
+						string: true
+					},
+					n: {
+						alias: 'name',
+						default: pkg.productName,
+						string: true
+					},
+					o: {
+						alias: 'output'
+					},
+					platforms: {
+						array: true,
+						default: [`${os.platform()}-${os.arch()}`]
+					},
+					r: {
+						alias: 'release',
+						boolean: true,
+						default: false
+					},
+					s: {
+						alias: 'sign',
+						requiresArg: true,
+						string: true
+					},
+					t: {
+						alias: 'token',
+						requiresArg: true,
+						string: true
+					},
+					v: {
+						alias: 'version',
+						default: function() {
+							return require('electron-prebuilt/package.json').version;
+						},
+						requiresArg: true,
+						string: true
+					}
+				}
+			)
+			.check(mapArgs)
+			.implies('r', 't')
+			.argv;
+
+const devDeps = Object.keys(pkg.devDependencies);
+
+const asar = argv.asar;
+const buildAll = argv.all;
+const icon = argv.icon;
+const name = argv.name;
+const version = argv.version;
+
+var osxSign = null;
+
+if (argv.sign) {
+	osxSign = {
+		identity: argv.sign
+	};
 }
 
-const version = argv.version || argv.v;
+const DEFAULT_OPTS = {
+	asar,
+	'app-bundle-id': 'com.natecavanaugh.github_pulls',
+	dir: './',
+	icon,
+	ignore: [
+		'^/test($|/)',
+		'^/tools($|/)',
+		'^/release($|/)',
+		'^/bower_components/(bootstrap.*|jquery|lexicon|momentjs|svg4everybody|roboto-fontface/(?!fonts.*))',
+		'^/(server|webpack.*|package)\.js$',
+	].concat(devDeps.map(module => `/node_modules/${module}($|/)`)),
+	name,
+	'osx-sign': osxSign,
+	overwrite: true,
+	version
+};
 
-if (version) {
-  DEFAULT_OPTS.version = version;
-  startPack();
-} else {
-  // use the same version as the currently-installed electron-prebuilt
-  exec('npm list electron-prebuilt --dev', (err, stdout) => {
-    if (err) {
-      DEFAULT_OPTS.version = '1.0.1';
-    } else {
-      DEFAULT_OPTS.version = stdout.split('electron-prebuilt@')[1].replace(/\s/g, '');
-    }
+startPack();
 
-    startPack();
-  });
+function createInstallers(results) {
+	let platforms = _.transform(
+		argv.platforms,
+		function(result, item, index) {
+			if (item.includes('win32')) {
+				result.push(item);
+			}
+		}
+	);
+
+	return _.map(
+		platforms,
+		function(item, index) {
+			return electronInstaller.createWindowsInstaller(
+				{
+					appDirectory: `./release/${item}/${pkg.productName}-${item}`,
+					description: pkg.description,
+					exe: 'Github Pulls.exe',
+					iconUrl: 'https://raw.githubusercontent.com/natecavanaugh/github-pulls/redux/app/app.ico',
+					outputDirectory: `./release/${item}/${pkg.productName}-${item}-installer`
+				}
+			);
+		}
+	);
+}
+
+function logger(plat, arch) {
+	return (filepath) => {
+		log(`${plat}-${arch} finished!`);
+	};
+}
+
+function mapArgs(argv, aliases) {
+	if (argv.all) {
+		const map = _.transform(
+			platforms,
+			function(result, item, index) {
+				item.map(
+					arch => {
+						let ext = MAP_EXTENSIONS[index] || MAP_EXTENSIONS.DEFAULT;
+						let productName = pkg.productName.replace(/ /g, '\\ ');
+
+						result.apps.push(`./release/${index}-${arch}/${productName}-${index}-${arch}/${productName}${ext}`);
+						result.platforms.push(`${index}-${arch}`);
+					}
+				)
+			},
+			{apps: [], platforms: []}
+		);
+
+		argv.app = map.apps;
+		argv.platforms = map.platforms;
+	}
+
+	return true;
+}
+
+function pack(platform, arch) {
+	const iconObj = {
+		icon: DEFAULT_OPTS.icon + (MAP_ICONS[platform] || MAP_ICONS.DEFAULT)
+	};
+
+	const version = pkg.version || DEFAULT_OPTS.version;
+
+	const opts = Object.assign(
+		{},
+		DEFAULT_OPTS,
+		iconObj,
+		{
+			'app-version': version,
+			arch,
+			platform,
+			prune: true,
+			out: `release/${platform}-${arch}`,
+			'version-string': {
+				CompanyName: pkg.companyName,
+				FileDescription: pkg.productName,
+				FileVersion: version,
+				ProductName: pkg.productName
+			}
+		}
+	);
+
+	return packager(opts);
+}
+
+function packPlatforms(platforms) {
+	spinner.start();
+	return _.map(
+		argv.platforms,
+		(item) => {
+			var pieces = item.split('-');
+
+			var platform = pieces[0];
+
+			var arch = pieces[1];
+
+			return pack(platform, arch).then(
+				res => {
+					log(`${platform}-${arch} finished!`);
+
+					return res;
+				}
+			);
+		}
+	);
+}
+
+function releaseApp(results) {
+	let opts = release.normalizeOptions(_.pick(argv, ['app', 'token']));
+
+	var result = Promise.resolve();
+
+// TODO
+// need to uncomment these
+// uncomment startPack
+// test packaging all without releasing (get app extensions)
+// possibly test releasing on a tmp repo
+// rename package.js to build.js
+	if (argv.release) {
+		result = result
+		.then(() => release.compress(opts))
+		.then(() => release.release(_.merge(opts, {verbose: true})))
+		.then(url => release.updateUrl(url))
+		.then(() => {
+			log('Published new release to GitHub (' + opts.tag + ')')
+		});
+	}
+
+	return result;
 }
 
 function startPack() {
-  console.log('start pack...');
-  webpack(cfg, (err, stats) => {
-    if (err) return console.error(err);
-    del('release')
-    .then(paths => {
-      if (shouldBuildAll) {
-        // build for all platforms
-        const archs = ['ia32', 'x64'];
-        const platforms = ['linux', 'win32', 'darwin'];
+	console.log('start pack...');
+	webpack(
+		cfg,
+		(err, stats) => {
+			if (err) {
+				return console.error(err);
+			}
 
-        platforms.forEach(plat => {
-          archs.forEach(arch => {
-            pack(plat, arch, log(plat, arch));
-          });
-        });
-      } else {
-        // build for current platform only
-        pack(os.platform(), os.arch(), log(os.platform(), os.arch()));
-      }
-    })
-    .catch(err => {
-      console.error(err);
-    });
-  });
-}
+			del('release').then(
+				paths => {
+					var promises = packPlatforms(argv.platforms);
 
-function pack(plat, arch, cb) {
-  // there is no darwin ia32 electron
-  if (plat === 'darwin' && arch === 'ia32') return;
-
-  const iconObj = {
-    icon: DEFAULT_OPTS.icon + (() => {
-      let extension = '.png';
-      if (plat === 'darwin') {
-        extension = '.icns';
-      } else if (plat === 'win32') {
-        extension = '.ico';
-      }
-      return extension;
-    })()
-  };
-
-  const opts = Object.assign({}, DEFAULT_OPTS, iconObj, {
-    platform: plat,
-    arch,
-    prune: true,
-    'app-version': pkg.version || DEFAULT_OPTS.version,
-    out: `release/${plat}-${arch}`
-  });
-
-  packager(opts, cb);
-}
-
-function log(plat, arch) {
-  return (err, filepath) => {
-    if (err) return console.error(err);
-    console.log(`${plat}-${arch} finished!`);
-  };
+					return Promise.all(promises)
+							.then(createInstallers)
+							.then(releaseApp);
+				}
+			)
+			.catch(err => console.error(err))
+			.done(() => {
+				spinner.stop();
+			});
+		}
+	);
 }
