@@ -19,7 +19,7 @@ export default function(store) {
 
 			if (action.type === PULLS_REQUEST) {
 				var getRepoIssues = function(repo) {
-					return github.issues.repoIssuesAsync(
+					return github.issues.getForRepoAsync(
 						{
 							filter: 'open',
 							per_page: 100,
@@ -55,7 +55,7 @@ export default function(store) {
 				var getPullComments = getComments.bind(null, 'pullRequests');
 
 				var getPullStatus = function(item, repo) {
-					return github.statuses.getCombinedAsync(
+					return github.repos.getCombinedStatusAsync(
 						{
 							sha: item.head.sha,
 							repo: repo.name,
@@ -115,7 +115,7 @@ export default function(store) {
 							var userPromises = _(allIssuesPulls)
 										.map('user.login')
 										.filter(user => !_.has(USER_CACHE, user))
-										.map(user => github.user.getFromAsync({user}))
+										.map(user => github.users.getForUserAsync({user}))
 										.value();
 
 							return Promise.join(

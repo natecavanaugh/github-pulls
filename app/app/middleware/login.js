@@ -83,7 +83,7 @@ export default function(store) {
 
 						hashHistory.push('/')
 
-						return github.user.getAsync({});
+						return github.users.getAsync({});
 					}
 				)
 				.then(

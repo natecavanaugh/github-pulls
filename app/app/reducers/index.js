@@ -8,7 +8,7 @@ import {PULLS_REQUEST, PULLS_SUCCESS, PULLS_FAILURE} from '../actions/pulls';
 import {LOGIN_REQUEST, LOGIN_SUCCESS, LOGIN_COMPLETE, LOGIN_FAILURE, LOGOUT} from '../actions/login';
 
 import {PAGE_ONLINE, PAGE_OFFLINE} from '../actions/page';
-import {UPDATE_AVAILABLE, UPDATE_CHECK, UPDATE_LATER} from '../actions/update';
+import {UPDATE_AVAILABLE, UPDATE_CHECK, UPDATE_DOWNLOAD, UPDATE_LATER} from '../actions/update';
 
 import {CONFIG_OPEN, CONFIG_SAVE, CONFIG_LOAD} from '../actions/config';
 
@@ -31,6 +31,14 @@ const rootReducer = combineReducers(
 		},
 
 		currentVersion: (state = 0, action) => state,
+
+		downloading: (state = false, action) => {
+			if (action.type === UPDATE_DOWNLOAD) {
+				state = true;
+			}
+
+			return state;
+		},
 
 		entities: function(state = {issues: {}, repos: {}, result: []}, action) {
 			var newState = state;

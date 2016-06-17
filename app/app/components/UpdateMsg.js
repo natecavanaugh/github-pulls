@@ -15,10 +15,22 @@ export default class UpdateMsg extends Component {
 	render() {
 		var props = this.props;
 
-		var {currentVersion, newVersion} = props;
+		var {currentVersion, newVersion, downloading} = props;
 
 		currentVersion = _.trimStart(currentVersion, 'v');
 		newVersion = _.trimStart(newVersion, 'v');
+
+		var loadingIcon = <span className="loading-icon" />;
+
+		var downloadBtnClassName = 'download-new-version';
+		var downloadBtnStyle = 'success';
+		var downloadBtnText = 'Download & Install';
+
+		if (downloading) {
+			downloadBtnClassName += ' loading';
+			downloadBtnStyle = 'default';
+			downloadBtnText = 'Downloading...'
+		}
 
 		return <div className="update-notification">
 				<h1 className="sr-only">{'Github Pulls Update'}</h1>
@@ -31,8 +43,10 @@ export default class UpdateMsg extends Component {
 						<div className="alert-content">
 							<span className="alert-msg">{'Version '}<span className="new-version">{newVersion}</span>{' is now available. You currently have version'} <span className="current-version">{currentVersion}</span>{'.'}</span>
 							<span className="btn-row">
-								<Button bsSize="sm" bsStyle="success" className="download-new-version" onClick={this.handleDownload}>{'Download & Install Now'}</Button>
-								<Button bsSize="sm" bsStyle="link" className="remind-me-later" onClick={this.handleDismiss}>{'Remind Me Later'}</Button>
+								<Button bsSize="sm" bsStyle={downloadBtnStyle} className={downloadBtnClassName} onClick={this.handleDownload}>{loadingIcon}{downloadBtnText}</Button>
+								{!downloading &&
+									<Button bsSize="sm" bsStyle="link" className="remind-me-later" onClick={this.handleDismiss}>{'Remind Me Later'}</Button>
+								}
 							</span>
 						</div>
 					</div>

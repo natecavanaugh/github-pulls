@@ -3,7 +3,7 @@ const GhReleases = require('electron-gh-releases');
 
 var pkg = require('../package.json');
 
-function getRepo (pkg) {
+function getRepo(pkg) {
 	var url = pkg.repository.url.split('/');
 
 	return url[3] + '/' + url[4].replace(/\.[^/.]+$/, '');

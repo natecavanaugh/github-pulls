@@ -2,6 +2,7 @@
 'use strict';
 
 const express = require('express');
+const path = require('path');
 const webpack = require('webpack');
 const config = require('./webpack.config.development');
 
@@ -15,11 +16,13 @@ const PORT = 3000;
 
 const wdm = webpackDevMiddleware(compiler, {
   publicPath: config.output.publicPath,
+  noInfo: true,
   stats: {
     colors: true
   }
 });
 
+app.use(wdm);
 app.use(webpackHotMiddleware(compiler));
 
 const server = app.listen(PORT, 'localhost', err => {

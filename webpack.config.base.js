@@ -6,7 +6,7 @@ const webpack = require('webpack');
 
 let includePaths = [].concat(require('node-bourbon').includePaths);
 
-includePaths.push(path.resolve(__dirname, './bower_components'));
+includePaths.push(path.resolve(__dirname, './app/bower_components'));
 
 module.exports = {
   sassLoader: {
@@ -30,14 +30,14 @@ module.exports = {
     ]
   },
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'app', 'dist'),
     filename: 'bundle.js',
     libraryTarget: 'commonjs2'
   },
   resolve: {
     extensions: ['', '.js', '.jsx'],
     packageMains: ['webpack', 'browser', 'web', 'browserify', ['jam', 'main'], 'main'],
-    root: [path.join(__dirname, "bower_components")]
+    root: [path.join(__dirname, 'app', "bower_components")]
   },
   plugins: [
     new webpack.ResolverPlugin(

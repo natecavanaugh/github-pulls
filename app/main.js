@@ -5,6 +5,20 @@ if (require('electron-squirrel-startup')) {
 	return;
 }
 
+process.env.NODE_ENV = process.env.NODE_ENV || 'production';
+
+var {NODE_ENV} = process.env;
+
+var DEV_ENV = NODE_ENV === 'development';
+
+if (DEV_ENV) {
+	var path = require('path');
+
+	var PATH_APP_NODE_MODULES = path.join(__dirname, 'node_modules');
+
+	require('module').globalPaths.push(PATH_APP_NODE_MODULES);
+}
+
 const electron = require('electron');
 const update = require('./lib/update');
 
@@ -17,12 +31,6 @@ let mainWindow = null;
 var pkg = require('./package.json');
 
 const {productName} = pkg;
-
-process.env.NODE_ENV = process.env.NODE_ENV || 'production';
-
-var {NODE_ENV} = process.env;
-
-var DEV_ENV = NODE_ENV === 'development';
 
 require('electron-debug')(
 	{

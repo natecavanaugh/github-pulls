@@ -2,52 +2,63 @@
 
 const _ = require('lodash');
 
-const Spinner = require('cli-spinner').Spinner;
 const chalk = require('chalk');
 const del = require('del');
 const exec = require('child_process').exec;
 const os = require('os');
 const release = require('electron-release');
+const got = require('got');
 const Promise = require('bluebird');
 const util = require('util');
 const electronInstaller = require('electron-winstaller');
 
+const fs = require('fs');
+const writeFile = Promise.promisify(fs.writeFile);
 const packager = Promise.promisify(require('electron-packager'));
+const publishRelease = Promise.promisify(require('publish-release'));
+const builder = require("electron-builder");
 
-const webpack = require('webpack');
+const GitHubApi = require('github');
+
+var github = new GitHubApi(
+	{
+		debug: false,
+		headers: {
+			'user-agent': 'Github Pulls app v1.0'
+		},
+		protocol: 'https',
+		version: '3.0.0'
+	}
+);
+
+_.forOwn(
+	github,
+	function(item, index) {
+		if (_.isPlainObject(item)) {
+			Promise.promisifyAll(item);
+		}
+	}
+);
+
+const webpack = Promise.promisify(require('webpack'));
 
 const cfg = require('./webpack.config.production.js');
 
-const pkg = require('./package.json');
+const pkg = require('./app/package.json');
 
-const archs = ['ia32', 'x64'];
+const archs = ['x64'];
 
-const platforms = {
-	darwin: archs.slice(1),
-	linux: archs,
-	win32: archs
-};
-
-const MAP_EXTENSIONS = {
-	darwin: '.app',
-	win32: '.exe',
-	DEFAULT: ''
-};
-
-const MAP_ICONS = {
-	darwin: '.icns',
-	win32: '.ico',
-	DEFAULT: '.png'
-};
+const platforms = 'linux osx win'.split(' ');
 
 const error = _.flow(util.format, chalk.red, console.error);
 const log = _.flow(util.format, chalk.green, console.log);
 
-const packList = [];
-
-Spinner.setDefaultSpinnerString(19);
-
-const spinner = new Spinner('Packaging platforms...');
+_.forOwn(
+	chalk.styles,
+	(item, index) => {
+		log[index] = _.flow(util.format, chalk[index], console.log);
+	}
+)
 
 const argv = require('yargs')
 			.env('GHPULLS')
@@ -81,7 +92,7 @@ const argv = require('yargs')
 					},
 					platforms: {
 						array: true,
-						default: [`${os.platform()}-${os.arch()}`]
+						default: [`${os.platform()}`]
 					},
 					r: {
 						alias: 'release',
@@ -112,8 +123,6 @@ const argv = require('yargs')
 			.implies('r', 't')
 			.argv;
 
-const devDeps = Object.keys(pkg.devDependencies);
-
 const asar = argv.asar;
 const buildAll = argv.all;
 const icon = argv.icon;
@@ -128,180 +137,187 @@ if (argv.sign) {
 	};
 }
 
-const DEFAULT_OPTS = {
+const build = {
 	asar,
-	'app-bundle-id': 'com.natecavanaugh.github_pulls',
-	dir: './',
-	icon,
-	ignore: [
-		'^/test($|/)',
-		'^/tools($|/)',
-		'^/release($|/)',
-		'^/bower_components/(bootstrap.*|jquery|lexicon|momentjs|svg4everybody|roboto-fontface/(?!fonts.*))',
-		'^/(server|webpack.*|package)\.js$',
-	].concat(devDeps.map(module => `/node_modules/${module}($|/)`)),
-	name,
-	'osx-sign': osxSign,
-	overwrite: true,
-	version
+	appId: 'com.natecavanaugh.github_pulls',
+	'app-category-type': 'public.app-category.developer-tools',
+	files: [
+		'**/*',
+		'bower_components/roboto-fontface/fonts{,/**}',
+		'!bower_components/{bootstrap,bootstrap-sass,jquery,lexicon,momentjs,svg4everybody}{,/**/*}',
+		'!bower_components/roboto-fontface/!(fonts){,/**}'
+	],
+
+	npmRebuild: false,
+
+	osx: {}
+};
+
+if (argv.all) {
+	build.linux = {
+		target: ['deb', 'rpm']
+	};
+
+	build.win = {
+		iconUrl: 'https://github.com/natecavanaugh/github-pulls/blob/master/build/icon.ico?raw=true',
+		remoteReleases: 'https://github.com/natecavanaugh/github-pulls'
+	};
+}
+
+const DEFAULT_OPTS = {
+	arch: archs[0],
+	platform: argv.platforms,
+	cscName: argv.sign,
+	githubToken: argv.token,
+	publish: argv.release ? 'always' : 'never',
+	'version-string': {
+		CompanyName: pkg.companyName,
+		FileDescription: pkg.productName,
+		FileVersion: version,
+		ProductName: pkg.productName
+	},
+
+	devMetadata: {
+		build
+	}
 };
 
 startPack();
 
-function createInstallers(results) {
-	let platforms = _.transform(
-		argv.platforms,
-		function(result, item, index) {
-			if (item.includes('win32')) {
-				result.push(item);
-			}
-		}
-	);
-
-	return _.map(
-		platforms,
-		function(item, index) {
-			return electronInstaller.createWindowsInstaller(
-				{
-					appDirectory: `./release/${item}/${pkg.productName}-${item}`,
-					description: pkg.description,
-					exe: 'Github Pulls.exe',
-					iconUrl: 'https://raw.githubusercontent.com/natecavanaugh/github-pulls/redux/app/app.ico',
-					outputDirectory: `./release/${item}/${pkg.productName}-${item}-installer`
-				}
-			);
-		}
-	);
-}
-
-function logger(plat, arch) {
-	return (filepath) => {
-		log(`${plat}-${arch} finished!`);
-	};
-}
-
 function mapArgs(argv, aliases) {
 	if (argv.all) {
-		const map = _.transform(
-			platforms,
-			function(result, item, index) {
-				item.map(
-					arch => {
-						let ext = MAP_EXTENSIONS[index] || MAP_EXTENSIONS.DEFAULT;
-						let productName = pkg.productName.replace(/ /g, '\\ ');
-
-						result.apps.push(`./release/${index}-${arch}/${productName}-${index}-${arch}/${productName}${ext}`);
-						result.platforms.push(`${index}-${arch}`);
-					}
-				)
-			},
-			{apps: [], platforms: []}
-		);
-
-		argv.app = map.apps;
-		argv.platforms = map.platforms;
+		argv.platforms = platforms;
 	}
 
 	return true;
 }
 
-function pack(platform, arch) {
-	const iconObj = {
-		icon: DEFAULT_OPTS.icon + (MAP_ICONS[platform] || MAP_ICONS.DEFAULT)
-	};
+// function pack(platform, arch) {
+// 	const iconObj = {
+// 		icon: DEFAULT_OPTS.icon + (MAP_ICONS[platform] || MAP_ICONS.DEFAULT)
+// 	};
 
-	const version = pkg.version || DEFAULT_OPTS.version;
+// 	const version = pkg.version || DEFAULT_OPTS.version;
 
-	const opts = Object.assign(
-		{},
-		DEFAULT_OPTS,
-		iconObj,
-		{
-			'app-version': version,
-			arch,
-			platform,
-			prune: true,
-			out: `release/${platform}-${arch}`,
-			'version-string': {
-				CompanyName: pkg.companyName,
-				FileDescription: pkg.productName,
-				FileVersion: version,
-				ProductName: pkg.productName
-			}
-		}
-	);
+// 	const opts = Object.assign(
+// 		{},
+// 		DEFAULT_OPTS,
+// 		iconObj,
+// 		{
+// 			'app-version': version,
+// 			arch,
+// 			platform,
+// 			prune: true,
+// 			out: `release/${platform}-${arch}`,
+// 			'version-string': {
+// 				CompanyName: pkg.companyName,
+// 				FileDescription: pkg.productName,
+// 				FileVersion: version,
+// 				ProductName: pkg.productName
+// 			}
+// 		}
+// 	);
 
-	return packager(opts);
-}
+// 	return packager(opts);
+// }
 
-function packPlatforms(platforms) {
-	spinner.start();
-	return _.map(
-		argv.platforms,
-		(item) => {
-			var pieces = item.split('-');
+function getRepo(pkg) {
+	let url = pkg.repository.url.split('/')
 
-			var platform = pieces[0];
-
-			var arch = pieces[1];
-
-			return pack(platform, arch).then(
-				res => {
-					log(`${platform}-${arch} finished!`);
-
-					return res;
-				}
-			);
-		}
-	);
+	return url[3] + '/' + url[4].replace(/\.[^/.]+$/, '');
 }
 
 function releaseApp(results) {
-	let opts = release.normalizeOptions(_.pick(argv, ['app', 'token']));
+	let repoInfo = getRepo(pkg);
 
-	var result = Promise.resolve();
+	let [owner, repo] = repoInfo.split('/');
+
+	let tag = `v${pkg.version}`;
+
+	github.authenticate(
+		{
+			token: argv.token,
+			type: 'oauth',
+			owner
+		}
+	);
+
+	return github.repos.getReleasesAsync(
+		{
+			user: owner,
+			repo
+		}
+	).then(releases => {
+		var release = _.find(releases, ['tag_name', tag]);
+
+		var result;
+
+		if (release) {
+			result = github.repos.editReleaseAsync(
+				{
+					user: owner,
+					repo,
+					tag_name: tag,
+					id: release.id,
+					draft: false
+				}
+			);
+		}
+		else {
+			result = Promise.reject(`Couldn't find a release with a tag name of ${tag}`);
+		}
+
+		return result;
+	})
+	.then(
+		release => {
+			var releaseURL = _.get(release, 'assets[0].browser_download_url');
+
+			release.releaseURL = releaseURL;
+
+			return releaseURL ? release : Promise.reject(`Couldn't find the assets browser_download_url`);
+		}
+	)
+	.then(
+		release => {
+			const fileName = './auto_updater.json';
+
+			var autoUpdater = require(fileName);
+
+			var {releaseURL, name, published_at, created_at} = release;
+
+			autoUpdater.url = releaseURL;
+			autoUpdater.name = name;
+			autoUpdater.pub_date = published_at || created_at;
+
+			return writeFile(fileName, JSON.stringify(autoUpdater, null, '\t'));
+		}
+	)
+	.then(
+		release => {
+			log.blue(
+				`The ${tag} release has been published,
+				and auto_updater.json has been modified.
+
+				${chalk.red('You need to commit and push the auto_updater.json file!')}`
+				.replace(/^\s*/gm, '')
+			);
+
+			return release;
+		}
+	);
 
 // TODO
-// need to uncomment these
-// uncomment startPack
-// test packaging all without releasing (get app extensions)
-// possibly test releasing on a tmp repo
-// rename package.js to build.js
-	if (argv.release) {
-		result = result
-		.then(() => release.compress(opts))
-		.then(() => release.release(_.merge(opts, {verbose: true})))
-		.then(url => release.updateUrl(url))
-		.then(() => {
-			log('Published new release to GitHub (' + opts.tag + ')')
-		});
-	}
-
-	return result;
+// need to fix editing the release options and set draft to false
 }
 
 function startPack() {
-	console.log('start pack...');
-	webpack(
-		cfg,
-		(err, stats) => {
-			if (err) {
-				return console.error(err);
-			}
-
-			del('release').then(
-				paths => {
-					var promises = packPlatforms(argv.platforms);
-
-					return Promise.all(promises)
-							.then(createInstallers)
-							.then(releaseApp);
-				}
-			)
-			.catch(err => console.error(err))
-			.done(() => {
-				spinner.stop();
-			});
-		}
-	);
+	webpack(cfg)
+	.then(() => del('dist'))
+	.then(() => builder.build(DEFAULT_OPTS))
+	.then(argv.release ? releaseApp : _.identity)
+	.catch(err => error(err.stack))
+	.done(() => {
+		log('Finished!');
+	});
 }

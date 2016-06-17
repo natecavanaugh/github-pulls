@@ -1,0 +1,49 @@
+{
+  "name": "github-pulls",
+  "productName": "Github Pulls",
+  "companyName": "Liferay",
+  "version": "1.0.0",
+  "main": "main.js",
+  "description": "Show all of your pull requests and issues across your different repositories, as well as arbitrary repositories.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/natecavanaugh/github-pulls.git"
+  },
+  "author": {
+    "name": "Nate Cavanaugh",
+    "email": "natecavanaugh@gmail.com",
+    "url": "https://github.com/natecavanaugh"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/natecavanaugh/github-pulls/issues"
+  },
+  "homepage": "https://github.com/natecavanaugh/github-pulls#readme",
+  "dependencies": {
+    "bluebird": "^3.0.6",
+    "electron-debug": "^0.7.0",
+    "electron-gh-releases": "^2.0.2",
+    "electron-squirrel-startup": "^1.0.0",
+    "github-cache": "^1.0.1",
+    "history": "^1.17.0",
+    "humps": "^1.0.0",
+    "jsop": "^0.3.1",
+    "lodash": "^4.6.1",
+    "moment": "^2.10.6",
+    "normalizr": "^2.0.0",
+    "react": "^0.14.8",
+    "react-addons-css-transition-group": "^0.14.8",
+    "react-auto-form": "^1.2.4",
+    "react-bootstrap": "^0.29.3",
+    "react-dom": "^0.14.8",
+    "react-redux": "^4.4.1",
+    "react-router": "^2.4.0",
+    "react-router-redux": "^4.0.4",
+    "redux": "^3.3.1",
+    "redux-devtools-log-monitor": "^1.0.5",
+    "redux-router": "^1.0.0-beta8",
+    "redux-thunk": "^2.0.1",
+    "svg-inline-react": "^1.0.1",
+    "validator": "^5.2.0"
+  }
+}

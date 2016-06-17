@@ -3,7 +3,14 @@ import _ from 'lodash';
 
 export const UPDATE_AVAILABLE = 'UPDATE_AVAILABLE';
 export const UPDATE_CHECK = 'UPDATE_CHECK';
+export const UPDATE_DOWNLOAD = 'UPDATE_DOWNLOAD';
 export const UPDATE_LATER = 'UPDATE_LATER';
+
+function startDownload() {
+	return {
+		type: UPDATE_DOWNLOAD
+	};
+}
 
 export function updateCheck(time) {
 	return {
@@ -33,7 +40,9 @@ export function updateNotify(available) {
 
 export function downloadNewVersion() {
 	return (dispatch, getState) => {
-		dispatch(updateAvailable(available));
+		dispatch(startDownload());
+
+		ipcRenderer.send('downloadUpdates');
 	};
 }
 

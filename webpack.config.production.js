@@ -10,7 +10,7 @@ const config = Object.create(baseConfig);
 
 config.devtool = 'source-map';
 
-config.entry = './app/index';
+config.entry = './app/app/index';
 
 config.output.publicPath = '../dist/';
 
@@ -34,9 +34,7 @@ config.plugins.push(
   new webpack.optimize.OccurenceOrderPlugin(),
   new webpack.DefinePlugin({
     '__DEV__': false,
-    'process.env': {
-      'NODE_ENV': JSON.stringify('production')
-    }
+    'process.env.NODE_ENV': JSON.stringify('development')
   }),
   new webpack.optimize.UglifyJsPlugin({
     compressor: {

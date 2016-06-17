@@ -59,7 +59,7 @@ class App extends Component {
 			downloadNewVersion,
 			remindMeLater,
 			updateAvailable,
-			updateLater
+			updateLater,
 		} = this.props;
 
 		var updateMsg = null;
@@ -67,7 +67,7 @@ class App extends Component {
 		var className = '';
 
 		if (updateAvailable && !updateLater) {
-			updateMsg = <UpdateMsg currentVersion={currentVersion} downloadNewVersion={downloadNewVersion} newVersion={updateAvailable.name} remindMeLater={remindMeLater} />;
+			updateMsg = <UpdateMsg currentVersion={currentVersion} downloadNewVersion={downloadNewVersion} newVersion={updateAvailable.name} remindMeLater={remindMeLater} {...this.props} />;
 
 			className = 'has-update';
 		}
