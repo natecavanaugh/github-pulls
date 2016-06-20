@@ -72,7 +72,7 @@ app.on('ready', function() {
 		resizable: true,
 		titleBarStyle: 'hidden-inset',
 		title: productName,
-		width: 768
+		width: 800
 	};
 
 	if (DEV_ENV) {

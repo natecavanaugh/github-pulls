@@ -36,7 +36,7 @@ if (username && token) {
 
 var windowConfig = {
 	height: window.screen.availHeight,
-	width: 768
+	width: 800
 };
 
 if (process.env.NODE_ENV === 'development') {
