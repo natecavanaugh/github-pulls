@@ -12,9 +12,7 @@
     "package-all": "npm run package -- --all",
     "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json && install-app-deps",
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
-    "release": "npm run package && electron-release --app=release/darwin-x64/GithubPulls.app --output=release/darwin-x64/GithubPulls-darwin-x64.zip",
-    "pack": "cross-env NODE_ENV=production node build.js",
-    "pack-all": "build --platform all --arch x64",
+    "release": "npm run package-all -- --release",
     "dist": "build"
   },
   "devDependencies": {
