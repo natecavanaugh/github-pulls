@@ -58,7 +58,7 @@ _.forOwn(
 	(item, index) => {
 		log[index] = _.flow(util.format, chalk[index], console.log);
 	}
-)
+);
 
 const argv = require('yargs')
 			.env('GHPULLS')
