@@ -1,4 +1,4 @@
-import jsop from 'jsop';
+import jsop from './jsop';
 
 export default class {
 	constructor(path) {

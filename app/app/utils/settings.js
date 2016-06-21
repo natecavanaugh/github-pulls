@@ -1,10 +1,11 @@
 import _ from 'lodash';
-import jsop from 'jsop';
+
+import jsop from './jsop';
 import path from 'path';
 
 const electron = require('electron');
 
-export const USER_PREFS_PATH = electron.ipcRenderer.sendSync('userPrefsPath');
+export const USER_PREFS_PATH = (electron.app || electron.remote.app).getPath('userData');
 
 global.USER_PREFS_PATH = USER_PREFS_PATH;
 
