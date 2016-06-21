@@ -22,6 +22,12 @@
 
 	<script>
 		(function() {
+			if (process.env.NODE_ENV === 'development') {
+				const devtoolsInstaller = require('electron-devtools-installer');
+
+				devtoolsInstaller.default(devtoolsInstaller.REACT_DEVELOPER_TOOLS).catch(() => {});
+			}
+
 			const script = document.createElement('script');
 
 			script.src = (process.env.HOT) ? 'http://localhost:3000/app/dist/bundle.js' : '../dist/bundle.js';

@@ -10,7 +10,6 @@ const release = require('electron-release');
 const got = require('got');
 const Promise = require('bluebird');
 const util = require('util');
-const electronInstaller = require('electron-winstaller');
 
 const fs = require('fs');
 const writeFile = Promise.promisify(fs.writeFile);

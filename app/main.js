@@ -50,15 +50,6 @@ app.on('ready', function() {
 
 	var size = electronScreen.getPrimaryDisplay().workAreaSize;
 
-	global.USER_PREFS_PATH = app.getPath('userData');
-
-	electron.ipcMain.on(
-		'userPrefsPath',
-		(event, arg) => {
-			event.returnValue = global.USER_PREFS_PATH;
-		}
-	);
-
 	electron.ipcMain.on(
 		'currentVersion',
 		(event, arg) => {
