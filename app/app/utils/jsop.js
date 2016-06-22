@@ -28,8 +28,8 @@ function createProxy(filename) {
 			else if (type === 'defineProperty') {
 				result = Object.defineProperty(obj, property, newValue);
 			}
-			else if (true) {
-				result = delete target[propKey];
+			else if (type === 'deleteProperty') {
+				result = delete obj[property];
 			}
 
 			write();
