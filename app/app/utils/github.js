@@ -28,4 +28,6 @@ _.forOwn(
 	}
 );
 
+Promise.promisifyAll(github);
+
 export default github;
