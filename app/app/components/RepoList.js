@@ -9,8 +9,6 @@ export class RepoList extends Component {
 	@PureRender
 	shouldComponentUpdate(nextProps, nextState) {
 		return (_.isObject(nextProps.repos) && _.isObject(nextProps.issues));
-
-		return shouldUpdate;
 	}
 
 	render() {
