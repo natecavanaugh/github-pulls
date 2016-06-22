@@ -2,9 +2,11 @@ import React, {Component, PropTypes} from 'react';
 import {Alert, Button, ControlLabel, FormGroup, FormControl} from 'react-bootstrap';
 import ErrorMsg from './ErrorMsg';
 import Icon from './Icon';
+import PureRender from '../containers/PureRender';
 
 const STR_MISSING_CREDENTIALS = 'Please enter both your username and password';
 
+@PureRender
 export default class Login extends Component {
 	constructor(props, context) {
 		super(props, context);

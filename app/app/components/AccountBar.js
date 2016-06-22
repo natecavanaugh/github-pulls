@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-
 import ExternalLink from './ExternalLink';
 import Icon from './Icon';
 import ManagementBar from './ManagementBar';
+import PureRender from '../containers/PureRender';
 
+@PureRender
 class AccountBar extends Component {
 	render() {
 		var props = this.props;

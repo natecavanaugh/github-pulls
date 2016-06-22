@@ -72,8 +72,10 @@ class PullsPage extends Component {
 		var listContent = null;
 		var errMsg = null;
 
+		var filteredProps = _.omit(props, 'loading');
+
 		if (hasRepos) {
-			listContent = <RepoList {...props} repos={props.repos} issues={props.issues} />;
+			listContent = <RepoList {...filteredProps} repos={props.repos} issues={props.issues} />;
 		}
 		else if (props.requestMade) {
 			listContent = <div className="no-repos">
@@ -86,7 +88,7 @@ class PullsPage extends Component {
 		}
 
 		return <div className={cssClass}>
-			<AccountBar {...props} />
+			<AccountBar {...filteredProps} />
 			{errMsg}
 			{listContent}
 			{configModal}

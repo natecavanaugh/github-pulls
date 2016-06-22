@@ -3,10 +3,14 @@ import React, {Component} from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 
 import Repo from './Repo';
+import PureRender from '../containers/PureRender';
 
 export class RepoList extends Component {
+	@PureRender
 	shouldComponentUpdate(nextProps, nextState) {
-		return _.isObject(nextProps.repos) && _.isObject(nextProps.issues);
+		return (_.isObject(nextProps.repos) && _.isObject(nextProps.issues));
+
+		return shouldUpdate;
 	}
 
 	render() {
