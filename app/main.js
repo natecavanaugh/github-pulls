@@ -84,6 +84,26 @@ app.on('ready', function() {
 		}
 	);
 
+	if (DEV_ENV) {
+		webContents.on(
+			'context-menu',
+			(e, props) => {
+				const {x, y} = props;
+
+				Menu.buildFromTemplate(
+					[
+						{
+							label: 'Inspect element',
+							click() {
+								mainWindow.inspectElement(x, y);
+							}
+						}
+					]
+				).popup(mainWindow);
+			}
+		);
+	}
+
 	if (process.platform === 'darwin') {
 		template = [{
 			label: productName,
