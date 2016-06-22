@@ -22,7 +22,7 @@
   "dependencies": {
     "bluebird": "^3.4.1",
     "electron-debug": "^1.0.1",
-    "electron-gh-releases": "^2.0.2",
+    "electron-gh-releases": "^2.0.3",
     "electron-squirrel-startup": "^1.0.0",
     "github-cache": "^1.0.1",
     "humps": "^1.0.0",
