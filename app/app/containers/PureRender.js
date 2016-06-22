@@ -6,13 +6,15 @@ var baseCheck = function(nextProps, nextState) {
 		return shouldUpdate;
 };
 
-export default function PureRender(target) {
+export default function PureRender(...args) {
 	var fn = baseCheck;
+
+	var [target, property, descriptor] = args;
+
 	var originalTarget = target;
 
 	if (_.isFunction(target)) {
-		if (/(^class\s|_classCallCheck)/.test(Function.prototype.toString.call(target))) {
-			originalTarget = target;
+		if (args.length === 1) {
 			target = target.prototype;
 		}
 		else {
@@ -24,9 +26,5 @@ export default function PureRender(target) {
 
 	target.shouldComponentUpdate = fn;
 
-	if (originalTarget != target) {
-		target = originalTarget;
-	}
-
-	return target;
+	return originalTarget;
 }
