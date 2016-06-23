@@ -13,8 +13,7 @@
     "package-all": "npm run package -- --all",
     "postinstall": "node node_modules/fbjs-scripts/node/check-dev-engines.js package.json && install-app-deps",
     "dev": "concurrently --kill-others \"npm run hot-server\" \"npm run start-hot\"",
-    "release": "npm run package-all -- --release",
-    "dist": "build"
+    "release": "npm run package-all -- --release"
   },
   "devDependencies": {
     "babel-core": "^6.10.4",
