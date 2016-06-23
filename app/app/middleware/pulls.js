@@ -19,7 +19,8 @@ export default function(store) {
 
 			if (action.type === PULLS_REQUEST) {
 				var getRepoIssues = function(repo) {
-					return github.issues.getForRepoAsync(
+					return github.getAllPagesAsync(
+						github.issues.getForRepo,
 						{
 							filter: 'open',
 							per_page: 100,
@@ -30,7 +31,8 @@ export default function(store) {
 				};
 
 				var getRepoPulls = function(repo) {
-					return github.pullRequests.getAllAsync(
+					return github.getAllPagesAsync(
+						github.pullRequests.getAll,
 						{
 							per_page: 100,
 							repo: repo.name,
@@ -41,7 +43,8 @@ export default function(store) {
 				};
 
 				var getComments = function(type, item, repo) {
-					return github[type].getCommentsAsync(
+					return github.getAllPagesAsync(
+						github[type].getComments,
 						{
 							per_page: 100,
 							number: item.number,
@@ -250,7 +253,8 @@ export default function(store) {
 					return item;
 				};
 
-				var myRepos = github.repos.getAllAsync(
+				var myRepos = github.getAllPagesAsync(
+					github.repos.getAll,
 					{
 						per_page: 100,
 						type: 'owner'
