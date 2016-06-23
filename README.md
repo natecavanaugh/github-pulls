@@ -7,7 +7,7 @@
 This app shows all of your GitHub pull requests and issues across your different repositories, and even across the branches in those repos.
 Now with version 1.0, we support Mac, Linux and Windows builds, as well as in app updates.
 
-![Github Pulls](/../screenshots/images/ghpulls.png?raw=true "Github Pulls")
+![Github Pulls](/../screenshots/images/cozy.png?raw=true "Github Pulls")
 
 ## Download
 To download, just go to the [Releases](https://github.com/natecavanaugh/github-pulls/releases) tab and download the latest zip file.
@@ -24,6 +24,29 @@ To download, just go to the [Releases](https://github.com/natecavanaugh/github-p
 - Updates can be automatically installed
 
 ## Screenshots
+
+<table width="100%">
+	<tr>
+		<th width="33%">Cozy</th>
+		<th width="33%">Compact</th>
+		<th width="33%">Comfortable</th>
+	</tr>
+	<tr>
+		<td align="center"><img src="/../screenshots/images/cozy.png?raw=true" width="100" /></td>
+		<td align="center"><img src="/../screenshots/images/compact.png?raw=true" width="100" /></td>
+		<td align="center"><img src="/../screenshots/images/comfortable.png?raw=true" width="100" /></td>
+	</tr>
+	<tr>
+		<th>Configuration</th>
+		<th>Display Styles</th>
+		<th>Collapsed Repos</th></tr>
+	<tr>
+		<td align="center"><img src="/../screenshots/images/config.png?raw=true" width="100" /></td>
+		<td align="center"><img src="/../screenshots/images/management_bar.png?raw=true" width="100" /></td>
+		<td align="center"><img src="/../screenshots/images/collapsed.png?raw=true" width="100" /></td>
+	</tr>
+</table>
+
 
 
 ## Building locally
