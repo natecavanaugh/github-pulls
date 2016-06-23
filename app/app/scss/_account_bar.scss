@@ -20,6 +20,11 @@
 		color: #FFF;
 	}
 
+	a {
+		-webkit-app-region: no-drag;
+		-webkit-user-select: all;
+	}
+
 	> .app-column {
 		@include align-content(center);
 		@include display(flex);
