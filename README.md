@@ -1,6 +1,15 @@
 # Github Pulls
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+
+
+- [About](#about)
+- [Download](#download)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Building locally](#building-locally)
+
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 ## About
