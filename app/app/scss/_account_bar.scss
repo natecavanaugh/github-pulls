@@ -24,6 +24,10 @@
 		@include align-content(center);
 		@include display(flex);
 		@include justify-content(space-between);
+
+		&:before, &:after {
+			display: none;
+		}
 	}
 
 	.logout {
@@ -31,10 +35,12 @@
 		text-align: right;
 		display: inline-block;
 		line-height: 32px;
+		z-index: 2;
 	}
 
 	.user-info {
 		flex-grow: 0;
+		z-index: 2;
 	}
 
 	.user-info img {
@@ -53,12 +59,14 @@
 	}
 
 	.app-title {
-		flex-grow: 1;
-		font-weight: bold;
-		line-height: 32px;
-		text-align: center;
 		font-size: 18px;
-		z-index: 100;
+		font-weight: bold;
+		left: 0;
+		line-height: 32px;
+		position: absolute;
+		right: 0;
+		text-align: center;
+		z-index: 1;
 	}
 
 	.app-title .pull-count {
@@ -132,7 +140,7 @@
 
 	transform: translateX(-50%);
 	width: 100%;
-	z-index: -1;
+	z-index: 0;
 }
 
 @keyframes shift-rightwards {
