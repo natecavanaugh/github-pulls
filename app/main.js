@@ -22,6 +22,8 @@ if (DEV_ENV) {
 const electron = require('electron');
 const update = require('./lib/update');
 
+const DARWIN = process.platform === 'darwin';
+
 const {app, BrowserWindow, Menu, shell} = electron;
 
 let menu;
@@ -40,7 +42,9 @@ require('electron-debug')(
 );
 
 app.on('window-all-closed', () => {
-	if (process.platform !== 'darwin') app.quit();
+	if (!DARWIN){
+		app.quit();
+	}
 });
 
 app.on('ready', function() {
@@ -104,128 +108,170 @@ app.on('ready', function() {
 		);
 	}
 
-	if (process.platform === 'darwin') {
-		template = [{
-			label: productName,
-			submenu: [
-			{
-				label: `About ${productName}`,
-				selector: 'orderFrontStandardAboutPanel:'
-			},
-			{type: 'separator'},
-			{
-				label: 'Services',
-				submenu: []
-			},
-			{type: 'separator'},
-			{
-				label: `Hide ${productName}`,
-				accelerator: 'Command+H',
-				selector: 'hide:'
-			},
-			{
-				label: 'Hide Others',
-				accelerator: 'Command+Shift+H',
-				selector: 'hideOtherApplications:'
-			},
-			{
-				label: 'Show All',
-				selector: 'unhideAllApplications:'
-			},
-			{type: 'separator'},
-			{
-				label: 'Quit',
-				accelerator: 'Command+Q',
-				click() {
-					app.quit();
-				}
-			}
-			].concat(
-				DEV_ENV ?
-				[
+	template = [
+		{
+				label: 'Edit',
+				submenu: [
+					{
+						label: 'Undo',
+						accelerator: 'CmdOrCtrl+Z',
+						selector: 'undo:'
+					},
+					{
+						label: 'Redo',
+						accelerator: 'Shift+CmdOrCtrl+Z',
+						selector: 'redo:'
+					},
 					{type: 'separator'},
 					{
-						label: 'Crash Main Process',
+						label: 'Cut',
+						accelerator: 'CmdOrCtrl+X',
+						selector: 'cut:'
+					},
+					{
+						label: 'Copy',
+						accelerator: 'CmdOrCtrl+C',
+						selector: 'copy:'
+					},
+					{
+						label: 'Paste',
+						accelerator: 'CmdOrCtrl+V',
+						selector: 'paste:'
+					},
+					{
+						label: 'Select All',
+						accelerator: 'CmdOrCtrl+A',
+						selector: 'selectAll:'
+					}
+				]
+			},
+			{
+				label: '&View',
+				submenu: [
+					{
+						label: '&Reload',
+						accelerator: 'CmdOrCtrl+R',
 						click() {
-							process.crash();
+							webContents.reload();
+						}
+					},
+					{
+						label: 'Toggle &Full Screen',
+						accelerator: DARWIN ? 'Ctrl+Command+F' : 'F11',
+						click() {
+							mainWindow.setFullScreen(!mainWindow.isFullScreen());
+						}
+					},
+					{
+						label: 'Toggle &Developer Tools',
+						accelerator: DARWIN ? 'Alt+Command+I' : 'Ctrl+Shift+I',
+						click() {
+							webContents.toggleDevTools();
 						}
 					}
 				]
-				:
-				[]
+			},
+			{
+				label: 'Window',
+				submenu: [
+					{
+						label: 'Minimize',
+						accelerator: 'Command+M',
+						selector: 'performMiniaturize:'
+					},
+					{
+						label: 'Close',
+						accelerator: 'Command+W',
+						selector: 'performClose:'
+					},
+					{type: 'separator'},
+					{
+						label: 'Bring All to Front',
+						selector: 'arrangeInFront:'
+					}
+				]
+			},
+			{
+				label: 'Help',
+				submenu: [
+					{
+						label: 'Learn More',
+						click() {
+							shell.openExternal('https://github.com/natecavanaugh/github-pulls');
+						}
+					},
+					{
+						label: 'Documentation',
+						click() {
+							shell.openExternal('https://github.com/natecavanaugh/github-pulls/tree/master/docs#readme');
+						}
+					},
+					{
+						label: 'Search Issues',
+						click() {
+							shell.openExternal('https://github.com/natecavanaugh/github-pulls/issues');
+						}
+					}
+				]
+			}
+		];
 
-			)
-		},
-		{
-			label: 'Edit',
-			submenu: [
+	if (DARWIN) {
+		template.unshift(
 			{
-				label: 'Undo',
-				accelerator: 'Command+Z',
-				selector: 'undo:'
-			},
-			{
-				label: 'Redo',
-				accelerator: 'Shift+Command+Z',
-				selector: 'redo:'
-			},
-			{type: 'separator'},
-			{
-				label: 'Cut',
-				accelerator: 'Command+X',
-				selector: 'cut:'
-			},
-			{
-				label: 'Copy',
-				accelerator: 'Command+C',
-				selector: 'copy:'
-			},
-			{
-				label: 'Paste',
-				accelerator: 'Command+V',
-				selector: 'paste:'
-			},
-			{
-				label: 'Select All',
-				accelerator: 'Command+A',
-				selector: 'selectAll:'
-			}]
-		},
-		{
-			label: 'View',
-			submenu: [
-			{
-				label: 'Reload',
-				accelerator: 'Command+R',
-				click() {
-					webContents.reload();
-				}
-			},
-			{
-				label: 'Toggle Full Screen',
-				accelerator: 'Ctrl+Command+F',
-				click() {
-					mainWindow.setFullScreen(!mainWindow.isFullScreen());
-				}
-			},
-			{
-				label: 'Toggle Developer Tools',
-				accelerator: 'Alt+Command+I',
-				click() {
-					if (webContents.isDevToolsOpened()) {
-						webContents.closeDevTools();
+				label: productName,
+				submenu: [
+					{
+						label: `About ${productName}`,
+						selector: 'orderFrontStandardAboutPanel:'
+					},
+					{type: 'separator'},
+					{
+						label: 'Services',
+						submenu: []
+					},
+					{type: 'separator'},
+					{
+						label: `Hide ${productName}`,
+						accelerator: 'Command+H',
+						selector: 'hide:'
+					},
+					{
+						label: 'Hide Others',
+						accelerator: 'Command+Shift+H',
+						selector: 'hideOtherApplications:'
+					},
+					{
+						label: 'Show All',
+						selector: 'unhideAllApplications:'
+					},
+					{type: 'separator'},
+					{
+						label: 'Quit',
+						accelerator: 'Command+Q',
+						click() {
+							app.quit();
+						}
 					}
-					else {
-						webContents.openDevTools({
-							detach: true
-						});
-					}
-				}
-			}]
-		},
-		{
-			label: 'Window',
-			submenu: [
+				].concat(
+					DEV_ENV ?
+					[
+						{type: 'separator'},
+						{
+							label: 'Crash Main Process',
+							click() {
+								process.crash();
+							}
+						}
+					]
+					:
+					[]
+
+				)
+			}
+		);
+
+		template[3].submenu = [
 			{
 				label: 'Minimize',
 				accelerator: 'Command+M',
@@ -240,97 +286,32 @@ app.on('ready', function() {
 			{
 				label: 'Bring All to Front',
 				selector: 'arrangeInFront:'
-			}]
-		},
-		{
-			label: 'Help',
-			submenu: [
+			}
+		];
+	}
+	else {
+		template.unshift(
 			{
-				label: 'Learn More',
-				click() {
-					shell.openExternal('https://github.com/natecavanaugh/github-pulls');
-				}
-			},
-			{
-				label: 'Documentation',
-				click() {
-					shell.openExternal('https://github.com/natecavanaugh/github-pulls/tree/master/docs#readme');
-				}
-			},
-			{
-				label: 'Search Issues',
-				click() {
-					shell.openExternal('https://github.com/natecavanaugh/github-pulls/issues');
-				}
-			}]
-		}];
+				label: '&File',
+				submenu: [
+					{
+						label: '&Close',
+						accelerator: 'Ctrl+W',
+						click() {
+							mainWindow.close();
+						}
+					}
+				]
+			}
+		);
+	}
 
-		menu = Menu.buildFromTemplate(template);
+	menu = Menu.buildFromTemplate(template);
+
+	if (DARWIN) {
 		Menu.setApplicationMenu(menu);
-	} else {
-		template = [{
-			label: '&File',
-			submenu: [
-			{
-				label: '&Open',
-				accelerator: 'Ctrl+O'
-			},
-			{
-				label: '&Close',
-				accelerator: 'Ctrl+W',
-				click() {
-					mainWindow.close();
-				}
-			}]
-		},
-		{
-			label: '&View',
-			submenu: [
-			{
-				label: '&Reload',
-				accelerator: 'Ctrl+R',
-				click() {
-					webContents.reload();
-				}
-			},
-			{
-				label: 'Toggle &Full Screen',
-				accelerator: 'F11',
-				click() {
-					mainWindow.setFullScreen(!mainWindow.isFullScreen());
-				}
-			},
-			{
-				label: 'Toggle &Developer Tools',
-				accelerator: 'Alt+Ctrl+I',
-				click() {
-					webContents.toggleDevTools();
-				}
-			}]
-		},
-		{
-			label: 'Help',
-			submenu: [
-			{
-				label: 'Learn More',
-				click() {
-					shell.openExternal('https://github.com/natecavanaugh/github-pulls');
-				}
-			},
-			{
-				label: 'Documentation',
-				click() {
-					shell.openExternal('https://github.com/natecavanaugh/github-pulls/tree/master/docs#readme');
-				}
-			},
-			{
-				label: 'Search Issues',
-				click() {
-					shell.openExternal('https://github.com/natecavanaugh/github-pulls/issues');
-				}
-			}]
-		}];
-		menu = Menu.buildFromTemplate(template);
+	}
+	else {
 		mainWindow.setMenu(menu);
 	}
 });
