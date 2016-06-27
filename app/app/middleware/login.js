@@ -5,7 +5,7 @@ import settings from '../utils/settings';
 
 import {hashHistory} from 'react-router';
 
-import {LOGIN_REQUEST, loginFailure, loginSuccess, loginComplete} from '../actions/login';
+import {LOGIN_REQUEST, login, loginFailure, loginSuccess, loginComplete} from '../actions/login';
 import {loadConfig} from '../actions/config';
 
 export default function(store) {
@@ -18,18 +18,33 @@ export default function(store) {
 			if (action.type === LOGIN_REQUEST) {
 				var scriptNote = 'Github Pulls (by Liferay) - electron';
 
-				let {username, password} = action;
+				let {username, password, otp, oauthToken} = action;
 
-				github.authenticate(
-					{
-						password,
-						type: 'basic',
-						username
-					}
-				);
+				var headers = {};
+
+				var payload = {
+					cache: false,
+					headers,
+					password,
+					type: 'basic',
+					username
+				};
+
+				if (oauthToken) {
+					payload = {
+						type: 'oauth',
+						token: oauthToken
+					};
+				}
+				else if (otp) {
+					payload.headers['X-GitHub-OTP'] = otp;
+				}
+
+				github.authenticate(payload);
 
 				retVal = github.authorization.getAllAsync(
 					{
+						headers,
 						per_page: 100
 					}
 				)
@@ -47,6 +62,7 @@ export default function(store) {
 						if (token && token.hashed_token) {
 							newResponse = github.authorization.deleteAsync(
 								{
+									headers,
 									id: token.id
 								}
 							);
@@ -59,6 +75,7 @@ export default function(store) {
 					response => {
 						return github.authorization.createAsync(
 							{
+								headers,
 								note: scriptNote,
 								scopes: ['repo']
 							}

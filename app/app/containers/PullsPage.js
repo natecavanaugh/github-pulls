@@ -55,7 +55,7 @@ class PullsPage extends Component {
 		var cssClass = 'app-container app-column container-fluid-1280';
 
 		cssClass += (!props.online ? ' status-offline' : '');
-		cssClass += ` display-${props.config.view || ''}`;
+		cssClass += ` display-${props.config.view || 'compact'}`;
 
 		if (props.loading) {
 			cssClass += ' loading';

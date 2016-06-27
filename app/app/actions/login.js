@@ -36,17 +36,19 @@ export function loginComplete(avatar_url) {
 	};
 }
 
-function loginUser(username, password) {
+function loginUser(username, password, otp, oauthToken) {
 	return {
 		password,
 		type: LOGIN_REQUEST,
-		username
+		username,
+		otp,
+		oauthToken
 	};
 }
 
-export function login(username, password) {
+export function login(username, password, otp, oauthToken) {
 	return (dispatch, getState) => {
-		return dispatch(loginUser(username, password));
+		return dispatch(loginUser(username, password, otp, oauthToken));
 	};
 }
 

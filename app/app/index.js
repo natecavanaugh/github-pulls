@@ -34,16 +34,16 @@ if (username && token) {
 	store.dispatch(updateCheck(lastUpdateCheck));
 }
 
-var windowConfig = {
-	height: window.screen.availHeight,
-	width: 800
-};
-
 if (process.env.NODE_ENV === 'development') {
-	windowConfig.width = Math.min(1400, window.screen.availWidth);
-}
+	var windowConfig = {
+		height: window.screen.availHeight,
+		width: 800
+	};
 
-window.resizeTo(windowConfig.width, windowConfig.height);
+	windowConfig.width = Math.min(1400, window.screen.availWidth);
+
+	window.resizeTo(windowConfig.width, windowConfig.height);
+}
 
 render(
 	<Provider store={store}>
