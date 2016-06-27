@@ -248,25 +248,19 @@ app.on('ready', function() {
 			{
 				label: 'Learn More',
 				click() {
-					shell.openExternal('http://electron.atom.io');
+					shell.openExternal('https://github.com/natecavanaugh/github-pulls');
 				}
 			},
 			{
 				label: 'Documentation',
 				click() {
-					shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-				}
-			},
-			{
-				label: 'Community Discussions',
-				click() {
-					shell.openExternal('https://discuss.atom.io/c/electron');
+					shell.openExternal('https://github.com/natecavanaugh/github-pulls/tree/master/docs#readme');
 				}
 			},
 			{
 				label: 'Search Issues',
 				click() {
-					shell.openExternal('https://github.com/atom/electron/issues');
+					shell.openExternal('https://github.com/natecavanaugh/github-pulls/issues');
 				}
 			}]
 		}];
@@ -320,25 +314,19 @@ app.on('ready', function() {
 			{
 				label: 'Learn More',
 				click() {
-					shell.openExternal('http://electron.atom.io');
+					shell.openExternal('https://github.com/natecavanaugh/github-pulls');
 				}
 			},
 			{
 				label: 'Documentation',
 				click() {
-					shell.openExternal('https://github.com/atom/electron/tree/master/docs#readme');
-				}
-			},
-			{
-				label: 'Community Discussions',
-				click() {
-					shell.openExternal('https://discuss.atom.io/c/electron');
+					shell.openExternal('https://github.com/natecavanaugh/github-pulls/tree/master/docs#readme');
 				}
 			},
 			{
 				label: 'Search Issues',
 				click() {
-					shell.openExternal('https://github.com/atom/electron/issues');
+					shell.openExternal('https://github.com/natecavanaugh/github-pulls/issues');
 				}
 			}]
 		}];
