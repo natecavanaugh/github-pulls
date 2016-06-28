@@ -281,7 +281,6 @@ export default function(store) {
 				retVal = Promise.all(externalRepos)
 						.then(
 							repos => {
-
 								repos = _.flatten(repos);
 
 								return _.reduce(
