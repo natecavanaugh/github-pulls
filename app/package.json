@@ -2,7 +2,7 @@
   "name": "github-pulls",
   "productName": "Github Pulls",
   "companyName": "Liferay",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "main": "main.js",
   "description": "Show all of your pull requests and issues across your different repositories, as well as arbitrary repositories.",
   "repository": {
