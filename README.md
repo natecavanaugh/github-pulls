@@ -63,6 +63,7 @@ To download, just go to the [Releases](https://github.com/natecavanaugh/github-p
 This branch has changed to using Electron and Redux with React (using the [Electon React Boilerplate](https://github.com/chentsulin/electron-react-boilerplate) setup).
 
 To build locally, follow the following steps:
+
 1. Run `npm install` from the root of the project
 2. Run `npm run dev`
 3. Make your changes, and the app will update live
