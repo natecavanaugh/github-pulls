@@ -192,6 +192,10 @@
 			bottom: 0;
 		}
 
+		.loading-dots {
+			text-align: center;
+		}
+
 		.loading-dot {
 			$width: 18px;
 			$offset: 10px;
@@ -199,11 +203,9 @@
 			animation: yoyo 1s ease-in-out infinite;
 			background-color: $header-toolbar-default-bg;
 			border-radius: 50%;
-			display: block;
+			display: inline-block;
 			height: $width;
-			position: absolute;
-			right: $offset;
-			top: 0;
+			margin: 0 ($width + $offset)/4;
 			transform: translateZ(0);
 			width: $width;
 			z-index: 0;
@@ -211,8 +213,7 @@
 			@for $i from 1 through 3 {
 				&:nth-child(#{$i}) {
 					animation-delay: $i * 0.1s;
-					$noffset: $offset * $i + ($width * ($i - 1));
-					right: calc(50% - #{$noffset});
+					// $noffset: $offset * $i + ($width * ($i - 1));
 				}
 			}
 		}
