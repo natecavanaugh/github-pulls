@@ -6,7 +6,7 @@ import AutoForm from 'react-auto-form';
 import _ from 'lodash';
 import { Button, Checkbox, FormGroup, ControlLabel, FormControl, InputGroup } from 'react-bootstrap';
 
-const REGEX_VALID_REPO_BASE = /([^\W_](?:[\w\-]+|[^\W_])?\/[\w\-.]+?)/;
+const REGEX_VALID_REPO_BASE = /([^\W_](?:[\w\-]+|[^\W_])?(\/[\w\-.]+?)?)/;
 
 const REGEX_GITHUB_REPO = new RegExp(`(?:^((?:git@|https:\/\/)?(?:github.com[\/:]))?|^)${REGEX_VALID_REPO_BASE.source}(?:$|(\.git)?$)`);
 
@@ -154,13 +154,21 @@ class Config extends Component {
 
 		return <FormGroup key={`configRepos${index}`}>
 			<InputGroup className={groupClass}>
-				<FormControl type="text" data-index={index} id={repoKey} name="repos" onBlur={this.handleBlur} onChange={this.handleChange} onPaste={this.handlePaste} placeholder="e.g. natecavanaugh/github-pulls" ref={repoKey} value={item} />
+				<FormControl type="text" data-index={index} id={repoKey} name="repos" onBlur={this.handleBlur} onChange={this.handleChange} onPaste={this.handlePaste} placeholder="e.g. liferay or natecavanaugh/github-pulls" ref={repoKey} value={item} />
 				<InputGroup.Button>
 					<Button aria-label="Remove" data-index={index} className={btnClass} onClick={this.removeField}><Icon name="hr" /></Button>
 					<Button aria-label="Add" data-index={index} className={btnClass} disabled={disabled} onClick={this.addField}><Icon name="plus" /></Button>
 				</InputGroup.Button>
 			</InputGroup>
 		</FormGroup>
+	}
+
+	formatRepo(repo) {
+		repo = repo.replace(REGEX_GITHUB_REPO, (str, domain, baseRepo, gitExt) => baseRepo);
+
+		repo = _.trim(repo, ' /	');
+
+		return repo;
 	}
 
 	handleBlur = (event) => {
@@ -286,7 +294,7 @@ class Config extends Component {
 		var validRepos = dataRepos.reduce(
 			(prev, item, index) => {
 				if (item.trim()) {
-					var repo = item.replace(REGEX_GITHUB_REPO, (str, domain, baseRepo, gitExt) => baseRepo);
+					var repo = this.formatRepo(item);
 
 					if (REGEX_VALID_REPO.test(repo)) {
 						prev.push(repo);
@@ -330,7 +338,7 @@ class Config extends Component {
 		var valid = false;
 
 		if (value.trim()) {
-			var repo = value.replace(REGEX_GITHUB_REPO, (str, domain, baseRepo, gitExt) => baseRepo);
+			var repo = this.formatRepo(value);
 
 			if (REGEX_VALID_REPO.test(repo)) {
 				valid = repo;
@@ -376,7 +384,7 @@ class Config extends Component {
 			<AutoForm onSubmit={this.handleSubmit}>
 				<Modal close={props.closeConfig} title="Settings" disableSave={hasErrors} errors={errorMsg}>
 					<div className="config-section config-repos">
-						<h3>Repos</h3>
+						<h3>Users &amp; Repos</h3>
 						{allRepos}
 					</div>
 					<div className="config-section config-display">

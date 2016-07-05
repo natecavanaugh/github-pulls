@@ -263,16 +263,34 @@ export default function(store) {
 
 				var config = getUserConfig(settings.val('username')).load();
 
-				var externalRepos = (config.repos || []).map(
+				var repos = _.uniq(config.repos);
+
+				var externalRepos = repos.map(
 					function(item, index) {
 						var [user, repo] = item.split('/');
 
-						return github.repos.getAsync(
-							{
-								repo,
-								user
-							}
-						);
+						var repoPromise = Promise.resolve();
+
+						if (!repo) {
+							repoPromise = github.getAllPagesAsync(
+								github.repos.getForUser,
+								{
+									user,
+									per_page: 100,
+									type: 'owner'
+								}
+							);
+						}
+						else {
+							repoPromise = github.repos.getAsync(
+								{
+									repo,
+									user
+								}
+							);
+						}
+
+						return repoPromise;
 					}
 				);
 
