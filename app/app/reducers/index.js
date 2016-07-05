@@ -24,7 +24,20 @@ const rootReducer = combineReducers(
 			var {type} = action;
 
 			if (checkType(type, CONFIG_OPEN, CONFIG_SAVE, CONFIG_LOAD)) {
-				newState = _.merge({}, state, action.config);
+				newState = _.mergeWith(
+					{},
+					state,
+					action.config,
+					function(objValue, srcValue, key, object, src, stack) {
+						var retVal;
+
+						if (_.isArray(srcValue)) {
+							retVal = [...srcValue];
+						}
+
+						return retVal;
+					}
+				);
 			}
 
 			return newState;
