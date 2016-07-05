@@ -25,9 +25,12 @@
 	padding-bottom: 130px;
 }
 
+$icon-width: 81px;
+
 .update-available {
 	bottom: 0;
 	margin-bottom: 0;
+	padding-left: $icon-width;
 	position: fixed;
 	width: 100%;
 	z-index: 100;
@@ -51,7 +54,7 @@
 		border-radius: 0;
 		top: 0;
 		transform: none;
-		width: 81px;
+		width: $icon-width;
 		box-sizing: border-box;
 		border-right: 2px solid #0b446d;
 		display: flex;
