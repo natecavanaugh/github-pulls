@@ -24,7 +24,7 @@ export default class Branch extends Component {
 
 		var branchPulls;
 
-		if (pullRequests.length > 1) {
+		if (pullRequests.length >= 1) {
 			branchPulls = (
 				<ReactCSSTransitionGroup className="list-unstyled pulls" component="ul" transitionName="pull" transitionEnterTimeout={500} transitionLeaveTimeout={500}>
 					{pullRequests}
